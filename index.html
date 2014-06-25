@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Idaho Fish and Game Hunt Planner Map Center">
+    <meta name="author" content="IFWIS">
+
+    <title>IDFG Hunt Planner Map Center</title>
+		<link rel = "icon" href="//fishandgame.idaho.gov/images/icons/favicon.ico" type="image/x-icons" />
+
+    <!-- Bootstrap core CSS -->
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" type="text/css" href="src/css/layout.css" >
+		<link rel="stylesheet" href="//js.arcgis.com/3.9/js/dojo/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" type="text/css" href="//js.arcgis.com/3.9/js/esri/css/esri.css">   
+    <link rel="stylesheet" type="text/css" href="src/css/bootstrapmap.css">
+		<link rel="stylesheet" type="text/css" href="src/agsjs/css/agsjs.css">
+		
+		<link rel="apple-touch-icon" href="/bootstrap/img/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/bootstrap/img/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/bootstrap/img/apple-touch-icon-114x114.png">
+		
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="../bootstrap_v3/docs-assets/js/html5shiv.js"></script>
+      <script src="../bootstrap_v3/docs-assets/js/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body class="claro">
+	<div class="wrapper">
+	 <div id="loading">
+		 <img id="loadingImg" src="src/images/loading.gif" alt="Loading..." class="ri"/>
+	 </div>
+   <div class="box">
+    <div id="navbar-wrapper" class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+					<a class="navbar-brand" href="#">
+						<img class="navbar-brand-image" src="src/images/logo.png" border="0" width="30px">
+						IDFG Map Center
+					</a>
+        </div>
+        <div class="collapse navbar-collapse">
+          
+					<ul class="nav navbar-nav">	
+            <li><a id="website" href="http://fishandgame.idaho.gov/" target="_blank">IDFG Website</a></li>
+						<li><a id="contact" href="#contactUs">Contact Us</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+		<!-- Highlight a Hunt Area Modal -->
+		<div class="modal fade" id="huntModal" style="display: none;" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Highlight a Hunt Area</h4>
+					</div>
+					<div class="modal-body">
+						I haven't done anything with this.  I envision some kind of drop-down selection like we currently have but maybe a little more involved. Like Drop-Down #1 -> Species, this will open Drop-Down #2 to select the controlled hunt number....something like that. I would also like to see an "Export to KML" button here as well.
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Layer List Modal
+		<div class="modal fade" id="layerListModal" style="display: none;" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Turn Layers On/Off</h4>
+					</div>
+					<div class="modal-body">
+						<span id="layerList"></span>
+						<br />
+					</div>
+				</div>
+			</div>
+		</div> -->
+		<!-- Legend Modal -->
+		<div class="modal fade" id="legendModal" style="display: none;" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Layer Legend</h4>
+					</div>
+					<div class="modal-body">
+						<h5>  *Use the slider to increase/decrease layer transparency</h5>
+						<div id="tocDiv"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Basemap Modal -->
+		<div class="modal fade" id="basemapModal" style="display: none;" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Switch Basemaps</h4>
+					</div>
+					<div class="modal-body">
+						<div id="basemapDiv"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Place Search Modal -->
+    <div class="modal fade" id="geosearchModal" style="display: none;" aria-hidden="true">
+			<div class="modal-dialog modal-sm">
+					<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+								<h4 class="modal-title">Place or Coordinate Search</h4>
+							</div>
+							<div class="modal-body">
+								<form id="geosearch-form">
+									<div class="form-group">
+										<p style="font-weight:bold", "font-size:16px"> Place Search: </p>
+										<div id="geosearch"></div>
+									</div> 
+									<input type="submit" id="btnGeosearch" data-dismiss="modal" value="Go">
+									<!--<button id="btnGeosearch" type="button" class="btn btn-success" data-dismiss="modal"> Go </button>-->
+									</br></br>
+									<p style="font-weight:bold", "font-size:16px"> Zoom to Coordinates: </p>
+									Longitude: <input id="longitudeInput" type="text" name="longitude" placeholder="ex. -116.18"></br>
+									</br>
+									Latitude: <input id="latitudeInput" type="text" name="latitude" placeholder="ex. 43.61"></br>
+									</br>
+									<input type="submit" id="btnCoordZoom" data-dismiss="modal" value="Go to Coordinate">
+									<!--<button id="btnCoordZoom" type="submit" class="btn btn-success" data-dismiss="modal">Go to Coordinate</button>-->
+									<button id="btnClear" data-dismiss="modal">Clear All</button>
+									<!--<button id="btnClear" type="submit" class="btn btn-default" data-dismiss="modal">Clear</button>-->
+								</form>
+							</div>
+					</div>
+			</div>
+    </div>
+		<!-- Measurement Modal -->
+		<div class="modal fade" id="measurementModal" data-backdrop='static' style="display: none;"  aria-hidden="true">
+			<div class="modal-dialog modal-sm">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"  aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Make Measurements or Get Coordinates</h4>
+					</div>
+					<div class="modal-body">
+						<div id="measurementNote">
+							After you have selected your tool and units, click the X in the corner to start making measurements on the map. Results will be displayed in the lower righthand corner of the map.
+						</div>
+						</br>
+						<div id="measurementDiv"></div>
+						</br>
+						<button id="clearMeasureResults">Clear Measurement Results</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Draw Modal -->
+		<div class="modal fade" id="drawModal" style="display: none;" aria-hidden="true">
+			<div class="modal-dialog modal-sm">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Draw On the Map</h4>
+					</div>
+					<div class="modal-body">
+						<button data-dojo-type="dijit/form/Button">Multi Point</button>
+						<button data-dojo-type="dijit/form/Button">Line</button>
+						<button data-dojo-type="dijit/form/Button">Polyline</button>
+						<button data-dojo-type="dijit/form/Button">Polygon</button>
+						<button data-dojo-type="dijit/form/Button">Freehand Polyline</button>
+						<button data-dojo-type="dijit/form/Button">Freehand Polygon</button>
+						<!--The Arrow,Triangle,Circle and Ellipse types all draw with the polygon symbol-->
+						<button data-dojo-type="dijit/form/Button">Arrow</button>
+						<button data-dojo-type="dijit/form/Button">Triangle</button>
+						<button data-dojo-type="dijit/form/Button">Circle</button>
+						<button data-dojo-type="dijit/form/Button">Ellipse</button>
+						</br></br>
+						Add text to your map: <input type="text" id="userTextBox" placeholder="ex. Camp Spot"><button data-dojo-type="dijit/form/Button">Add Text</button>
+						</br></br>
+						<button id="btnClearGraphic">CLEAR ALL</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Create PDF Modal -->
+		<div class="modal fade" id="pdfModal" style="display: none;" aria-hidden="true">
+			<div class="modal-dialog modal-sm">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Create a PDF Map</h4>
+					</div>
+					<div class="modal-body">
+						<div id="pdfNote">
+								Enter a map title:
+								<input id="txtTitle" style="width:250px" type="text" class="textBox" placeholder="ex. GMU 54"/>
+								</br></br>
+								The 'Creating PDF Map...' message indicates the PDF is being generated.
+								</br></br>
+								When the PDF is ready, it will open in a new window.
+								</br></br>
+								<input type="submit" id="btnPDF" value="Create PDF">
+							<span id="printStatus"></span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	 </div>
+    <!-- Bootstrap-map-js -->
+		<div class="row row-offcanvas row-offcanvas-left">
+    <!-- sidebar -->
+			<div class="column col-sm-2 col-xs-1 sidebar-offcanvas" id="sidebar">
+					<ul class="nav">
+					<li><a href="#" data-toggle="offcanvas" class="visible-xs text-center"><i class="glyphicon glyphicon-chevron-right"></i></a></li>
+				  </ul>
+					<ul class="nav hidden-xs" id="lg-menu">
+							<li class="active"><a id="huntNav1" href="#huntArea"><i class="glyphicon glyphicon-flash"></i> Highlight a Hunt Area</a></li>
+							<!--<li><a id= "layerListNav1" href="#layerList"><i class="glyphicon glyphicon-off"></i> Turn Layers On/Off</a></li>-->
+							<li><a id="legendNav1" href="#legend"><i class="glyphicon glyphicon-list"></i> Layer Legend</a></li>
+							<li><a id="basemapNav1" href="#basemap"><i class="glyphicon glyphicon-globe"></i> Change the Basemap</a></li>
+							<li><a id="geosearchNav1" href="#placeSearch"><i class="glyphicon glyphicon-search"></i> Place or Coordinate Search</a></li>
+							<li><a id="measurementNav1" href="#measurement"><i class="glyphicon glyphicon-resize-vertical"></i>Measurements & Coordinates</a></li>
+							<li><a id="drawNav1" href="#draw"><i class="glyphicon glyphicon-pencil"></i> Draw On the Map</a></li>
+							<li><a id="pdfNav1" href="#pdf"><i class="glyphicon glyphicon-print"></i> Create PDF Map</a></li>
+					</ul>
+					<!--<ul class="list-unstyled hidden-xs" id="sidebar-footer">
+							<h3>Resources</h3>
+							<li><a href="http://fishandgame.idaho.gov/"><i class="glyphicon glyphicon-link"></i> IDFG Website</a></li>
+							<li><a href="#contact"><i class="glyphicon glyphicon-envelope"></i> Contact Us</a></li>
+					</ul>-->
+				
+				<!-- tiny only nav-->
+				<ul class="nav visible-xs" id="xs-menu">
+						<li><a id="huntNav2" href="#huntArea" title="Highlight a Hunt Area" class="masterTooltip"><i class="glyphicon glyphicon-flash"></i></a></li>
+						<!--<li><a id="layerListNav2" href="#layerList" class="text-center"><i class="glyphicon glyphicon-off"></i></a></li>-->
+						<li><a id="legendNav2" href="#legend" title="Layer Legend" class="masterTooltip"><i class="glyphicon glyphicon-list"></i></a></li>
+						<li><a id="basemapNav2" href="#basemap" title="Change the Basemap" class="masterTooltip"><i class="glyphicon glyphicon-globe"></i></a></li>
+						<li><a id="geosearchNav2" href="#placeSearch" title="Place Search" class="masterTooltip"><i class="glyphicon glyphicon-search"></i></a></li>
+						<li><a id="measurementNav2" href="#measurement" title="Measurements & Coordinates" class="masterTooltip"><i class="glyphicon glyphicon-resize-vertical"></i></a></li>
+						<li><a id="drawNav2" href="#draw" title="Draw On the Map" class="masterTooltip"><i class="glyphicon glyphicon-pencil"></i></a></li>
+						<li><a id="pdfNav2" href="#pdf" title="Create PDF Map" class="masterTooltip"><i class="glyphicon glyphicon-print"></i></a></li>
+				</ul>
+				
+			</div>
+		<!-- /sidebar -->
+		
+		<!-- map -->
+			<div class="column col-sm-10 col-xs-11" id="main">
+				<div id="mapDiv">
+					<div id="LocateButton" class="masterTooltip"></div>
+					<span id="info"></span>
+					<div id="measureResultsDiv">
+					Measurement Results:</br><span id="Results"></span>
+					</div>
+			</div>
+		</div>
+	 </div>
+	</div>
+
+	<script type="text/javascript">
+		var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+		var dojoConfig = {
+				//The location.pathname.replace() logic below may look confusing but all its doing is
+				// enabling us to load the api from a CDN and load local modules from the correct location.
+				packages: [{
+						name: "application",
+						location: package_path + '/src/js'
+				}],
+				paths: {
+				//if you want to host on your own server, download and put in folders then use path like: 
+						agsjs: location.pathname.replace(/\/[^/]+$/, '') + '/src/agsjs' 
+				}
+		};
+	</script>	
+	
+		<script src="//js.arcgis.com/3.9"></script>
+    <script src="src/js/map.js"></script>
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="//code.jquery.com/jquery-1.10.1.min.js"></script>
+		<script src="//code.jquery.com/ui/1.10.1/jquery-ui.min.js"></script>
+  
+		<!--<script src="https://code.jquery.com/jquery.js"></script>-->
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    
+  </body>
+</html>
