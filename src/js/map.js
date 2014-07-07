@@ -5,6 +5,7 @@ require(["esri/map",
 	"esri/dijit/BasemapGallery",
 	"esri/arcgis/utils",
 	"esri/layers/FeatureLayer",
+	"esri/layers/GraphicsLayer", 
 	"esri/layers/ArcGISDynamicMapServiceLayer",
 	"esri/dijit/Geocoder",
 	"esri/tasks/LegendLayer",
@@ -25,6 +26,8 @@ require(["esri/map",
 	"esri/geometry/Multipoint", 
 	"esri/symbols/PictureMarkerSymbol",
 	"esri/dijit/Popup",
+	"esri/tasks/QueryTask",
+	"esri/tasks/query",
 	"agsjs/dijit/TOC",
 	"dojo/_base/connect",
 	"dojo/dom",
@@ -36,7 +39,7 @@ require(["esri/map",
 	"dijit/form/Button",
 	"dojo/fx",
 	"dojo/domReady!"], 
-	function(Map, LocateButton, Scalebar, webMercatorUtils, BasemapGallery, arcgisUtils, FeatureLayer, ArcGISDynamicMapServiceLayer, Geocoder, LegendLayer, GeometryService, Measurement, Draw, Graphic, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, TextSymbol, Color, Font, PrintParameters, PrintTemplate, PrintTask, InfoTemplate, Multipoint, PictureMarkerSymbol, Popup, TOC, connect, dom, parser, registry, on, query, BootstrapMap) {
+	function(Map, LocateButton, Scalebar, webMercatorUtils, BasemapGallery, arcgisUtils, FeatureLayer, GraphicsLayer, ArcGISDynamicMapServiceLayer, Geocoder, LegendLayer, GeometryService, Measurement, Draw, Graphic, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, TextSymbol, Color, Font, PrintParameters, PrintTemplate, PrintTask, InfoTemplate, Multipoint, PictureMarkerSymbol, Popup, QueryTask, Query, TOC, connect, dom, parser, registry, on, query, BootstrapMap) {
 		
 		// call the parser to create the dijit layout dijits
 		parser.parse(); // note djConfig.parseOnLoad = false;
@@ -48,12 +51,12 @@ require(["esri/map",
 			zoom:6
 		});
 		
-		//LocateButton will zone to where you are.  Tracking is enabled and the button becomes a toggle that creates an event to watch for location changes.
-		var locateSymbol = new PictureMarkerSymbol({
-			"url": "src/images/red-pin.png",
-			"height": 30,
-			"width": 30
-		});
+		//LocateButton will zoom to where you are.  If tracking is enabled and the button becomes a toggle that creates an event to watch for location changes.
+		var locateSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 20,
+			new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+			new Color([215,73,255, 0.8]), 8),
+			new Color ([199,0,255, 0.8]));
+		
 		geoLocate = new LocateButton({
         map: map,
 				symbol: locateSymbol
@@ -67,11 +70,28 @@ require(["esri/map",
 			scalebarUnit: "dual"
 		});
 		
-		//add coordinate viewer
+		var placeLayer, zoomToLayer, zoomToLabelLayer, drawToolbarLayer, drawTextLayer;
+		
 		 map.on("load", function() {
 		//after map loads, connect to listen to mouse move & drag events
 			map.on("mouse-move", showCoordinates);
 			map.on("mouse-drag", showCoordinates);
+		//add graphics layer for the hunt areas query
+			queryLayer = new GraphicsLayer();
+			map.addLayer(queryLayer);
+		//add graphics layers for graphic outputs from the various tools (Place Search, Coordinate Search w/label, Draw shapes, Draw text)	
+			placeLayer = new GraphicsLayer();
+			map.addLayer(placeLayer);
+			zoomToLayer = new GraphicsLayer();
+			map.addLayer(zoomToLayer);
+			zoomToLabelLayer = new GraphicsLayer();
+			map.addLayer(zoomToLabelLayer);
+			//graphics layers for toolbar shapes and text.  Must be separated into different layers or they will not print properly on the map.
+			drawToolbarLayer = new GraphicsLayer();
+			map.addLayer(drawToolbarLayer);
+			drawTextLayer = new GraphicsLayer();	
+			map.addLayer(drawTextLayer);
+			map.reorderLayer(drawTextLayer,1);
 		});
 		
 		//hide the loading icon
@@ -79,6 +99,7 @@ require(["esri/map",
 			$("#loading").hide();
 		});
 		
+		//show coordinates as the user scrolls around the map. In Desktop, it displays where ever the mouse is hovering.  In mobile, the user must tap the screen to get the coordinates.
 		function showCoordinates(evt) {
 			//the map is in web mercator but display coordinates in geographic (lat, long)
 			var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
@@ -100,13 +121,17 @@ require(["esri/map",
 		//add layers (or groups of layers) to the map.
 		huntLayers = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Data/Hunting/MapServer",
 			{id:"huntLayers"});
+		adminLayers = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Data/AdministrativeBoundaries/MapServer",
+			{id:"adminLayers"});
+		surfaceMgmtLayer = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Basemaps/SurfaceMgmt_WildlifeTracts/MapServer",
+			{id:"surfaceMgmtLayer"});
+			
 
 		//add the Table of Contents.  Layers can be toggled on/off. Symbology is displayed.  Each "layer group" has a transparency slider.
 		map.on('layers-add-result', function(evt){
 			// overwrite the default visibility of service.
 			// TOC will honor the overwritten value.
 			//huntLayers.setVisibleLayers([..., ..., ]);
-			//try {
 				toc = new TOC({
 					map: map,
 					layerInfos: [{
@@ -114,6 +139,16 @@ require(["esri/map",
 						title: "Hunt Related Layers",
 						//collapsed: false, // whether this root layer should be collapsed initially, default false.
 						slider: true // whether to display a transparency slider.
+					}, {
+						layer: adminLayers,
+						title: "Administrative Boundaries",
+						collapsed:true,
+						slider: true
+					}, {
+						layer: surfaceMgmtLayer,
+						title: "Land Management Layer",
+						collapsed: true,
+						slider:true
 					}]
 					}, 'tocDiv');
 				toc.startup();
@@ -121,17 +156,90 @@ require(["esri/map",
 				toc.on('load', function(){
 					if (console) 
 						console.log('TOC loaded');
+					//toggle layers/on by click root/layer labels (as well as checking checkbox)
+					$('.agsjsTOCServiceLayerLabel').click(function(){
+						$(this).siblings('span').children('input').click();
+					});
+					$('.agsjsTOCRootLayerLabel').click(function(){
+						$(this).siblings('span').children('input').click();
+					});
 				});
 		});
 		
-		map.addLayers([huntLayers]);
+		map.addLayers([surfaceMgmtLayer, adminLayers, huntLayers]);
+		adminLayers.hide(); //So none of the layers are "on" when the map loads.
+		surfaceMgmtLayer.hide(); //So the surf mgmt. layer isn't "on" when the map loads.
 		
-		//toggle layers/on by click layer label (as well as checking checkbox)
-		$(".agsjsTOCContent").click (function(){
-			// What to put here?!?
-			return;
-		});
+		//function to get variable values from the URL to query for hunt planner hunt area.
+		function getVariableByName(name) {
+			var query = window.location.search.substring(1);
+			var vars = query.split("&");
+			for (var i=0; i < vars.length;i++){
+				var variableName = vars[i].split('=');
+				if (variableName[0] == name)
+				{
+					return variableName[1]
+				}
+			}
+		}
+		//get the variables of areaID (hunt area, IOG area, or Access Yes! area), layerID (which layer to apply the ID query to), and label (what will appear in the legend)	
+		window.onload = function(){
+			var areaID = getVariableByName('val');
+			var layerID = getVariableByName('lyr');
+			var label = getVariableByName('lbl');
+			if (typeof label != 'undefined'){
+				label = "Highlighted Area";
+			}
+			console.log("AreaID = " + areaID);
+			if (typeof areaID != 'undefined'){
+				doQuery(areaID, layerID, label);
+			}
+		};
 			
+		function doQuery(areaID, layerID, label) {
+			//initialize query tasks
+			newQueryTask = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Wildlife/HuntPlanner/MapServer/" + layerID);
+
+			//initialize query
+			newQuery = new Query();
+			newQuery.returnGeometry = true;
+			newQuery.outFields = ["ID"]
+			newHighlight = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+				new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+				new Color([154,32,219]), 3),
+				new Color([154,32,219,0.1])
+			);
+			newQuery.where = "ID = '"+ areaID + "'"
+			console.log ("Area Query = " + newQuery.where + ", LayerID = " + layerID);
+			newQueryTask.execute (newQuery, showResults);
+		}
+			
+		function showResults(featureSet) {
+			//remove all query layer graphics
+			//queryLayer.clear();
+
+			//Performance enhancer - assign featureSet array to a single variable.
+			var newFeatures = featureSet.features;
+
+			//Loop through each feature returned
+			for (var i=0, il=newFeatures.length; i<il; i++) {
+				//Get the current feature from the featureSet.
+				//Feature is a graphic
+				var newGraphic = newFeatures[i];
+				newGraphic.setSymbol(newHighlight);
+
+				//Set the infoTemplate.
+				//newGraphic.setInfoTemplate(infoTemplate);
+
+				//Add graphic to the map graphics layer.
+				queryLayer.add(newGraphic);
+				
+				//Zoom to graphics extent.
+				var selectionExtent = esri.graphicsExtent(newFeatures);
+				map.setExtent(selectionExtent.expand(1.25), true);
+			}
+		}
+
 		// Create geocoder widget
 		var geocoder = new Geocoder({
 			maxLocations: 10,
@@ -142,11 +250,11 @@ require(["esri/map",
 		geocoder.startup();
 		geocoder.on("select", geocodeSelect);
 		geocoder.on("findResults", geocodeResults);
-		geocoder.on("clear", clearFindGraphics);
 
 		// Geosearch functions
-		on(dom.byId("btnGeosearch"),"click", geosearch);
-		on(dom.byId("btnClear"),"click", clearFindGraphics);
+		$("#btnGeosearch").click (function(){
+		geosearch();
+		});
 
 		map.on("load", function(e){
 			map.infoWindow.offsetY = 35;
@@ -159,7 +267,7 @@ require(["esri/map",
 				geocodeResults(res);
 			});
 		}
-
+		
 		function geocodeSelect(item) {
 			var g = (item.graphic ? item.graphic : item.result.feature);
 			g.setSymbol(sym);
@@ -169,7 +277,8 @@ require(["esri/map",
 		function geocodeResults(places) {
 			places = places.results;
 			if (places.length > 0) {
-				clearFindGraphics();
+				clearPlaceLayer();
+				
 				var symbol = sym;
 				// Create and add graphics with pop-ups
 				for (var i = 0; i < places.length; i++) {
@@ -181,19 +290,32 @@ require(["esri/map",
 			}
 		}
 		
+		var sym = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 28,
+			new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+			new Color([255,255,255]), 2),
+			new Color ([29,0,255]));
+
+		//add graphic to show geocode results
 		function addPlaceGraphic(item,symbol)  {
 			var place = {};
-			var attributes,infoTemplate,pt,graphic;
+			var attributes,infoTemplate,pt, graphic;
 			pt = item.feature.geometry;
 			place.address = item.name;
 			// Graphic components
 			attributes = { address:place.address, lat:pt.getLatitude().toFixed(2), lon:pt.getLongitude().toFixed(2) };   
 			infoTemplate = new InfoTemplate("${address}","Latitude: ${lat}<br/>Longitude: ${lon}");
+			console.log("placeLayer loaded");
 			graphic = new Graphic(pt,symbol,attributes,infoTemplate);
 			// Add to map
-			map.graphics.add(graphic);  
+			placeLayer.add(graphic);  
 		}
-							
+		
+		//clear place search graphics layer
+		$("#btnClearPlace").click (function(){
+				placeLayer.clear();
+		});
+		
+		//zoom to place searched for.
 		function zoomToPlaces(places) {
 			var multiPoint = new Multipoint(map.spatialReference);
 			for (var i = 0; i < places.length; i++) {
@@ -202,54 +324,57 @@ require(["esri/map",
 			}
 			map.setExtent(multiPoint.getExtent().expand(2.0));
 		}
-
-		function clearFindGraphics() {
-			map.infoWindow.hide();
-			map.graphics.clear();
-		}
-
-		function createPictureSymbol(url, xOffset, yOffset, size) {
-			return new PictureMarkerSymbol(
-			{
-					"angle": 0,
-					"xoffset": xOffset, "yoffset": yOffset, "type": "esriPMS",
-					"url": url,  
-					"contentType": "image/png",
-					"width":size, "height": size
-			});
-		}
-
-		var sym = createPictureSymbol("src/images/blue-pin.png", 0, 12, 35);
 		
 		//the user inputs a long, lat coordinate and a flag icon is added to that location and the location is centered and zoomed to on the map.
 		$("#btnCoordZoom").click (function(){
-			console.log("Go to Coordinate");
 			zoomToCoordinate();
 		});
 		
+		//zoom to the coordinate and add a graphic
 		function zoomToCoordinate(){
-			var flagGraphic;
-			if(flagGraphic) {
-						 map.graphics.remove(flagGraphic);
-					}
+			var zoomToGraphic;
+			//if(zoomToGraphic) {
+						 //zoomToLayer.remove(zoomToGraphic);
+					//}
 			var longitude = $("#longitudeInput").val();
 			var latitude = $("#latitudeInput").val();
-			var symbol = new esri.symbol.PictureMarkerSymbol("src/images/flag.png",16,16);
+			var symbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 28,
+			new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+			new Color([255,255,255]), 2),
+			new Color ([0,0,0]));
 			var pt = new esri.geometry.Point(longitude, latitude);
-			flagGraphic = new esri.Graphic(pt, symbol);
-			map.graphics.add(flagGraphic);
+			var labelSymbol = new TextSymbol(longitude + ", " + latitude);
+			labelSymbol.setColor (new esri.Color("black"));
+			var font = new Font();
+			font.setSize("14pt");
+			font.setFamily("Helvetica");
+			font.setWeight(Font.WEIGHT_BOLD);
+			labelSymbol.setFont(font);
+			labelSymbol.setHorizontalAlignment("left");
+			labelSymbol.setVerticalAlignment("middle");
+			labelSymbol.setOffset(17, 0);
+			console.log("zoomToLabel: " + longitude + ", " + latitude);
+			zoomToGraphic = new Graphic(pt, symbol);
+			zoomToLabel = new Graphic(pt, labelSymbol);
+			zoomToLayer.add(zoomToGraphic);
+			zoomToLabelLayer.add(zoomToLabel);
 			map.centerAndZoom(pt, 12);
 		}
-	
+		
+		//clear coordinate search graphics layer
+		$("#btnClear").click (function(){
+			zoomToLayer.clear();
+		});
+
 		//add the measurement tools
 		//esriConfig.defaults.geometryService = new GeometryService("https://fishandgame.idaho.gov/gis/rest/services/Utilities/Geometry/GeometryServer");
-		var pms = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE,
+		var pms = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 10,
 			new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
-				new Color([255, 0, 0, .55], 1)));
-			pms.setColor(new Color([255, 0, 0, .55]));
+				new Color([165, 24, 221, .55], 1)));
+			pms.setColor(new Color([165, 24, 221, .55]));
 			pms.setSize("8");
 		var sls = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SHORTDASHDOTDOT,
-			new Color([255, 0, 0, .55]), 3);
+			new Color([165, 24, 221,, .55]), 3);
 		
 		var measurement = new Measurement({
 			map: map,
@@ -262,25 +387,23 @@ require(["esri/map",
 			handle:".modal-header"
 		});*/
 		
-		dojo.connect(measurement, "onMeasureEnd", function () {
+		measurement.on("measure-end", function () {
+			console.log(measurement.activeTool);
+			measurement.setTool(measurement.activeTool, false);
 			var resultValue = measurement.resultValue.domNode.innerHTML;
 			var copyResultValue = document.getElementById('Results');
 			copyResultValue.innerHTML = resultValue;
 			$("#measureResultsDiv").show();
 			$("#measureResultsDiv").effect("highlight", {color: 'yellow'}, 3000);
 			$("#clearMeasureResults").click(function(){
-				$("#measureResultsDiv").hide();
+				measurement.clearResult();
+				$("#measureResultsDiv").hide();	
 			});
 		});
 	
 		//add the Draw toolbar.
+		var toolbar;
 		map.on("load", createToolbar);
-		
-		$("#btnClearGraphic").click (function(){
-			map.graphics.clear();
-			$("#drawModal").modal('toggle');
-			return;
-		});
 	
 		// loop through all dijits, connect onClick event
 		// listeners for buttons to activate drawing tools
@@ -291,19 +414,16 @@ require(["esri/map",
 				d.on("click", activateTool);
 			}
 		});
-
-		//change the tooltip text for the Draw.POINT tool.
-		esri.bundle.toolbars.draw.addPoint = "Click to add text to the map.";
 		
 		function activateTool() {
 			var tool;
-			if (this.label === "Add Text") {
+			/* if (this.label === "Add Text") {
 			console.log ("Add Text");
 			toolbar.activate(Draw.POINT);
-			} else {
+			} else { */
 			tool = this.label.toUpperCase().replace(/ /g, "_");
 			toolbar.activate(Draw[tool]);
-			}
+			//}
 			$("#drawModal").modal('toggle');
 		}
 
@@ -314,44 +434,90 @@ require(["esri/map",
 
 		function addToMap(evt) {
 			var symbol;
-			var userText = $("#userTextBox").val();
 			toolbar.deactivate();
 			switch (evt.geometry.type) {
-				case "point":
+				/*case "point":
 					symbol= new TextSymbol($("#userTextBox").val()).setColor(
 						new Color([255, 0, 0])).setFont(
 						new Font("16pt").setWeight(Font.WEIGHT_BOLD)).setHorizontalAlignment("left");
-					break;
+					break;*/
 				case "multipoint":
-					symbol = new SimpleMarkerSymbol();
+					symbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 15,
+						new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+						new Color([255,255,0]),0.5),
+						new Color([255,255,0]));
 					break;
 				case "polyline":
-					symbol = new SimpleLineSymbol();
+					symbol = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+						new Color([255,255,0]),2);
 					break;
 				default:
-					symbol = new SimpleFillSymbol();
-					break;
+					symbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+					new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+					new Color([255,255,0]),2),
+					new Color([255,255,0,0.25]));
+					break; 
 			}
-			
-			var graphic = new Graphic(evt.geometry, symbol);
-			map.graphics.add(graphic);
+			var drawGraphic = new Graphic(evt.geometry, symbol);
+			drawToolbarLayer.add(drawGraphic);
 		}
-
+		
+		
+		//fire the text graphic in a separate graphics layer than the other draw symbols otherwise it will show as just a point when using the PrintTask GP Tool.
+		$("#dijit_form_Button_10_label").on("click", drawPoint);
+		
+		//active the draw.POINT tool
+		var pointTool;
+		function drawPoint(){
+			//change the tooltip text for the Draw.POINT tool.
+			esri.bundle.toolbars.draw.addPoint = "Click to add text to the map.";
+			pointTool = new Draw(map);
+			console.log("Activate point tool");
+			pointTool.activate(Draw.POINT);
+			pointTool.on("draw-end", addText);
+		}
+		//add text to the point
+		function addText(evt){
+			pointTool.deactivate();
+			var userText = $("#userTextBox").val();
+			var textSymbol= new TextSymbol(userText);
+			textSymbol.setColor (new esri.Color("black"));
+			var font = new Font();
+			font.setSize("14pt");
+			font.setFamily("Helvetica");
+			font.setWeight(Font.WEIGHT_BOLD);
+			textSymbol.setFont(font);
+			var textGraphic = new Graphic(evt.geometry, textSymbol);
+			drawTextLayer.add(textGraphic);
+		};
+		
+	//clear all shape graphics
+	$("#btnClearGraphic").click (function(){
+		drawToolbarLayer.clear();
+	});
+	//clear all text graphics
+	$("#btnClearText").click (function(){
+		drawTextLayer.clear();
+	});
+		
 	//Create PDF using PrintTask	
   $("#btnPDF").click (function(){
 		console.log("Start Printing");
     submitPrint(); 
   });
+	
+	$("#pdfModal").on('hidden.bs.modal', function(){
+		dojo.byId("printStatus").innerHTML = "";
+	});
 		
 	function submitPrint() {
 	var printParams = new PrintParameters();
 		printParams.map = map;
-	var status = dojo.byId("printStatus");
+		var status = dojo.byId("printStatus");
 		status.innerHTML = "Creating PDF Map...";
 		
 	var template = new PrintTemplate();
 	var printTitle = $("#txtTitle").val();
-	console.log("printTitle= " + printTitle);
 	template.layoutOptions = {
 		"titleText": printTitle
 	};
@@ -367,13 +533,19 @@ require(["esri/map",
         console.log("response = " + response.url);       
         status.innerHTML = "";
 		    //open the map PDF or image in a new browser window.
-        window.open(response.url.replace("sslifwisiis","fishandgame.idaho.gov"));
+				var newUrl = response.url.replace("sslifwisiis","fishandgame.idaho.gov");
+        var childWindow = window.open(newUrl);
+				childWindow.onload = function(){
+					console.log("Child window loaded");
+					childWindow.location.reload();
+				}
 				$("#pdfModal").modal('hide');
       });
 	  
       deferred.addErrback(function (error) {
         console.log("Print Task Error = " + error);
-        status.innerHTML = "Print Error" + error;
+        status.innerHTML = error;
+				
       });
 	};
 	
@@ -506,6 +678,4 @@ require(["esri/map",
 			});
 			
 		});
-		
-		
 });
