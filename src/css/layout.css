@@ -101,6 +101,10 @@ input[type=checkbox] {
 	margin: 5px;
 }
 
+.dijitTreeExpando, .agsjsTOCContent {
+	cursor:pointer;
+}
+
 .close {
 	font-size: 30px !important;
 	opacity: 0.8 !important;
@@ -159,17 +163,25 @@ input[type=checkbox] {
 	padding: 2px 4px 4px;
 }
 
-#btnClear, #btnClearGraphic, #clearMeasureResults {
+#btnHuntHighlight, #btnCloseLegend, #btnCloseBasemap, #btnClear, #btnClearGraphic, #btnClearText, #btnClearPlace, #clearMeasureResults, #btnCloseMeasurement, #btnCloseDraw, #btnClosePrint {
 	text-align: center !important;
 	vertical-align: middle !important;
 	border: 1px solid #cccccc!important;
 	border-radius: 4px !important;
-	padding: 6px 12px !important;
+	padding: 6.5px 12px !important;
 	font-size: 14px !important;
 	color: #333 !important;
 	background-color: #FFF !important;
 }
-	
+
+#btnHuntHighlight, #btnCloseMeasurement, #btnCloseDraw, #btnClosePrint {
+	margin-left:5px !important;
+}
+
+#btnClearText {
+	margin-left:5px !important;
+	margin-right:5px !important;
+}
 
 #printStatus {
 	font-weight: bold;
