@@ -126,7 +126,8 @@ require(["esri/map",
 		surfaceMgmtLayer = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Basemaps/SurfaceMgmt_WildlifeTracts/MapServer",
 			{id:"surfaceMgmtLayer"});
 			
-
+		//Populate the queryLabel Div that will show the query result label in the legend.
+		
 		//add the Table of Contents.  Layers can be toggled on/off. Symbology is displayed.  Each "layer group" has a transparency slider.
 		map.on('layers-add-result', function(evt){
 			// overwrite the default visibility of service.
@@ -182,20 +183,108 @@ require(["esri/map",
 				}
 			}
 		}
+		
 		//get the variables of areaID (hunt area, IOG area, or Access Yes! area), layerID (which layer to apply the ID query to), and label (what will appear in the legend)	
 		window.onload = function(){
+			//set the dropdown lists back to default value ("None").
+			$("#gmu").val('420');
+			$("#elkzone").val('420');
+			$("#chunt").val('420');
 			var areaID = getVariableByName('val');
 			var layerID = getVariableByName('lyr');
 			var label = getVariableByName('lbl');
 			if (typeof label != 'undefined'){
-				label = "Highlighted Area";
+				var cleanLabel = label.split('+').join(' ');
+				label = cleanLabel;
+			} else {
+				label = "Selected Hunt Area";
 			}
-			console.log("AreaID = " + areaID);
 			if (typeof areaID != 'undefined'){
 				doQuery(areaID, layerID, label);
 			}
-		};
+			$("#queryLabel").text(label);
+		}
+		
+		//toggle query layer on/off when checkbox is toggle on/off
+		$("#queryCheckbox").change(function(){	
+		 if ($(this).prop('checked')) {
+		  queryLayer.show();
+		  console.log("QUERY SHOW");
+		 } else {
+		  queryLayer.hide();
+		  console.log("QUERY HIDE");
+		 }
+		});
 			
+		//get variable values from the dropdown lists in the hunt modal window and run doQuery.
+		$(".target1").change(function(){
+			$("#elkzone").val('420');
+			$("#chunt").val('420');
+			var gmu = $('#gmu').val();
+			var areaID = gmu;
+			var layerID = "0";
+			var label = $("#gmu option:selected").text();
+			console.log ("GMU ID: " + areaID + ", GMU LABEL: " + label);
+			
+			if (typeof label != 'undefined'){
+				label = label;
+			} else {
+				label = "Selected Hunt Area";
+			}
+			if (typeof areaID != 'undefined'){
+				doQuery(areaID, layerID, label);
+			}
+			$("#queryLabel").text(label);
+		});
+		
+		$(".target2").change(function(){
+			$("#gmu").val('420');
+			$("#chunt").val('420');
+			var elkzone = $('#elkzone').val();
+			var areaID = elkzone;
+			var layerID = "0";
+			var label = ($("#elkzone option:selected").text()) + " Elk Zone";
+			console.log ("ELK ZONE ID: " + areaID + ", ELK ZONE LABEL: " + label);
+			
+			if (typeof label != 'undefined'){
+				label = label;
+			} else {
+				label = "Selected Hunt Area";
+			}
+			if (typeof areaID != 'undefined'){
+				doQuery(areaID, layerID, label);
+			}
+			$("#queryLabel").text(label);
+		});
+		
+		$(".target3").change(function(){
+			$("#elkzone").val('420');
+			$("#gmu").val('420');
+			var chunt = $('#chunt').val();
+			var areaID = chunt;
+			var layerID = "0";
+			var label = $("#chunt option:selected").text();
+			console.log ("CHUNT ID: " + areaID + ", CHUNT LABEL: " + label);
+			
+			if (typeof label != 'undefined'){
+				label = label;
+			} else {
+				label = "Selected Hunt Area";
+			}
+			if (typeof areaID != 'undefined'){
+				doQuery(areaID, layerID, label);
+			}
+			$("#queryLabel").text(label);
+		});
+		
+		$("#btnClearHighlighted").click(function(){
+			queryLayer.clear();
+			$("#gmu").val('420');
+			$("#elkzone").val('420');
+			$("#chunt").val('420');
+		})
+
+		
 		function doQuery(areaID, layerID, label) {
 			//initialize query tasks
 			newQueryTask = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Wildlife/HuntPlanner/MapServer/" + layerID);
@@ -210,13 +299,13 @@ require(["esri/map",
 				new Color([154,32,219,0.1])
 			);
 			newQuery.where = "ID = '"+ areaID + "'"
-			console.log ("Area Query = " + newQuery.where + ", LayerID = " + layerID);
+			console.log ("Area Query " + newQuery.where + ", LayerID = " + layerID);
 			newQueryTask.execute (newQuery, showResults);
 		}
 			
 		function showResults(featureSet) {
 			//remove all query layer graphics
-			//queryLayer.clear();
+			queryLayer.clear();
 
 			//Performance enhancer - assign featureSet array to a single variable.
 			var newFeatures = featureSet.features;
@@ -238,6 +327,10 @@ require(["esri/map",
 				var selectionExtent = esri.graphicsExtent(newFeatures);
 				map.setExtent(selectionExtent.expand(1.25), true);
 			}
+			
+			//add the query area to the legend. Give it a label based on variable label.
+			$("#queryLabelDiv").show();
+			$("#queryCheckbox").prop('checked', true);
 		}
 
 		// Create geocoder widget
