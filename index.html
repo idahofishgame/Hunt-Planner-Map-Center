@@ -60,7 +60,7 @@
       </div>
     </div>
 		<!-- Highlight a Hunt Area Modal -->
-		<div class="modal fade" id="huntModal" style="display: none;" aria-hidden="true">
+		<div class="modal fade" id="huntModal" tabindex="-1" style="display: none;" aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -69,6 +69,7 @@
 					</div>
 					<div class="modal-body">
 						I haven't done anything with this.  I envision some kind of drop-down selection like we currently have but maybe a little more involved. Like Drop-Down #1 -> Species, this will open Drop-Down #2 to select the controlled hunt number....something like that. I would also like to see an "Export to KML" button here as well.
+						</br></br>Hunt ID: <input type="text" id="HuntID"><button id="btnHuntHighlight" data-dismiss="modal">Highlight the Hunting Area</button>
 					</div>
 				</div>
 			</div>
@@ -89,7 +90,7 @@
 			</div>
 		</div> -->
 		<!-- Legend Modal -->
-		<div class="modal fade" id="legendModal" style="display: none;" aria-hidden="true">
+		<div class="modal fade" id="legendModal" tabindex="-1" style="display: none;" aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -99,12 +100,14 @@
 					<div class="modal-body">
 						<h5>  *Use the slider to increase/decrease layer transparency</h5>
 						<div id="tocDiv"></div>
+						</br>
+						<button id="btnCloseLegend" data-dismiss="modal">Close the Legend Window</button>
 					</div>
 				</div>
 			</div>
 		</div>
 		<!-- Basemap Modal -->
-		<div class="modal fade" id="basemapModal" style="display: none;" aria-hidden="true">
+		<div class="modal fade" id="basemapModal" tabindex="-1" style="display: none;" aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -113,13 +116,15 @@
 					</div>
 					<div class="modal-body">
 						<div id="basemapDiv"></div>
+						</br>
+						<button id="btnCloseBasemap" data-dismiss="modal">Close the Basemap Window</button>
 					</div>
 				</div>
 			</div>
 		</div>
 		<!-- Place Search Modal -->
-    <div class="modal fade" id="geosearchModal" style="display: none;" aria-hidden="true">
-			<div class="modal-dialog modal-sm">
+    <div class="modal fade" id="geosearchModal" tabindex="-1" style="display: none;" aria-hidden="true">
+			<div class="modal-dialog">
 					<div class="modal-content">
 							<div class="modal-header">
 								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -132,6 +137,7 @@
 										<div id="geosearch"></div>
 									</div> 
 									<input type="submit" id="btnGeosearch" data-dismiss="modal" value="Go">
+									<button id="btnClearPlace" data-dismiss="modal">Clear Place Search</button>
 									<!--<button id="btnGeosearch" type="button" class="btn btn-success" data-dismiss="modal"> Go </button>-->
 									</br></br>
 									<p style="font-weight:bold", "font-size:16px"> Zoom to Coordinates: </p>
@@ -141,7 +147,7 @@
 									</br>
 									<input type="submit" id="btnCoordZoom" data-dismiss="modal" value="Go to Coordinate">
 									<!--<button id="btnCoordZoom" type="submit" class="btn btn-success" data-dismiss="modal">Go to Coordinate</button>-->
-									<button id="btnClear" data-dismiss="modal">Clear All</button>
+									<button id="btnClear" data-dismiss="modal">Clear Coordinate Search</button>
 									<!--<button id="btnClear" type="submit" class="btn btn-default" data-dismiss="modal">Clear</button>-->
 								</form>
 							</div>
@@ -149,8 +155,8 @@
 			</div>
     </div>
 		<!-- Measurement Modal -->
-		<div class="modal fade" id="measurementModal" data-backdrop='static' style="display: none;"  aria-hidden="true">
-			<div class="modal-dialog modal-sm">
+		<div class="modal fade" id="measurementModal" data-backdrop='static' tabindex="-1" style="display: none;"  aria-hidden="true">
+			<div class="modal-dialog">
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal"  aria-hidden="true">&times;</button>
@@ -158,19 +164,23 @@
 					</div>
 					<div class="modal-body">
 						<div id="measurementNote">
-							After you have selected your tool and units, click the X in the corner to start making measurements on the map. Results will be displayed in the lower righthand corner of the map.
+							After you have selected your tool and units, click the X in the corner to start making measurements on the map. Results will be displayed in the lower righthand corner of the map. 
 						</div>
 						</br>
 						<div id="measurementDiv"></div>
 						</br>
-						<button id="clearMeasureResults">Clear Measurement Results</button>
+						<button id="clearMeasureResults">Clear Measurement Results</button><button id="btnCloseMeasurement" data-dismiss="modal">Close the Measurement Window</button>
+						</br></br>
+						<div id="printNote">
+							NOTE: Clear measurement results before attempt to create a PDF map
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 		<!-- Draw Modal -->
-		<div class="modal fade" id="drawModal" style="display: none;" aria-hidden="true">
-			<div class="modal-dialog modal-sm">
+		<div class="modal fade" id="drawModal" tabindex="-1" style="display: none;" aria-hidden="true">
+			<div class="modal-dialog">
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -191,14 +201,16 @@
 						</br></br>
 						Add text to your map: <input type="text" id="userTextBox" placeholder="ex. Camp Spot"><button data-dojo-type="dijit/form/Button">Add Text</button>
 						</br></br>
-						<button id="btnClearGraphic">CLEAR ALL</button>
+						<button id="btnClearGraphic">Clear Shapes</button>
+						<button id="btnClearText">Clear Text</button>
+						<button id="btnCloseDraw" data-dismiss="modal">Close the Draw Window</button>
 					</div>
 				</div>
 			</div>
 		</div>
 		<!-- Create PDF Modal -->
-		<div class="modal fade" id="pdfModal" style="display: none;" aria-hidden="true">
-			<div class="modal-dialog modal-sm">
+		<div class="modal fade" id="pdfModal" tabindex="-1" style="display: none;" aria-hidden="true">
+			<div class="modal-dialog">
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -213,7 +225,7 @@
 								</br></br>
 								When the PDF is ready, it will open in a new window.
 								</br></br>
-								<input type="submit" id="btnPDF" value="Create PDF">
+								<input type="submit" id="btnPDF" value="Create PDF"><button id="btnClosePrint" data-dismiss="modal">Close the Print Window</button>
 							<span id="printStatus"></span>
 						</div>
 					</div>
@@ -237,7 +249,7 @@
 							<li><a id="measurementNav1" href="#measurement"><i class="glyphicon glyphicon-resize-vertical"></i>Measurements & Coordinates</a></li>
 							<li><a id="drawNav1" href="#draw"><i class="glyphicon glyphicon-pencil"></i> Draw On the Map</a></li>
 							<li><a id="pdfNav1" href="#pdf"><i class="glyphicon glyphicon-print"></i> Create PDF Map</a></li>
-					</ul>
+					</ul>					 
 					<!--<ul class="list-unstyled hidden-xs" id="sidebar-footer">
 							<h3>Resources</h3>
 							<li><a href="http://fishandgame.idaho.gov/"><i class="glyphicon glyphicon-link"></i> IDFG Website</a></li>
