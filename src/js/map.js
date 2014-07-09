@@ -935,6 +935,20 @@ require(["esri/map",
 			$("body").css("margin-right","0px");
 			$(".navbar").css("margin-right","0px");
 		});
+			// HowTo nav1 menu is selected
+		$("#helpNav1").click(function(e){
+			$("#helpModal").modal("show"); 
+			// Bootstrap work-around
+			$("body").css("margin-right","0px");
+			$(".navbar").css("margin-right","0px");
+		});
+		// HowTo nav2 menu is selected
+		$("#helpNav2").click(function(e){
+			$("#helpModal").modal("show"); 
+			// Bootstrap work-around
+			$("body").css("margin-right","0px");
+			$(".navbar").css("margin-right","0px");
+		});
 		/* off-canvas sidebar toggle */
 		$('[data-toggle=offcanvas]').click(function() {
 				$(this).toggleClass('visible-xs text-center');
