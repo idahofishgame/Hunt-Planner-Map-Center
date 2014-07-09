@@ -54,7 +54,7 @@
           
 					<ul class="nav navbar-nav">	
             <li><a id="website" href="http://fishandgame.idaho.gov/" target="_blank">IDFG Website</a></li>
-						<li><a id="contact" href="#contactUs">Contact Us</a></li>
+						<li><a id="contact" href="https://fishandgame.idaho.gov/ifwis/portal/contact#huntplanner">Contact Us</a></li>
           </ul>
         </div>
       </div>
@@ -265,7 +265,7 @@
 										<span data-dojo-attach-point="checkContainerNode">
 											<input id="fireLayersCheckbox" type="checkbox"></input>
 										</span>
-										<img class="dijitTreeExpando agsjsTOCIcon dijitTreeExpandoClosed" src="http://js.arcgis.com/3.9/js/dojo/dojo/resources/blank.gif" alt="" data-dojo-attach-point="iconNode">
+										<!--<img class="dijitTreeExpando agsjsTOCIcon dijitTreeExpandoClosed" src="http://js.arcgis.com/3.9/js/dojo/dojo/resources/blank.gif" alt="" data-dojo-attach-point="iconNode">-->
 										<span class="agsjsTOCRootLayerLabel" data-dojo-attach-point="labelNode">Wildfire & Closure Related Layers</span>
 									</span>
 								</div>			
@@ -299,7 +299,7 @@
 												<span data-dojo-attach-point="checkContainerNode">
 													<input id="fireLayer2Checkbox" type="checkbox"></input>
 												</span>
-												<img class="agsjsTOCIcon" data-dojo-attach-point="iconNode" alt="" src="src/images/ActiveFirePerimeters.png"></img
+												<img class="agsjsTOCIcon" data-dojo-attach-point="iconNode" alt="" src="src/images/ActiveFirePerimeters.png"></img>
 												<span class="agsjsTOCServiceLayerLabel" data-dojo-attach-point="labelNode">Active Fire Perimeters</span>	
 											</span>
 										</div>			
@@ -451,6 +451,37 @@
 				</div>
 			</div>
 		</div>
+		<!-- How To Modal -->
+		<div class="modal fade" id="helpModal" tabindex="-1" style="display: none;" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">How To</h4>
+					</div>
+					<div class="modal-body">
+								To add a hunt area boundary, expand <b>"Highlight a Hunt Area"</b> and select an area. The selected hunt area will be zoomed to and highlighted in purple.
+								</br></br>
+								To add other helpful layers (such as administrative boundaries, land management overlay, trails, campgrounds, wildfires), expand <b>"Turn Layers On/Off"</b> and check/uncheck the checkboxes to add corresponding layers.  You can also increase/decrease the transparency of a layer group by using the slider directly below the layer group name.
+								</br>
+								* Be advised that some layers (depending on the data source and your network speed) may take some time to render.
+								</br></br>
+								To change the basemap under the layers,  expand <b>"Change the Basemap"</b> and select a basemap (such as Imagery, Terrain, Topographic, etc.)
+								</br></br>
+								To search for a place by name or latitude/longitude coordinate, expand <b>"Place or Coordinate Search"</b>. Simple type a place into the place search box or coordinates in the longitude/latitude boxes and hit enter or click 'Go'/'Go to Coordinates'.  The map will automatically zoom to the location. When you zoon to a coordinate, it will be labeled with its corresponding longitude/latitude. Use the clear buttons to clear the search graphics off the map.
+								</br></br>
+								To measure the area or length of an area or find the coordinates at a location you click on, expand <b>"Measurements & Coordinates"</b>.  First, select your tool - Area, Distance, or Location.  Then, select the units you would like the results to be in (acres, sq miles, ...miles, meters,...degrees, DMS (degrees minutes seconds). Finally, close the Measurement window and begin taking measurements. 
+								</br></br>
+								To add shapes or text labels to your map, expand <b>"Draw On the Map"</b>. When you select a draw tool, the window will automatically close and you can begin adding shapes to your map to highlight an area or specify a certain point.  To add a text label to your map, first add the text you would like to appear in the textbox after 'Add text to your map:' and then click the 'Add Text' button.  Click on the map to add the label.
+								</br></br>
+								To create a PDF of the map after you have zoomed to a specific area, changed the basemap, and/or added shapes and text, expand <b>"Create PDF Map"</b>. If you would like your PDF map to have a title, fill in the 'Enter a map title:' textbox.  Click Create PDF and it will open in a new window.  Depending on the browser you are using, there are a number of ways to save/print the PDF by either using the browser menu or right-clicking the PDF.</br>
+								* Be advised that it may take some time to create the PDF map. Please be patient.
+								</br></br>
+								<button id="btnCloseHelp" data-dismiss="modal">Close the How To Window</button>
+					</div>
+				</div>
+			</div>
+		</div>
 	 </div>
     <!-- Bootstrap-map-js -->
 		<div class="row row-offcanvas row-offcanvas-left">
@@ -460,26 +491,28 @@
 					<li><a href="#" data-toggle="offcanvas" class="visible-xs text-center"><i class="glyphicon glyphicon-chevron-right"></i></a></li>
 				  </ul>
 					<ul class="nav hidden-xs" id="lg-menu">
-							<li class="active"><a id="huntNav1" href="#huntArea"><i class="glyphicon glyphicon-flash"></i> Highlight a Hunt Area</a></li>
+							<li class="active"><a id="huntNav1"><i class="glyphicon glyphicon-flash"></i> Highlight a Hunt Area</a></li>
 							<!--<li><a id= "layerListNav1" href="#layerList"><i class="glyphicon glyphicon-off"></i> Turn Layers On/Off</a></li>-->
-							<li><a id="legendNav1" href="#legend"><i class="glyphicon glyphicon-list"></i> Turn Layers On/Off</a></li>
-							<li><a id="basemapNav1" href="#basemap"><i class="glyphicon glyphicon-globe"></i> Change the Basemap</a></li>
-							<li><a id="geosearchNav1" href="#placeSearch"><i class="glyphicon glyphicon-search"></i> Place or Coordinate Search</a></li>
-							<li><a id="measurementNav1" href="#measurement"><i class="glyphicon glyphicon-resize-vertical"></i>Measurements & Coordinates</a></li>
-							<li><a id="drawNav1" href="#draw"><i class="glyphicon glyphicon-pencil"></i> Draw On the Map</a></li>
-							<li><a id="pdfNav1" href="#pdf"><i class="glyphicon glyphicon-print"></i> Create PDF Map</a></li>
+							<li><a id="legendNav1"><i class="glyphicon glyphicon-list"></i> Turn Layers On/Off</a></li>
+							<li><a id="basemapNav1"><i class="glyphicon glyphicon-globe"></i> Change the Basemap</a></li>
+							<li><a id="geosearchNav1"><i class="glyphicon glyphicon-search"></i> Place or Coordinate Search</a></li>
+							<li><a id="measurementNav1"><i class="glyphicon glyphicon-resize-vertical"></i>Measurements & Coordinates</a></li>
+							<li><a id="drawNav1"><i class="glyphicon glyphicon-pencil"></i> Draw On the Map</a></li>
+							<li><a id="pdfNav1"><i class="glyphicon glyphicon-print"></i> Create PDF Map</a></li>
+							<li><a id="helpNav1"><i class="glyphicon glyphicon-question-sign"></i> How To...</a></li>
 					</ul>					 
 				
 				<!-- tiny only nav-->
 				<ul class="nav visible-xs" id="xs-menu">
-						<li><a id="huntNav2" href="#huntArea" title="Highlight a Hunt Area" class="masterTooltip"><i class="glyphicon glyphicon-flash"></i></a></li>
+						<li><a id="huntNav2" title="Highlight a Hunt Area" class="masterTooltip"><i class="glyphicon glyphicon-flash"></i></a></li>
 						<!--<li><a id="layerListNav2" href="#layerList" class="text-center"><i class="glyphicon glyphicon-off"></i></a></li>-->
-						<li><a id="legendNav2" href="#legend" title="Turn Layers On/Off" class="masterTooltip"><i class="glyphicon glyphicon-list"></i></a></li>
-						<li><a id="basemapNav2" href="#basemap" title="Change the Basemap" class="masterTooltip"><i class="glyphicon glyphicon-globe"></i></a></li>
-						<li><a id="geosearchNav2" href="#placeSearch" title="Place or Coordinate Search" class="masterTooltip"><i class="glyphicon glyphicon-search"></i></a></li>
-						<li><a id="measurementNav2" href="#measurement" title="Measurements & Coordinates" class="masterTooltip"><i class="glyphicon glyphicon-resize-vertical"></i></a></li>
-						<li><a id="drawNav2" href="#draw" title="Draw On the Map" class="masterTooltip"><i class="glyphicon glyphicon-pencil"></i></a></li>
-						<li><a id="pdfNav2" href="#pdf" title="Create PDF Map" class="masterTooltip"><i class="glyphicon glyphicon-print"></i></a></li>
+						<li><a id="legendNav2" title="Turn Layers On/Off" class="masterTooltip"><i class="glyphicon glyphicon-list"></i></a></li>
+						<li><a id="basemapNav2" title="Change the Basemap" class="masterTooltip"><i class="glyphicon glyphicon-globe"></i></a></li>
+						<li><a id="geosearchNav2" title="Place or Coordinate Search" class="masterTooltip"><i class="glyphicon glyphicon-search"></i></a></li>
+						<li><a id="measurementNav2" title="Measurements & Coordinates" class="masterTooltip"><i class="glyphicon glyphicon-resize-vertical"></i></a></li>
+						<li><a id="drawNav2" title="Draw On the Map" class="masterTooltip"><i class="glyphicon glyphicon-pencil"></i></a></li>
+						<li><a id="pdfNav2" title="Create PDF Map" class="masterTooltip"><i class="glyphicon glyphicon-print"></i></a></li>
+						<li><a id="helpNav2" title="How To..." class="masterTooltip"><i class="glyphicon glyphicon-question-sign"></i></a></li>
 				</ul>			
 			</div>
 		<!-- /sidebar -->
