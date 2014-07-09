@@ -105,6 +105,12 @@ input[type=checkbox] {
 	cursor:pointer;
 }
 
+.dijitTreeExpando {
+	background-repeat: no-repeat !important;
+	width: 20px !important;
+	height: 20px !important;
+}
+
 .close {
 	font-size: 30px !important;
 	opacity: 0.8 !important;
@@ -115,9 +121,7 @@ input[type=checkbox] {
 	z-index:10000 !important;
 }
 
-.dijitPopup.dijitMenuPopup
-
-{
+.dijitPopup.dijitMenuPopup {
 	color: #fff !important;
 	border: 1px solid transparent !important;
 	border-radius: 4px !important;
@@ -163,7 +167,7 @@ input[type=checkbox] {
 	padding: 2px 4px 4px;
 }
 
-#btnHuntHighlight, #btnCloseLegend, #btnCloseBasemap, #btnClear, #btnClearGraphic, #btnClearText, #btnClearPlace, #clearMeasureResults, #btnCloseMeasurement, #btnCloseDraw, #btnClosePrint {
+#btnClearHighlighted,#btnCloseHighlighted, #btnCloseLegend, #btnCloseBasemap, #btnClear, #btnClearGraphic, #btnClearText, #btnClearPlace, #clearMeasureResults, #btnCloseMeasurement, #btnCloseDraw, #btnClosePrint {
 	text-align: center !important;
 	vertical-align: middle !important;
 	border: 1px solid #cccccc!important;
@@ -174,7 +178,7 @@ input[type=checkbox] {
 	background-color: #FFF !important;
 }
 
-#btnHuntHighlight, #btnCloseMeasurement, #btnCloseDraw, #btnClosePrint {
+#btnCloseHighlighted, #btnCloseMeasurement, #btnCloseDraw, #btnClosePrint {
 	margin-left:5px !important;
 }
 
@@ -225,7 +229,31 @@ input[type=checkbox] {
 	webkit-box-shadow: 0 3px 20px #000;
 	box-shadow: 0 3px 20px #000;
 	font-family: 'Trebuchet MS', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+	
 }
+
+.esriPopupWrapper {
+	font-family: 'Trebuchet MS', 'Helvetica Neue', Arial, Helvetica, sans-serif !important;
+	font-size: 14px !important;
+}
+	
+.esriPopup.myTheme .titlePane {
+	font-weight: bold !important;
+	background-color: #000000;
+}
+
+.esriPopup.myTheme .title {
+	color: #ffffff !important;
+}
+
+
+.esriPopup.myTheme .contentPane,
+.esriPopup.myTheme .actionsPane {
+	border-color: 1px solid #3f4533;
+	background-color: #ffffff;
+	color:#3f4533;
+}
+
 
 .wrapper, .row {
    height: 100%;
