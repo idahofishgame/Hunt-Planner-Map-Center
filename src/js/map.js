@@ -27,11 +27,14 @@ require(["esri/map",
 	"esri/geometry/Multipoint", 
 	"esri/symbols/PictureMarkerSymbol",
 	"esri/dijit/Popup",
+	"esri/dijit/PopupTemplate",
 	"esri/tasks/QueryTask",
 	"esri/tasks/query",
 	"agsjs/dijit/TOC",
 	"dojo/_base/connect",
 	"dojo/dom",
+	"dojo/dom-class",
+	"dojo/dom-construct",
 	"dojo/parser",
 	"dijit/registry",
 	"dojo/on",
@@ -40,18 +43,27 @@ require(["esri/map",
 	"dijit/form/Button",
 	"dojo/fx",
 	"dojo/domReady!"], 
-	function(Map, LocateButton, Scalebar, webMercatorUtils, BasemapGallery, arcgisUtils, FeatureLayer, GraphicsLayer, ArcGISDynamicMapServiceLayer, ImageParameters, Geocoder, LegendLayer, GeometryService, Measurement, Draw, Graphic, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, TextSymbol, Color, Font, PrintParameters, PrintTemplate, PrintTask, InfoTemplate, Multipoint, PictureMarkerSymbol, Popup, QueryTask, Query, TOC, connect, dom, parser, registry, on, query, BootstrapMap) {
+	function(Map, LocateButton, Scalebar, webMercatorUtils, BasemapGallery, arcgisUtils, FeatureLayer, GraphicsLayer, ArcGISDynamicMapServiceLayer, ImageParameters, Geocoder, LegendLayer, GeometryService, Measurement, Draw, Graphic, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, TextSymbol, Color, Font, PrintParameters, PrintTemplate, PrintTask, InfoTemplate, Multipoint, PictureMarkerSymbol, Popup, PopupTemplate, QueryTask, Query, TOC, connect, dom, domClass, domConstruct, parser, registry, on, query, BootstrapMap) {
 		
 		// call the parser to create the dijit layout dijits
 		parser.parse(); // note djConfig.parseOnLoad = false;
+		
+		//create a popup div
+		var popup = Popup({
+				titleInBody: false
+		},domConstruct.create("div"));
 		
 		//Get a reference to the ArcGIS Map class
 		map = BootstrapMap.create("mapDiv",{
 			basemap:"topo",
 			center:[-114.52,45.50],
-			zoom:6
+			zoom:6,
+			infoWindow: popup
 		});
 		
+		//create a domClass to customize the look of the popup window
+		domClass.add(map.infoWindow.domNode, "myTheme");
+
 		//LocateButton will zoom to where you are.  If tracking is enabled and the button becomes a toggle that creates an event to watch for location changes.
 		var locateSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 20,
 			new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
@@ -119,39 +131,116 @@ require(["esri/map",
 			console.log("basemap gallery error:  ", msg);
 		});
 		
+		//popup window template for the surface management feature layer
+		var surfMgmtPopupTemplate = new PopupTemplate({
+			title: "Land Management Agency",
+			description: "{AGNCY_NAME}",
+			fieldInfos:[{
+				fieldName: "AGNCY_NAME", visible: true
+				}]
+			});
+
+		//popup window template for the Campground feature layer
+		var campgroundPopupTemplate = new PopupTemplate({
+			title: "Campground Information",
+			fieldInfos:[{
+				fieldName: "NAME", visible: true,
+				fieldName: "Phone", visible: true,
+				fieldName: "Rate", visible: true,
+				fieldName: "Season", visible: true,
+				FieldName: "Sites", visible: true,
+				FieldName: "Max_Length", visible: true,
+				FieldName: "Type", visible: true,
+				FieldName: "URL", visible: true
+				}]
+			});	
+		campgroundPopupTemplate.setContent(
+			"<b>Name: </b>${NAME}<br/>" +
+			"<b>Phone: </b>${Phone}</br>" +
+			"<b>Fee/Rate: </b>${Rate}</br>" +
+			"<b>Season: </b>${Season}</br>" +
+			"<b># of Sites: </b>${Sites}</br>" +
+			"<b>Max # of Days at Site*: </b>${Max_Length}</br>" +
+			"<b>* </b> 0 = No Limit</br>" +
+			"<b>Site Administrator: </b>${Type}</br>"
+		);
+		
+		//popup window template for the fire closure feature layer
+		var closurePopupTemplate = new PopupTemplate({
+			title: "Fire Emergency Closure Area",
+			fieldInfos:[{
+				fieldName: "NAME", visible: true,
+				fieldName: "URL", visible: true,
+				fieldName: "UPDATE_", visible: true
+				}]
+			});
+		closurePopupTemplate.setContent(
+			"<b>Name: </b>${NAME}<br/>" +
+			"<b>Effective Date: </b>${UPDATE_}<br/>" +
+			"<a style='cursor:pointer;' href='${URL}' target='_blank'>InciWeb Description</a>"
+		);
+		
+		//popup window template for the fire perimeter feature layer
+		var perimeterPopupTemplate = new PopupTemplate({
+			title: "{fire_name} Fire",
+			fieldInfos:[{
+				fieldName: "fire_name", visible: true,
+				fieldName: "acres", visible: true,
+				fieldName: "active", visible: true, 
+				}]
+			});
+		perimeterPopupTemplate.setContent(
+			"<b>Acres: </b>${acres}<br/>" +
+			"<b>Active (Y/N): </b>${active}</br>"
+		);
+		
 		//add layers (or groups of layers) to the map.
 		huntLayers = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Data/Hunting/MapServer",
 			{id:"huntLayers"});
 		adminLayers = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Data/AdministrativeBoundaries/MapServer",
 			{id:"adminLayers"});
-		surfaceMgmtLayer = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Basemaps/SurfaceMgmt_WildlifeTracts/MapServer",
-			{id:"surfaceMgmtLayer"});
+		surfaceMgmtLayer = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/Basemaps/SurfaceMgmt_WildlifeTracts/MapServer/0",
+			{
+				id:"surfaceMgmtLayer",
+				opacity: 0.5,
+				outFields:["*"],
+				infoTemplate:surfMgmtPopupTemplate
+			});
 		trailLayers = new ArcGISDynamicMapServiceLayer("http://gis2.idaho.gov/arcgis/rest/services/DPR/Idaho_Trails_Map/MapServer",
 			{id:"trailLayers"});
 		campgroundLayer = new FeatureLayer("http://gis2.idaho.gov/arcgis/rest/services/ADM/Campgrounds/MapServer/0",
-			{id:"campgroundLayer"});
+			{
+				id:"campgroundLayer",
+				outFields:["*"],
+				infoTemplate:campgroundPopupTemplate
+			});
 		fireLayer0 = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/External/InciWeb_FireClosures/MapServer/0",
-			{id:"fireLayer0"});
+			{
+				id:"fireLayer0",
+				outFields:['NAME', 'URL', 'UPDATE_'],
+				infoTemplate:closurePopupTemplate
+			});
 		fireLayer1 = new FeatureLayer("http://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/1",
-			{id:"fireLayer1"});	
+			{id:"fireLayer1",});	
 		fireLayer2 = new FeatureLayer("http://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/2",
-			{id:"fireLayer2"});
+			{
+				id:"fireLayer2",
+				outFields:['acres', 'active', 'fire_name'],
+				infoTemplate:perimeterPopupTemplate
+			});
 		fireLayer3 = new FeatureLayer("http://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/3",
 			{id:"fireLayer3"});	
-			
-		//Populate the queryLabel Div that will show the query result label in the legend.
 		
 		//add the Table of Contents.  Layers can be toggled on/off. Symbology is displayed.  Each "layer group" has a transparency slider.
 		map.on('layers-add-result', function(evt){
-			// overwrite the default visibility of service.
-			// TOC will honor the overwritten value.
-			//huntLayers.setVisibleLayers([..., ..., ]);
+			// overwrite the default visibility of service. TOC will honor the overwritten value.
+			trailLayers.setVisibleLayers([1,2,3,4,5,6,7,8,9,10,11,12,13]);
 				toc = new TOC({
 					map: map,
 					layerInfos: [{
 						layer: huntLayers,
 						title: "Hunt Related Layers",
-						//collapsed: false, // whether this root layer should be collapsed initially, default false.
+						collapsed: false, // whether this root layer should be collapsed initially, default false.
 						slider: true // whether to display a transparency slider.
 					}, {
 						layer: adminLayers,
@@ -184,13 +273,13 @@ require(["esri/map",
 					$('.agsjsTOCServiceLayerLabel').click(function(){
 						$(this).siblings('span').children('input').click();
 					});
-					$('.agsjsTOCRootLayerLabel').click(function(){
-						$(this).siblings('span').children('input').click();
-					});
+					//$('.agsjsTOCRootLayerLabel').click(function(){
+						//$(this).siblings('span').children('input').click();
+					//});
 				});
 		});
 		
-		map.addLayers([surfaceMgmtLayer, adminLayers, huntLayers, trailLayers, campgroundLayer, fireLayer2, fireLayer3]);
+		map.addLayers([surfaceMgmtLayer, adminLayers, fireLayer3, fireLayer2, fireLayer0, huntLayers, trailLayers, campgroundLayer]);
 		adminLayers.hide(); //So none of the layers are "on" when the map loads.
 		surfaceMgmtLayer.hide();
 		trailLayers.hide();
@@ -245,15 +334,11 @@ require(["esri/map",
 		  console.log("QUERY HIDE");
 		 }
 		});
-		//uncheck fireLayersCheckbox
+		//uncheck fire Layer Checkboxes
 		$("#fireLayersCheckbox").prop("checked", false);
-		//uncheck fireLayer0Checkbox
 		$("#fireLayer0Checkbox").prop("checked", false);
-		//uncheck fireLayer1Checkbox
 		$("#fireLayer1Checkbox").prop("checked", false);
-		//uncheck fireLayer2Checkbox
 		$("#fireLayer2Checkbox").prop("checked", false);
-		//uncheck fireLayer3Checkbox
 		$("#fireLayer3Checkbox").prop("checked", false);
 		//toggle all fireLayers off when the fireLayersCheckbox is unchecked.
 		$("#fireLayersCheckbox").change(function(){	
@@ -418,7 +503,7 @@ require(["esri/map",
 				map.setExtent(selectionExtent.expand(1.25), true);
 			}
 			
-			//add the query area to the legend. Give it a label based on variable label.
+			//Populate the queryLabel Div that will show the query result label in the legend.
 			$("#queryLabelDiv").show();
 			$("#queryCheckbox").prop('checked', true);
 		}
@@ -850,15 +935,15 @@ require(["esri/map",
 			$("body").css("margin-right","0px");
 			$(".navbar").css("margin-right","0px");
 		});
-/* off-canvas sidebar toggle */
-			$('[data-toggle=offcanvas]').click(function() {
-					$(this).toggleClass('visible-xs text-center');
-					$(this).find('i').toggleClass('glyphicon-chevron-right glyphicon-chevron-left');
-					$('.row-offcanvas').toggleClass('active');
-					$('#lg-menu').toggleClass('#sidebar hidden-xs').toggleClass('#sidebar visible-xs');
-					$('#xs-menu').toggleClass('#sidebar visible-xs').toggleClass('#sidebar hidden-xs');
-					/*$('#btnShow').toggle();*/
-			});
-			
+		/* off-canvas sidebar toggle */
+		$('[data-toggle=offcanvas]').click(function() {
+				$(this).toggleClass('visible-xs text-center');
+				$(this).find('i').toggleClass('glyphicon-chevron-right glyphicon-chevron-left');
+				$('.row-offcanvas').toggleClass('active');
+				$('#lg-menu').toggleClass('#sidebar hidden-xs').toggleClass('#sidebar visible-xs');
+				$('#xs-menu').toggleClass('#sidebar visible-xs').toggleClass('#sidebar hidden-xs');
+				/*$('#btnShow').toggle();*/
 		});
+			
+	});
 });
