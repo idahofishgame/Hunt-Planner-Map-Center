@@ -7,6 +7,7 @@ require(["esri/map",
 	"esri/layers/FeatureLayer",
 	"esri/layers/GraphicsLayer", 
 	"esri/layers/ArcGISDynamicMapServiceLayer",
+	"esri/layers/ImageParameters",
 	"esri/dijit/Geocoder",
 	"esri/tasks/LegendLayer",
 	"esri/tasks/GeometryService",
@@ -39,7 +40,7 @@ require(["esri/map",
 	"dijit/form/Button",
 	"dojo/fx",
 	"dojo/domReady!"], 
-	function(Map, LocateButton, Scalebar, webMercatorUtils, BasemapGallery, arcgisUtils, FeatureLayer, GraphicsLayer, ArcGISDynamicMapServiceLayer, Geocoder, LegendLayer, GeometryService, Measurement, Draw, Graphic, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, TextSymbol, Color, Font, PrintParameters, PrintTemplate, PrintTask, InfoTemplate, Multipoint, PictureMarkerSymbol, Popup, QueryTask, Query, TOC, connect, dom, parser, registry, on, query, BootstrapMap) {
+	function(Map, LocateButton, Scalebar, webMercatorUtils, BasemapGallery, arcgisUtils, FeatureLayer, GraphicsLayer, ArcGISDynamicMapServiceLayer, ImageParameters, Geocoder, LegendLayer, GeometryService, Measurement, Draw, Graphic, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, TextSymbol, Color, Font, PrintParameters, PrintTemplate, PrintTask, InfoTemplate, Multipoint, PictureMarkerSymbol, Popup, QueryTask, Query, TOC, connect, dom, parser, registry, on, query, BootstrapMap) {
 		
 		// call the parser to create the dijit layout dijits
 		parser.parse(); // note djConfig.parseOnLoad = false;
@@ -125,6 +126,18 @@ require(["esri/map",
 			{id:"adminLayers"});
 		surfaceMgmtLayer = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Basemaps/SurfaceMgmt_WildlifeTracts/MapServer",
 			{id:"surfaceMgmtLayer"});
+		trailLayers = new ArcGISDynamicMapServiceLayer("http://gis2.idaho.gov/arcgis/rest/services/DPR/Idaho_Trails_Map/MapServer",
+			{id:"trailLayers"});
+		campgroundLayer = new FeatureLayer("http://gis2.idaho.gov/arcgis/rest/services/ADM/Campgrounds/MapServer/0",
+			{id:"campgroundLayer"});
+		fireLayer0 = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/External/InciWeb_FireClosures/MapServer/0",
+			{id:"fireLayer0"});
+		fireLayer1 = new FeatureLayer("http://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/1",
+			{id:"fireLayer1"});	
+		fireLayer2 = new FeatureLayer("http://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/2",
+			{id:"fireLayer2"});
+		fireLayer3 = new FeatureLayer("http://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/3",
+			{id:"fireLayer3"});	
 			
 		//Populate the queryLabel Div that will show the query result label in the legend.
 		
@@ -150,6 +163,16 @@ require(["esri/map",
 						title: "Land Management Layer",
 						collapsed: true,
 						slider:true
+					}, {
+						layer: trailLayers,
+						title: "Motorized & Non-motorized Trails",
+						collapsed: true,
+						slider: true
+					}, {
+						layer: campgroundLayer,
+						title: "Campgrounds",
+						collapsed: true,
+						slider: true	
 					}]
 					}, 'tocDiv');
 				toc.startup();
@@ -167,9 +190,16 @@ require(["esri/map",
 				});
 		});
 		
-		map.addLayers([surfaceMgmtLayer, adminLayers, huntLayers]);
+		map.addLayers([surfaceMgmtLayer, adminLayers, huntLayers, trailLayers, campgroundLayer, fireLayer2, fireLayer3]);
 		adminLayers.hide(); //So none of the layers are "on" when the map loads.
-		surfaceMgmtLayer.hide(); //So the surf mgmt. layer isn't "on" when the map loads.
+		surfaceMgmtLayer.hide();
+		trailLayers.hide();
+		campgroundLayer.hide();
+		fireLayer0.hide();
+		fireLayer1.hide();
+		fireLayer2.hide();
+		fireLayer3.hide();
+		
 		
 		//function to get variable values from the URL to query for hunt planner hunt area.
 		function getVariableByName(name) {
@@ -205,7 +235,7 @@ require(["esri/map",
 			$("#queryLabel").text(label);
 		}
 		
-		//toggle query layer on/off when checkbox is toggle on/off
+		//toggle query layer on/off when checkbox is toggled on/off
 		$("#queryCheckbox").change(function(){	
 		 if ($(this).prop('checked')) {
 		  queryLayer.show();
@@ -215,6 +245,65 @@ require(["esri/map",
 		  console.log("QUERY HIDE");
 		 }
 		});
+		//uncheck fireLayersCheckbox
+		$("#fireLayersCheckbox").prop("checked", false);
+		//uncheck fireLayer0Checkbox
+		$("#fireLayer0Checkbox").prop("checked", false);
+		//uncheck fireLayer1Checkbox
+		$("#fireLayer1Checkbox").prop("checked", false);
+		//uncheck fireLayer2Checkbox
+		$("#fireLayer2Checkbox").prop("checked", false);
+		//uncheck fireLayer3Checkbox
+		$("#fireLayer3Checkbox").prop("checked", false);
+		//toggle all fireLayers off when the fireLayersCheckbox is unchecked.
+		$("#fireLayersCheckbox").change(function(){	
+		 if ($(this).prop('checked')== false) { 
+				fireLayer0.hide();
+				fireLayer1.hide();
+				fireLayer2.hide();
+				fireLayer3.hide();
+				$("#fireLayer0Checkbox").prop("checked", false);
+				$("#fireLayer1Checkbox").prop("checked", false);
+				$("#fireLayer2Checkbox").prop("checked", false);
+				$("#fireLayer3Checkbox").prop("checked", false);
+		 }
+		});
+		  //toggle fireLayer0 on/off when checkbox is toggled on/off
+			$("#fireLayer0Checkbox").change(function(){	
+			 if ($(this).prop('checked')) {
+				fireLayer0.show();
+				$("#fireLayersCheckbox").prop("checked", true);
+			 } else {
+				fireLayer0.hide();
+			 }
+			});
+			//toggle fireLayer1 on/off when checkbox is toggled on/off
+			$("#fireLayer1Checkbox").change(function(){	
+			 if ($(this).prop('checked')) {
+				fireLayer1.show();
+				$("#fireLayersCheckbox").prop("checked", true);
+			 } else {
+				fireLayer1.hide();
+			 }
+			});
+			//toggle fireLayer2 on/off when checkbox is toggled on/off
+			$("#fireLayer2Checkbox").change(function(){	
+				 if ($(this).prop('checked')) {
+					fireLayer2.show();
+					$("#fireLayersCheckbox").prop("checked", true);
+				 } else {
+					fireLayer2.hide();
+				 }
+			});
+			//toggle fireLayer3 on/off when checkbox is toggled on/off
+			$("#fireLayer3Checkbox").change(function(){	
+				 if ($(this).prop('checked')) {
+					fireLayer3.show();
+					$("#fireLayersCheckbox").prop("checked", true);
+				 } else {
+					fireLayer3.hide();
+				 }
+			});		
 			
 		//get variable values from the dropdown lists in the hunt modal window and run doQuery.
 		$(".target1").change(function(){
@@ -279,6 +368,7 @@ require(["esri/map",
 		
 		$("#btnClearHighlighted").click(function(){
 			queryLayer.clear();
+			$("#queryLabelDiv").hide();
 			$("#gmu").val('420');
 			$("#elkzone").val('420');
 			$("#chunt").val('420');
