@@ -399,6 +399,7 @@ require(["esri/map",
 			var layerID = "0";
 			var label = $("#gmu option:selected").text();
 			console.log ("GMU ID: " + areaID + ", GMU LABEL: " + label);
+			$("#huntModal").modal('hide');
 			
 			if (typeof label != 'undefined'){
 				label = label;
@@ -419,6 +420,7 @@ require(["esri/map",
 			var layerID = "0";
 			var label = ($("#elkzone option:selected").text()) + " Elk Zone";
 			console.log ("ELK ZONE ID: " + areaID + ", ELK ZONE LABEL: " + label);
+			$("#huntModal").modal('hide');
 			
 			if (typeof label != 'undefined'){
 				label = label;
@@ -439,6 +441,7 @@ require(["esri/map",
 			var layerID = "0";
 			var label = $("#chunt option:selected").text();
 			console.log ("CHUNT ID: " + areaID + ", CHUNT LABEL: " + label);
+			$("#huntModal").modal('hide');
 			
 			if (typeof label != 'undefined'){
 				label = label;
@@ -802,12 +805,12 @@ require(["esri/map",
         console.log("response = " + response.url);       
         status.innerHTML = "";
 		    //open the map PDF or image in a new browser window.
-				var newUrl = response.url.replace("sslifwisiis","fishandgame.idaho.gov");
-        var childWindow = window.open(newUrl);
+				window.open(response.url.replace("sslifwisiis","fishandgame.idaho.gov"));
+        /* var childWindow = window.open(newUrl);
 				childWindow.onload = function(){
 					console.log("Child window loaded");
 					childWindow.location.reload();
-				}
+				} */
 				$("#pdfModal").modal('hide');
       });
 	  
