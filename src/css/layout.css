@@ -229,13 +229,18 @@ input[type=checkbox] {
 	font-family: 'Trebuchet MS', 'Helvetica Neue', Arial, Helvetica, sans-serif;
 	
 }
+.esriPopup.myTheme{
+	z-index: 55;
+}
 
 .esriPopupWrapper {
 	font-family: 'Trebuchet MS', 'Helvetica Neue', Arial, Helvetica, sans-serif !important;
 	font-size: 14px !important;
 }
 
-
+.esriPopup.myTheme .sizer {
+	width: 250px;
+}
 	
 .esriPopup.myTheme .titlePane {
 	font-weight: bold !important;
@@ -279,7 +284,6 @@ input[type=checkbox] {
 	background-color: #ffffff;
 	color:#3f4533;
 }
-
 
 .wrapper, .row {
    height: 100%;
