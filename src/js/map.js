@@ -148,10 +148,10 @@ require(["esri/map",
 				fieldName: "Phone", visible: true,
 				fieldName: "Rate", visible: true,
 				fieldName: "Season", visible: true,
-				FieldName: "Sites", visible: true,
-				FieldName: "Max_Length", visible: true,
-				FieldName: "Type", visible: true,
-				FieldName: "URL", visible: true
+				fieldName: "Sites", visible: true,
+				fieldName: "Max_Length", visible: true,
+				fieldName: "Type", visible: true,
+				fieldName: "URL", visible: true
 				}]
 			});	
 		campgroundPopupTemplate.setContent(
@@ -306,7 +306,7 @@ require(["esri/map",
 		//get the variables of areaID (hunt area, IOG area, or Access Yes! area), layerID (which layer to apply the ID query to), and label (what will appear in the legend)	
 		window.onload = function(){
 			//set the dropdown lists back to default value ("None").
-			$("#gmu").val('420');
+			$("#gmu").val('420'); //420 = value of none
 			$("#elkzone").val('420');
 			$("#chunt").val('420');
 			var areaID = getVariableByName('val');
@@ -462,7 +462,7 @@ require(["esri/map",
 		
 		function doQuery(areaID, layerID, label) {
 			//initialize query tasks
-			newQueryTask = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Wildlife/HuntPlanner/MapServer/" + layerID);
+			newQueryTask = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/" + layerID);
 
 			//initialize query
 			newQuery = new Query();
@@ -632,6 +632,7 @@ require(["esri/map",
 		//clear coordinate search graphics layer
 		$("#btnClear").click (function(){
 			zoomToLayer.clear();
+			zoomToLabelLayer.clear();
 		});
 
 		//add the measurement tools
@@ -668,7 +669,7 @@ require(["esri/map",
 				$("#measureResultsDiv").hide();	
 			});
 		});
-	
+
 		//add the Draw toolbar.
 		var toolbar;
 		map.on("load", createToolbar);
@@ -837,20 +838,6 @@ require(["esri/map",
 			$("body").css("margin-right","0px");
 			$(".navbar").css("margin-right","0px");
 		});
-		/* layerList nav1 menu is selected
-		$("#layerListNav1").click(function(e){
-			$("#layerListModal").modal("show"); 
-			// Bootstrap work-around
-			$("body").css("margin-right","0px");
-			$(".navbar").css("margin-right","0px");
-		});
-		// layerList nav2 menu is selected
-		$("#layerListNav2").click(function(e){
-			$("#layerListModal").modal("show"); 
-			// Bootstrap work-around
-			$("body").css("margin-right","0px");
-			$(".navbar").css("margin-right","0px");
-		});*/
 		// legend nav1 menu is selected
 		$("#legendNav1").click(function(e){
 			$("#legendModal").modal("show"); 
@@ -935,20 +922,21 @@ require(["esri/map",
 			$("body").css("margin-right","0px");
 			$(".navbar").css("margin-right","0px");
 		});
-			// HowTo nav1 menu is selected
+		// help nav1 menu is selected
 		$("#helpNav1").click(function(e){
 			$("#helpModal").modal("show"); 
 			// Bootstrap work-around
 			$("body").css("margin-right","0px");
 			$(".navbar").css("margin-right","0px");
 		});
-		// HowTo nav2 menu is selected
+		// help nav2 menu is selected
 		$("#helpNav2").click(function(e){
 			$("#helpModal").modal("show"); 
 			// Bootstrap work-around
 			$("body").css("margin-right","0px");
 			$(".navbar").css("margin-right","0px");
 		});
+		
 		/* off-canvas sidebar toggle */
 		$('[data-toggle=offcanvas]').click(function() {
 				$(this).toggleClass('visible-xs text-center');
