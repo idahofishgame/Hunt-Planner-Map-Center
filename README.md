@@ -1,4 +1,4 @@
-IDFG-Hunt-Planner-Map-Center
+HuntPlanner MapCenter
 ============================
 
 The IDFG Map Center application is a tool for hunters to explore hunting opportunities in Idaho.
