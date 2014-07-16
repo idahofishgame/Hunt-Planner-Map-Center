@@ -139,6 +139,7 @@ input[type=checkbox] {
 	border-color:#3F4533;
 	padding: 6px 12px;
 	font-size: 14px;
+	margin-left: 5px;
 }
 
 .claro .dijitButton .dijitButtonNode {
@@ -152,7 +153,7 @@ input[type=checkbox] {
 	background-image: none !important;
 }
 
-#userTextBox, #longitudeInput, #latitudeInput {
+#gmu, #elkzone, #chunt, #userTextBox, #longitudeInput, #latitudeInput, #txtTitle {
 	margin-right: 5px;
 	border-radius: 4px;
 }
@@ -167,7 +168,7 @@ input[type=checkbox] {
 	padding: 2px 4px 4px;
 }
 
-#btnClearHighlighted,#btnCloseHighlighted, #btnCloseLegend, #btnCloseBasemap, #btnClear, #btnClearGraphic, #btnClearText, #btnClearPlace, #clearMeasureResults, #btnCloseMeasurement, #btnCloseDraw, #btnClosePrint {
+#btnClearHighlighted, #btnCloseHighlighted, #btnCloseLegend, #btnCloseBasemap, #btnClear, #btnClearGraphic, #btnClearText, #btnClearPlace, #btnCloseSearch, #clearMeasureResults, #btnCloseMeasurement, #btnCloseDraw, #btnClosePrint, #btnCloseHelp {
 	text-align: center !important;
 	vertical-align: middle !important;
 	border: 1px solid #cccccc!important;
@@ -176,9 +177,6 @@ input[type=checkbox] {
 	font-size: 14px !important;
 	color: #333 !important;
 	background-color: #FFF !important;
-}
-
-#btnCloseHighlighted, #btnCloseMeasurement, #btnCloseDraw, #btnClosePrint {
 	margin-left:5px !important;
 }
 
@@ -236,6 +234,8 @@ input[type=checkbox] {
 	font-family: 'Trebuchet MS', 'Helvetica Neue', Arial, Helvetica, sans-serif !important;
 	font-size: 14px !important;
 }
+
+
 	
 .esriPopup.myTheme .titlePane {
 	font-weight: bold !important;
@@ -246,7 +246,33 @@ input[type=checkbox] {
 	color: #ffffff !important;
 }
 
+.esriPopup.myTheme .titleButton {
+		position: absolute !important;
+		width: 16px !important;
+		height: 16px !important;
+		cursor: pointer !important;
+}
 
+.esriPopup.myTheme .titleButton.close {
+		background: url('../images/Close.png') no-repeat scroll !important;
+}
+
+.esriPopup.myTheme .titleButton.prev{
+		background: url('../images/prev.png') no-repeat scroll !important;
+}
+
+.esriPopup.myTheme .titleButton.next{
+		background: url('../images/next.png') no-repeat scroll !important;
+}
+
+.esriPopup.myTheme .titleButton.maximize {
+		background: url('../images/maximize.png') no-repeat scroll !important;
+}
+
+.esriPopup.myTheme .pointer.bottom {
+		background: url('../images/pointer.png') no-repeat scroll !important;		
+}
+		
 .esriPopup.myTheme .contentPane,
 .esriPopup.myTheme .actionsPane {
 	border-color: 1px solid #3f4533;
