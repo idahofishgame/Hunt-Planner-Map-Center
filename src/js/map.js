@@ -132,17 +132,17 @@ require(["esri/map",
 		});
 		
 		//popup window template for the surface management feature layer
-		var surfMgmtPopupTemplate = new PopupTemplate({
-			title: "Land Management Agency",
+		/* var surfMgmtPopupTemplate = new PopupTemplate({
+			title: "Land Management Info",
 			description: "{AGNCY_NAME}",
 			fieldInfos:[{
 				fieldName: "AGNCY_NAME", visible: true
 				}]
-			});
+			}); */
 
 		//popup window template for the Campground feature layer
 		var campgroundPopupTemplate = new PopupTemplate({
-			title: "Campground Information",
+			title: "Campground Info",
 			fieldInfos:[{
 				fieldName: "NAME", visible: true,
 				fieldName: "Phone", visible: true,
@@ -167,7 +167,7 @@ require(["esri/map",
 		
 		//popup window template for the fire closure feature layer
 		var closurePopupTemplate = new PopupTemplate({
-			title: "Fire Emergency Closure Area",
+			title: "Fire Closure Info",
 			fieldInfos:[{
 				fieldName: "NAME", visible: true,
 				fieldName: "URL", visible: true,
@@ -196,45 +196,45 @@ require(["esri/map",
 		
 		//add layers (or groups of layers) to the map.
 		huntLayers = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Data/Hunting/MapServer",
-			{id:"huntLayers"});
+			{id:"Hunt Area"});
 		adminLayers = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Data/AdministrativeBoundaries/MapServer",
-			{id:"adminLayers"});
+			{id:"Adminstrative Boundary"});
 		surfaceMgmtLayer = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/Basemaps/SurfaceMgmt_WildlifeTracts/MapServer/0",
 			{
-				id:"surfaceMgmtLayer",
-				opacity: 0.5,
-				outFields:["*"],
-				infoTemplate:surfMgmtPopupTemplate
+				id:"Surface Management",
+				opacity: 0.5
+				//outFields:["*"],
+				//infoTemplate:surfMgmtPopupTemplate
 			});
-		trailLayers = new ArcGISDynamicMapServiceLayer("http://gis2.idaho.gov/arcgis/rest/services/DPR/Idaho_Trails_Map/MapServer",
-			{id:"trailLayers"});
-		campgroundLayer = new FeatureLayer("http://gis2.idaho.gov/arcgis/rest/services/ADM/Campgrounds/MapServer/0",
+		trailLayers = new ArcGISDynamicMapServiceLayer("https://gis2.idaho.gov/arcgis/rest/services/DPR/Idaho_Trails_Map/MapServer",
+			{id:"Trails and Roads"});
+		campgroundLayer = new FeatureLayer("https://gis2.idaho.gov/arcgis/rest/services/ADM/Campgrounds/MapServer/0",
 			{
-				id:"campgroundLayer",
+				id:"Campgrounds",
 				outFields:["*"],
 				infoTemplate:campgroundPopupTemplate
 			});
 		fireLayer0 = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/External/InciWeb_FireClosures/MapServer/0",
 			{
-				id:"fireLayer0",
+				id:"Fire Closure",
 				outFields:['NAME', 'URL', 'UPDATE_'],
 				infoTemplate:closurePopupTemplate
 			});
 		fireLayer1 = new FeatureLayer("http://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/1",
-			{id:"fireLayer1",});	
+			{id:"Large Fires",});	
 		fireLayer2 = new FeatureLayer("http://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/2",
 			{
-				id:"fireLayer2",
+				id:"Fire Perimeter",
 				outFields:['acres', 'active', 'fire_name'],
 				infoTemplate:perimeterPopupTemplate
 			});
 		fireLayer3 = new FeatureLayer("http://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/3",
-			{id:"fireLayer3"});	
+			{id:"MODIS Fire Detection"});	
 		
 		//add the Table of Contents.  Layers can be toggled on/off. Symbology is displayed.  Each "layer group" has a transparency slider.
 		map.on('layers-add-result', function(evt){
 			// overwrite the default visibility of service. TOC will honor the overwritten value.
-			trailLayers.setVisibleLayers([1,2,3,4,5,6,7,8,9,10,11,12,13]);
+			trailLayers.setVisibleLayers([1,4,5,6,7,8,9,10,11,12,13]);
 				toc = new TOC({
 					map: map,
 					layerInfos: [{
