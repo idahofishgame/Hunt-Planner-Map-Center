@@ -2,6 +2,8 @@ require(["esri/map",
 	"esri/dijit/LocateButton",
 	"esri/dijit/Scalebar",
 	"esri/geometry/webMercatorUtils",
+	"esri/dijit/BasemapLayer",
+	"esri/dijit/Basemap",
 	"esri/dijit/BasemapGallery",
 	"esri/arcgis/utils",
 	"esri/layers/FeatureLayer",
@@ -43,8 +45,9 @@ require(["esri/map",
 	"dijit/form/Button",
 	"dojo/fx",
 	"dojo/domReady!"], 
-	function(Map, LocateButton, Scalebar, webMercatorUtils, BasemapGallery, arcgisUtils, FeatureLayer, GraphicsLayer, ArcGISDynamicMapServiceLayer, ImageParameters, Geocoder, LegendLayer, GeometryService, Measurement, Draw, Graphic, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, TextSymbol, Color, Font, PrintParameters, PrintTemplate, PrintTask, InfoTemplate, Multipoint, PictureMarkerSymbol, Popup, PopupTemplate, QueryTask, Query, TOC, connect, dom, domClass, domConstruct, parser, registry, on, query, BootstrapMap) {
+	function(Map, LocateButton, Scalebar, webMercatorUtils, BasemapLayer, Basemap, BasemapGallery, arcgisUtils, FeatureLayer, GraphicsLayer, ArcGISDynamicMapServiceLayer, ImageParameters, Geocoder, LegendLayer, GeometryService, Measurement, Draw, Graphic, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, TextSymbol, Color, Font, PrintParameters, PrintTemplate, PrintTask, InfoTemplate, Multipoint, PictureMarkerSymbol, Popup, PopupTemplate, QueryTask, Query, TOC, connect, dom, domClass, domConstruct, parser, registry, on, query, BootstrapMap) {
 		
+
 		// call the parser to create the dijit layout dijits
 		parser.parse(); // note djConfig.parseOnLoad = false;
 		
@@ -131,6 +134,15 @@ require(["esri/map",
 			console.log("basemap gallery error:  ", msg);
 		});
 		
+		//Add the USA Topo basemap to the basemap gallery.
+		var layer = new esri.dijit.BasemapLayer({url:"http://services.arcgisonline.com/ArcGIS/rest/services/USA_Topo_Maps/MapServer"});
+		var basemap = new esri.dijit.Basemap({
+			layers:[layer],
+			title:"USGS Topo",
+			thumbnailUrl:"src/images/usa_topo.jpg"
+		});
+		basemapGallery.add(basemap);
+		
 		//popup window template for the surface management feature layer
 		/* var surfMgmtPopupTemplate = new PopupTemplate({
 			title: "Land Management Info",
@@ -195,26 +207,26 @@ require(["esri/map",
 		);
 		
 		//add layers (or groups of layers) to the map.
-		huntLayers = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Data/Hunting/MapServer",
+		huntLayers = new ArcGISDynamicMapServiceLayer("http://fishandgame.idaho.gov/gis/rest/services/Data/Hunting/MapServer",
 			{id:"Hunt Area"});
-		adminLayers = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Data/AdministrativeBoundaries/MapServer",
+		adminLayers = new ArcGISDynamicMapServiceLayer("http://fishandgame.idaho.gov/gis/rest/services/Data/AdministrativeBoundaries/MapServer",
 			{id:"Adminstrative Boundary"});
-		surfaceMgmtLayer = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/Basemaps/SurfaceMgmt_WildlifeTracts/MapServer/0",
+		surfaceMgmtLayer = new FeatureLayer("http://fishandgame.idaho.gov/gis/rest/services/Basemaps/SurfaceMgmt_WildlifeTracts/MapServer/0",
 			{
 				id:"Surface Management",
 				opacity: 0.5
 				//outFields:["*"],
 				//infoTemplate:surfMgmtPopupTemplate
 			});
-		trailLayers = new ArcGISDynamicMapServiceLayer("https://gis2.idaho.gov/arcgis/rest/services/DPR/Idaho_Trails_Map/MapServer",
+		trailLayers = new ArcGISDynamicMapServiceLayer("http://gis2.idaho.gov/arcgis/rest/services/DPR/Idaho_Trails_Map/MapServer",
 			{id:"Trails and Roads"});
-		campgroundLayer = new FeatureLayer("https://gis2.idaho.gov/arcgis/rest/services/ADM/Campgrounds/MapServer/0",
+		campgroundLayer = new FeatureLayer("http://gis2.idaho.gov/arcgis/rest/services/ADM/Campgrounds/MapServer/0",
 			{
 				id:"Campgrounds",
 				outFields:["*"],
 				infoTemplate:campgroundPopupTemplate
 			});
-		fireLayer0 = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/External/InciWeb_FireClosures/MapServer/0",
+		fireLayer0 = new FeatureLayer("http://fishandgame.idaho.gov/gis/rest/services/External/InciWeb_FireClosures/MapServer/0",
 			{
 				id:"Fire Closure",
 				outFields:['NAME', 'URL', 'UPDATE_'],
@@ -399,7 +411,6 @@ require(["esri/map",
 			var layerID = "0";
 			var label = $("#gmu option:selected").text();
 			console.log ("GMU ID: " + areaID + ", GMU LABEL: " + label);
-			$("#huntModal").modal('hide');
 			
 			if (typeof label != 'undefined'){
 				label = label;
@@ -420,7 +431,6 @@ require(["esri/map",
 			var layerID = "0";
 			var label = ($("#elkzone option:selected").text()) + " Elk Zone";
 			console.log ("ELK ZONE ID: " + areaID + ", ELK ZONE LABEL: " + label);
-			$("#huntModal").modal('hide');
 			
 			if (typeof label != 'undefined'){
 				label = label;
@@ -441,7 +451,6 @@ require(["esri/map",
 			var layerID = "0";
 			var label = $("#chunt option:selected").text();
 			console.log ("CHUNT ID: " + areaID + ", CHUNT LABEL: " + label);
-			$("#huntModal").modal('hide');
 			
 			if (typeof label != 'undefined'){
 				label = label;
@@ -805,12 +814,12 @@ require(["esri/map",
         console.log("response = " + response.url);       
         status.innerHTML = "";
 		    //open the map PDF or image in a new browser window.
-				window.open(response.url.replace("sslifwisiis","fishandgame.idaho.gov"));
-        /* var childWindow = window.open(newUrl);
+				var newUrl = response.url.replace("sslifwisiis","fishandgame.idaho.gov");
+        var childWindow = window.open(newUrl);
 				childWindow.onload = function(){
 					console.log("Child window loaded");
 					childWindow.location.reload();
-				} */
+				}
 				$("#pdfModal").modal('hide');
       });
 	  
