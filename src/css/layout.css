@@ -63,6 +63,13 @@ img.ri:empty {
 	left: 5px !important;
 }
 
+.esriBasemapGalleryLabelContainer{
+	font-size: 80% !important;
+}
+
+#googleRoads:focus, #googleSatellite:focus, #googleHybrid:focus, #googleTerrain:focus {
+	border:2px solid #3C7AFF;
+}
 
 #LocateButton {
 	position: absolute;
