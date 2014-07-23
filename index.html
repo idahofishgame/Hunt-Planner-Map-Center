@@ -55,8 +55,8 @@
           
 					<ul class="nav navbar-nav">	
             <li><a id="Idaho Fish and Game Homepage" href="http://fishandgame.idaho.gov/" target="_blank">Home</a></li>
-						<li><a id="Hunting" href="https://fishandgame.idaho.gov/hunting">Hunting</a></li>
-            <li><a id="Huntplanner" href="https://fishandgame.idaho.gov/ifwis/huntplanner">Hunt Planner</a></li>
+						<li><a id="Hunting" href="http://fishandgame.idaho.gov/public/hunt/" target="_blank">Hunting</a></li>
+            <li><a id="Huntplanner" href="https://fishandgame.idaho.gov/ifwis/huntplanner"target="_blank">Hunt Planner</a></li>
           </ul>
         </div>
       </div>
@@ -323,7 +323,41 @@
 					</div>
 					<div class="modal-body">
 						<div id="basemapDiv"></div>
-						<br/>
+						<div id="googleMapsDiv">
+							<div id="googleRoadNode" class="esriBasemapGalleryNode">
+									<input type="image" class="esriBasemapGalleryThumbnail" src="src/images/GoogleRoads.png" id="googleRoads">
+								<div class="esriBasemapGalleryLabelContainer">
+									<span alt= Google Roads" title="Google Roads">
+										Google Roads
+									</span>
+								</div>
+							</div>
+							<div id="googleSatelliteNode" class="esriBasemapGalleryNode">
+									<input type="image" class="esriBasemapGalleryThumbnail" src="src/images/GoogleSatellite.jpg" id="googleSatellite">
+								<div class="esriBasemapGalleryLabelContainer">
+									<span alt= Google Satellite" title="Google Satellite">
+										Google Satellite
+									</span>
+								</div>
+							</div>
+							<div id="googleHybridNode" class="esriBasemapGalleryNode">
+									<input type="image" class="esriBasemapGalleryThumbnail" src="src/images/GoogleHybrid.jpg" id="googleHybrid">
+								<div class="esriBasemapGalleryLabelContainer">
+									<span alt= Google Hybrid" title="Google Hybrid">
+										Google Hybrid
+									</span>
+								</div>
+							</div>
+							<div id="googleTerrainNode" class="esriBasemapGalleryNode">
+									<input type="image" class="esriBasemapGalleryThumbnail" src="src/images/GoogleTerrain.jpg" id="googleTerrain">
+								<div class="esriBasemapGalleryLabelContainer">
+									<span alt= Google Terrain" title="Google Terrain">
+										Google Terrain
+									</span>
+								</div>
+							</div>
+						</div>
+						<br/></br/>
 						<button id="btnCloseBasemap" data-dismiss="modal">Close the Basemap Window</button>
 					</div>
 				</div>
@@ -461,7 +495,7 @@
 								<em>NOTE: Some layers (depending on the data source and your network speed) may take some time to render.</em></p>
 								
 								<h4><i class="glyphicon glyphicon-globe"></i> Change the Basemap</h4>
-                <p>You may select from a number of basemaps including aerial imagery, terrain, topographic and street maps.</p>
+                <p>You may select from a number of basemaps including ArcGIS aerial imagery, terrain, topographic and street maps and Google roads, satellite, hybrid, and terrain.  When creating a PDF, please choose a non-Google basemap.</p>
 								
 								<h4><i class="glyphicon glyphicon-search"></i> Place or Coordinate Search</h4>
                 <p>Type a place into the place search box or coordinates in the longitude/latitude boxes and click <em>Go/Go to Coordinates</em>.  The map will automatically zoom to the location. Coordinates will be labeled with the longitude/latitude. You may be use the clear buttons to clear the points graphics off the map.</p>
@@ -479,7 +513,7 @@
                 <h4><i class="glyphicon glyphicon-envelope"></i> Contact Us</h4>
                 <p>Have a question/comment/complaint about the Map Center? <a href="https://fishandgame.idaho.gov/ifwis/portal/contact#huntplanner" title="Send us a note">Contact Us</a>! Any feedback (good or bad) is greatly appreciated.</p>
                 
-                <h4><i class="glyphicon glyphicon-thumbs-down"></i> Not a Fan?</h4>
+                <h4><i class="glyphicon glyphicon-asterisk"></i> Help Us Improve!</h4>
                 <p>While we work out the kinks in the new Map Center, we will keep <a href="http://fishandgame.idaho.gov/ifwis/huntplanner/mapcenter-classic" title="The Old Map Center">the old version</a> operational.  We will be phasing this out, so please <a href="https://fishandgame.idaho.gov/ifwis/portal/contact#huntplanner" title="Send us a note">let us know</a> why specifically you prefer the old version, so we may incorporate these features into the new release. Based off your comments we've already made a number of improvements!  Keep them coming!</p>
 								<button id="btnCloseHelp" data-dismiss="modal">Close the How To Window</button>
 					</div>
