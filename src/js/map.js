@@ -5,6 +5,7 @@ require(["esri/map",
 	"esri/dijit/BasemapLayer",
 	"esri/dijit/Basemap",
 	"esri/dijit/BasemapGallery",
+	"agsjs/layers/GoogleMapsLayer",
 	"esri/arcgis/utils",
 	"esri/layers/FeatureLayer",
 	"esri/layers/GraphicsLayer", 
@@ -45,7 +46,7 @@ require(["esri/map",
 	"dijit/form/Button",
 	"dojo/fx",
 	"dojo/domReady!"], 
-	function(Map, LocateButton, Scalebar, webMercatorUtils, BasemapLayer, Basemap, BasemapGallery, arcgisUtils, FeatureLayer, GraphicsLayer, ArcGISDynamicMapServiceLayer, ImageParameters, Geocoder, LegendLayer, GeometryService, Measurement, Draw, Graphic, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, TextSymbol, Color, Font, PrintParameters, PrintTemplate, PrintTask, InfoTemplate, Multipoint, PictureMarkerSymbol, Popup, PopupTemplate, QueryTask, Query, TOC, connect, dom, domClass, domConstruct, parser, registry, on, query, BootstrapMap) {
+	function(Map, LocateButton, Scalebar, webMercatorUtils, BasemapLayer, Basemap, BasemapGallery, GoogleMapsLayer, arcgisUtils, FeatureLayer, GraphicsLayer, ArcGISDynamicMapServiceLayer, ImageParameters, Geocoder, LegendLayer, GeometryService, Measurement, Draw, Graphic, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, TextSymbol, Color, Font, PrintParameters, PrintTemplate, PrintTask, InfoTemplate, Multipoint, PictureMarkerSymbol, Popup, PopupTemplate, QueryTask, Query, TOC, connect, dom, domClass, domConstruct, parser, registry, on, query, BootstrapMap) {
 		
 
 		// call the parser to create the dijit layout dijits
@@ -126,12 +127,22 @@ require(["esri/map",
 		//add the basemap gallery, in this case we'll display maps from ArcGIS.com including bing maps
 		basemapGallery = new BasemapGallery({
 			showArcGISBasemaps: true,
-			map: map
+			map: map,
 		}, "basemapDiv");
 		basemapGallery.startup();
 		
 		basemapGallery.on("error", function(msg) {
 			console.log("basemap gallery error:  ", msg);
+		});
+		
+		$("#basemapDiv").click (function(){
+			console.log("BasemapDiv Clicked");
+			map.removeLayer(googleLayer);
+			$("#basemapModal").modal('hide');
+		});
+		
+		$(".esriBasemapGalleryNode").click (function(){
+			$("#basemapModal").modal('hide');
 		});
 		
 		//Add the USA Topo basemap to the basemap gallery.
@@ -143,6 +154,45 @@ require(["esri/map",
 		});
 		basemapGallery.add(basemap);
 		
+		//Add Google Map basemap layers
+		googleLayer = new agsjs.layers.GoogleMapsLayer({
+			id: 'google',
+			apiOptions: {
+				v: '3.6' // use a specific version is recommended for production system. 
+			},
+			mapOptions: {
+				streetViewControl: false // use false if do not want street view. Default is true.
+			}
+		});
+				
+		$("#googleRoads").click (function(){
+				console.log ("Clicked Google Roads");
+				map.addLayer(googleLayer);
+				map.reorderLayer(googleLayer, 1);
+				googleLayer.setMapTypeId(agsjs.layers.GoogleMapsLayer.MAP_TYPE_ROADMAP);
+		});
+		
+		$("#googleSatellite").click (function(){
+				console.log ("Clicked Google Satellite");
+				map.addLayer(googleLayer);
+				map.reorderLayer(googleLayer, 1);
+				googleLayer.setMapTypeId(agsjs.layers.GoogleMapsLayer.MAP_TYPE_SATELLITE);
+		});
+		
+		$("#googleHybrid").click (function(){
+				console.log ("Clicked Google Hybrid");
+				map.addLayer(googleLayer);
+				map.reorderLayer(googleLayer, 1);
+				googleLayer.setMapTypeId(agsjs.layers.GoogleMapsLayer.MAP_TYPE_HYBRID);
+		});
+		
+		$("#googleTerrain").click (function(){
+				console.log ("Clicked Google Terrain");
+				map.addLayer(googleLayer);
+				map.reorderLayer(googleLayer, 1);
+				googleLayer.setMapTypeId(agsjs.layers.GoogleMapsLayer.MAP_TYPE_TERRAIN);
+		});
+						
 		//popup window template for the surface management feature layer
 		/* var surfMgmtPopupTemplate = new PopupTemplate({
 			title: "Land Management Info",
@@ -207,26 +257,26 @@ require(["esri/map",
 		);
 		
 		//add layers (or groups of layers) to the map.
-		huntLayers = new ArcGISDynamicMapServiceLayer("http://fishandgame.idaho.gov/gis/rest/services/Data/Hunting/MapServer",
+		huntLayers = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Data/Hunting/MapServer",
 			{id:"Hunt Area"});
-		adminLayers = new ArcGISDynamicMapServiceLayer("http://fishandgame.idaho.gov/gis/rest/services/Data/AdministrativeBoundaries/MapServer",
+		adminLayers = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Data/AdministrativeBoundaries/MapServer",
 			{id:"Adminstrative Boundary"});
-		surfaceMgmtLayer = new FeatureLayer("http://fishandgame.idaho.gov/gis/rest/services/Basemaps/SurfaceMgmt_WildlifeTracts/MapServer/0",
+		surfaceMgmtLayer = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/Basemaps/SurfaceMgmt_WildlifeTracts/MapServer/0",
 			{
 				id:"Surface Management",
 				opacity: 0.5
 				//outFields:["*"],
 				//infoTemplate:surfMgmtPopupTemplate
 			});
-		trailLayers = new ArcGISDynamicMapServiceLayer("http://gis2.idaho.gov/arcgis/rest/services/DPR/Idaho_Trails_Map/MapServer",
+		trailLayers = new ArcGISDynamicMapServiceLayer("https://gis2.idaho.gov/arcgis/rest/services/DPR/Idaho_Trails_Map/MapServer",
 			{id:"Trails and Roads"});
-		campgroundLayer = new FeatureLayer("http://gis2.idaho.gov/arcgis/rest/services/ADM/Campgrounds/MapServer/0",
+		campgroundLayer = new FeatureLayer("https://gis2.idaho.gov/arcgis/rest/services/ADM/Campgrounds/MapServer/0",
 			{
 				id:"Campgrounds",
 				outFields:["*"],
 				infoTemplate:campgroundPopupTemplate
 			});
-		fireLayer0 = new FeatureLayer("http://fishandgame.idaho.gov/gis/rest/services/External/InciWeb_FireClosures/MapServer/0",
+		fireLayer0 = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/External/InciWeb_FireClosures/MapServer/0",
 			{
 				id:"Fire Closure",
 				outFields:['NAME', 'URL', 'UPDATE_'],
@@ -300,6 +350,7 @@ require(["esri/map",
 		fireLayer1.hide();
 		fireLayer2.hide();
 		fireLayer3.hide();
+		map.reorderLayer(surfaceMgmtLayer, 0);
 		
 		
 		//function to get variable values from the URL to query for hunt planner hunt area.
@@ -421,7 +472,10 @@ require(["esri/map",
 				doQuery(areaID, layerID, label);
 			}
 			$("#queryLabel").text(label);
+			
+			$("#huntModal").modal('hide');
 		});
+		
 		
 		$(".target2").change(function(){
 			$("#gmu").val('420');
@@ -441,6 +495,8 @@ require(["esri/map",
 				doQuery(areaID, layerID, label);
 			}
 			$("#queryLabel").text(label);
+			
+			$("#huntModal").modal('hide');
 		});
 		
 		$(".target3").change(function(){
@@ -461,6 +517,8 @@ require(["esri/map",
 				doQuery(areaID, layerID, label);
 			}
 			$("#queryLabel").text(label);
+			
+			$("#huntModal").modal('hide');
 		});
 		
 		$("#btnClearHighlighted").click(function(){
