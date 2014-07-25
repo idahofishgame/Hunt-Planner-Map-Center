@@ -268,7 +268,7 @@ require(["esri/map",
 				//outFields:["*"],
 				//infoTemplate:surfMgmtPopupTemplate
 			});
-		trailLayers = new ArcGISDynamicMapServiceLayer("https://gis2.idaho.gov/arcgis/rest/services/DPR/Idaho_Trails_Map/MapServer",
+		trailLayers = new ArcGISDynamicMapServiceLayer("https://gis2.idaho.gov/arcgis/rest/services/DPR/Idaho_Trails_MapR/MapServer",
 			{id:"Trails and Roads"});
 		campgroundLayer = new FeatureLayer("https://gis2.idaho.gov/arcgis/rest/services/ADM/Campgrounds/MapServer/0",
 			{
