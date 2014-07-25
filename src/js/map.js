@@ -712,8 +712,8 @@ require(["esri/map",
 				new Color([165, 24, 221, .55], 1)));
 			pms.setColor(new Color([165, 24, 221, .55]));
 			pms.setSize("8");
-		var sls = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SHORTDASHDOTDOT,
-			new Color([165, 24, 221,, .55]), 3);
+		var sls = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+			new Color([165, 24, 221, .55]), 3);
 		
 		var measurement = new Measurement({
 			map: map,
