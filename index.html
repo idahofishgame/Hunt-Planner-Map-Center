@@ -46,7 +46,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-					<a class="navbar-brand" href="#">
+					<a class="navbar-brand">
 						<img class="navbar-brand-image" src="src/images/logo.png" border="0" width="30px">
 						Map Center
 					</a>
@@ -395,7 +395,8 @@
 			</div>
     </div>
 		<!-- Measurement Modal -->
-		<div class="modal fade" id="measurementModal" data-backdrop='static' tabindex="-1" style="display: none;"  aria-hidden="true">
+		<div class="modal fade" id="measurementModal" data-backdrop='static' style="display: none;"  aria-hidden="true">
+		<!-- For some reason, you cannot use tabindex="-1" with the measurement widget.  The dropdown unit menu will not work. -->
 			<div class="modal-dialog">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -413,9 +414,6 @@
 						<br/><br/>
 						<button id="btnCloseMeasurement" data-dismiss="modal">Close the Measurement Window</button>
 						<br/><br/>
-						<div id="printNote">
-							NOTE: Clear measurement results before attempt to create a PDF map
-						</div>
 					</div>
 				</div>
 			</div>
@@ -469,7 +467,7 @@
 								When the PDF is ready, it will open in a new window.
 								<br/><br/>
 								<input type="submit" id="btnPDF" value="Create PDF">
-								<span id="printStatus"></span>
+								<span id="printStatus"></span></span><img id="loadingPrint" src="http://fishandgame.idaho.gov/ifwis/images/loading.gif" style="display:none;" />
 								<br/><br/>
 								<button id="btnClosePrint" data-dismiss="modal">Close the Print Window</button>
 						</div>
@@ -545,7 +543,7 @@
 						<li><a id="legendNav2" title="Turn Layers On/Off" class="masterTooltip"><i class="glyphicon glyphicon-list"></i></a></li>
 						<li><a id="basemapNav2" title="Change the Basemap" class="masterTooltip"><i class="glyphicon glyphicon-globe"></i></a></li>
 						<li><a id="geosearchNav2" title="Place or Coordinate Search" class="masterTooltip"><i class="glyphicon glyphicon-search"></i></a></li>
-						<li><a id="measurementNav2" title="Measurements & Coordinates" class="masterTooltip"><i class="glyphicon glyphicon-resize-vertical"></i></a></li>
+						<li><a id="measurementNav2" title="Measurements & Coordinates" class="masterTooltip"><i class="glyphicon glyphicon-screenshot"></i></a></li>
 						<li><a id="drawNav2" title="Draw On the Map" class="masterTooltip"><i class="glyphicon glyphicon-pencil"></i></a></li>
 						<li><a id="pdfNav2" title="Create PDF Map" class="masterTooltip"><i class="glyphicon glyphicon-print"></i></a></li>
 						<li><a id="helpNav2" title="How To..." class="masterTooltip"><i class="glyphicon glyphicon-question-sign"></i></a></li>
