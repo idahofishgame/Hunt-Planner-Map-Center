@@ -854,6 +854,7 @@ require(["esri/map",
 		printParams.map = map;
 		var status = dojo.byId("printStatus");
 		status.innerHTML = "Creating PDF Map...";
+		$("#loadingPrint").show();
 		
 	var template = new PrintTemplate();
 	var printTitle = $("#txtTitle").val();
@@ -872,13 +873,15 @@ require(["esri/map",
         console.log("response = " + response.url);       
         status.innerHTML = "";
 		    //open the map PDF or image in a new browser window.
-				var newUrl = response.url.replace("sslifwisiis","fishandgame.idaho.gov");
+				window.open(response.url.replace("sslifwisiis","fishandgame.idaho.gov"));
+				/* var newUrl = response.url.replace("sslifwisiis","fishandgame.idaho.gov");
         var childWindow = window.open(newUrl);
 				childWindow.onload = function(){
 					console.log("Child window loaded");
 					childWindow.location.reload();
-				}
+				} */
 				$("#pdfModal").modal('hide');
+				$("#loadingPrint").hide();
       });
 	  
       deferred.addErrback(function (error) {
