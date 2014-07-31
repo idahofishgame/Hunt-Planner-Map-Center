@@ -268,7 +268,7 @@ require(["esri/map",
 				//outFields:["*"],
 				//infoTemplate:surfMgmtPopupTemplate
 			});
-		trailLayers = new ArcGISDynamicMapServiceLayer("https://gis2.idaho.gov/arcgis/rest/services/DPR/Idaho_Trails_MapR/MapServer",
+		trailLayers = new ArcGISDynamicMapServiceLayer("http://gis2.idaho.gov/arcgis/rest/services/DPR/IDTrailsSimple/MapServer",
 			{id:"Trails and Roads"});
 		campgroundLayer = new FeatureLayer("https://gis2.idaho.gov/arcgis/rest/services/ADM/Campgrounds/MapServer/0",
 			{
@@ -296,7 +296,7 @@ require(["esri/map",
 		//add the Table of Contents.  Layers can be toggled on/off. Symbology is displayed.  Each "layer group" has a transparency slider.
 		map.on('layers-add-result', function(evt){
 			// overwrite the default visibility of service. TOC will honor the overwritten value.
-			trailLayers.setVisibleLayers([1,4,5,6,7,8,9,10,11,12,13]);
+			trailLayers.setVisibleLayers([2,3,4,5,6,7,8,9,10,11]);
 				toc = new TOC({
 					map: map,
 					layerInfos: [{
@@ -873,13 +873,10 @@ require(["esri/map",
         console.log("response = " + response.url);       
         status.innerHTML = "";
 		    //open the map PDF or image in a new browser window.
-				window.open(response.url.replace("sslifwisiis","fishandgame.idaho.gov"));
-				/* var newUrl = response.url.replace("sslifwisiis","fishandgame.idaho.gov");
-        var childWindow = window.open(newUrl);
-				childWindow.onload = function(){
-					console.log("Child window loaded");
-					childWindow.location.reload();
-				} */
+				var PDFwindow = window.open(response.url.replace("sslifwisiis","fishandgame.idaho.gov"));
+				if (typeof(PDFwindow) == 'undefined') {
+					alert("Your browser tried to open the PDF in a new window.  Although this is a safe file, your security settings prevented it from being opened in a new window. Please disable your pop-up blocker and try creating a PDF again.");
+				}
 				$("#pdfModal").modal('hide');
 				$("#loadingPrint").hide();
       });
