@@ -1,4 +1,5 @@
-require(["esri/map",
+require(["esri/urlUtils",
+	"esri/map",
 	"esri/dijit/LocateButton",
 	"esri/dijit/Scalebar",
 	"esri/geometry/webMercatorUtils",
@@ -46,9 +47,17 @@ require(["esri/map",
 	"dijit/form/Button",
 	"dojo/fx",
 	"dojo/domReady!"], 
-	function(Map, LocateButton, Scalebar, webMercatorUtils, BasemapLayer, Basemap, BasemapGallery, GoogleMapsLayer, arcgisUtils, FeatureLayer, GraphicsLayer, ArcGISDynamicMapServiceLayer, ImageParameters, Geocoder, LegendLayer, GeometryService, Measurement, Draw, Graphic, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, TextSymbol, Color, Font, PrintParameters, PrintTemplate, PrintTask, InfoTemplate, Multipoint, PictureMarkerSymbol, Popup, PopupTemplate, QueryTask, Query, TOC, connect, dom, domClass, domConstruct, parser, registry, on, query, BootstrapMap) {
+	function(urlUtils, Map, LocateButton, Scalebar, webMercatorUtils, BasemapLayer, Basemap, BasemapGallery, GoogleMapsLayer, arcgisUtils, FeatureLayer, GraphicsLayer, ArcGISDynamicMapServiceLayer, ImageParameters, Geocoder, LegendLayer, GeometryService, Measurement, Draw, Graphic, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, TextSymbol, Color, Font, PrintParameters, PrintTemplate, PrintTask, InfoTemplate, Multipoint, PictureMarkerSymbol, Popup, PopupTemplate, QueryTask, Query, TOC, connect, dom, domClass, domConstruct, parser, registry, on, query, BootstrapMap) {
 		
-
+	// Proxy settings
+		esriConfig.defaults.io.proxyUrl = "http://fishandgame.idaho.gov/gis_proxy/proxy.ashx?";
+        esriConfig.defaults.io.alwaysUseProxy = false;
+		
+		urlUtils.addProxyRule({
+			urlPrefix: "http://fishandgame.idaho.gov",
+			proxyUrl: "http://fishandgame.idaho.gov/gis_proxy/proxy.ashx"
+    });
+		
 		// call the parser to create the dijit layout dijits
 		parser.parse(); // note djConfig.parseOnLoad = false;
 		
@@ -870,19 +879,35 @@ require(["esri/map",
 	
 	var deferred = printTask.execute(printParams);
       deferred.addCallback(function (response){
-        console.log("response = " + response.url);       
+        //console.log("response = " + response.url);  
+				//alert(JSON.stringify(response));		
         status.innerHTML = "";
 		    //open the map PDF or image in a new browser window.
-				var PDFwindow = window.open(response.url.replace("sslifwisiis","fishandgame.idaho.gov"));
+			var new_url_for_map = response.url.replace("sslifwisiis","fishandgame.idaho.gov");
+			var currentTime = new Date();
+			var unique_PDF_url = new_url_for_map += "?ts="+currentTime.getTime();
+				console.log("response = " + unique_PDF_url);
+				//PDFwindow = window.open(new_url_for_map);
 				if (typeof(PDFwindow) == 'undefined') {
-					alert("Your browser tried to open the PDF in a new window.  Although this is a safe file, your security settings prevented it from being opened in a new window. Please disable your pop-up blocker and try creating a PDF again.");
+					//alert("Your browser tried to open the PDF in a new window.  Although this is a safe file, your security settings prevented it //from being opened in a new window. Please disable your pop-up blocker and try creating a PDF again.");
+					$("#div_for_pdf").html("<a href='" + unique_PDF_url + "'>CLICK HERE TO DOWNLOAD PDF MAP</a><br/><br/>");
+					$("#div_for_pdf a").attr('target', '_blank');
+					$("#div_for_pdf").click(function(){
+						$("#pdfModal").modal('hide');
+						$("#div_for_pdf").html("");
+					});
+				} else {
+					window.open(new_url_for_map);
+					$("#pdfModal").modal('hide');
 				}
-				$("#pdfModal").modal('hide');
 				$("#loadingPrint").hide();
+				
+				
       });
 	  
       deferred.addErrback(function (error) {
         console.log("Print Task Error = " + error);
+		
         status.innerHTML = error;
 				
       });
