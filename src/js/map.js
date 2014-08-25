@@ -323,11 +323,11 @@ require(["esri/urlUtils",
 						title: "Land Management Layer",
 						collapsed: true,
 						slider:true
-					}, {
-						layer: trailLayers,
-						title: "Motorized & Non-motorized Trails",
-						collapsed: true,
-						slider: true
+					//}, {
+						//layer: trailLayers,
+						//title: "Motorized & Non-motorized Trails",
+						//collapsed: true,
+						//slider: true
 					}, {
 						layer: campgroundLayer,
 						title: "Campgrounds",
@@ -381,6 +381,7 @@ require(["esri/urlUtils",
 			$("#gmu").val('420'); //420 = value of none
 			$("#elkzone").val('420');
 			$("#chunt").val('420');
+			$("#waterfowl").val('420');
 			var areaID = getVariableByName('val');
 			var layerID = getVariableByName('lyr');
 			var label = getVariableByName('lbl');
@@ -466,6 +467,7 @@ require(["esri/urlUtils",
 		$(".target1").change(function(){
 			$("#elkzone").val('420');
 			$("#chunt").val('420');
+			$("#waterfowl").val('420');
 			var gmu = $('#gmu').val();
 			var areaID = gmu;
 			var layerID = "0";
@@ -489,6 +491,7 @@ require(["esri/urlUtils",
 		$(".target2").change(function(){
 			$("#gmu").val('420');
 			$("#chunt").val('420');
+			$("#waterfowl").val('420');
 			var elkzone = $('#elkzone').val();
 			var areaID = elkzone;
 			var layerID = "0";
@@ -511,11 +514,35 @@ require(["esri/urlUtils",
 		$(".target3").change(function(){
 			$("#elkzone").val('420');
 			$("#gmu").val('420');
+			$("#waterfowl").val('420');
 			var chunt = $('#chunt').val();
 			var areaID = chunt;
 			var layerID = "0";
 			var label = $("#chunt option:selected").text();
 			console.log ("CHUNT ID: " + areaID + ", CHUNT LABEL: " + label);
+			
+			if (typeof label != 'undefined'){
+				label = label;
+			} else {
+				label = "Selected Hunt Area";
+			}
+			if (typeof areaID != 'undefined'){
+				doQuery(areaID, layerID, label);
+			}
+			$("#queryLabel").text(label);
+			
+			$("#huntModal").modal('hide');
+		});
+		
+		$(".target4").change(function(){
+			$("#elkzone").val('420');
+			$("#gmu").val('420');
+			$("#chunt").val('420');
+			var waterfowl = $('#waterfowl').val();
+			var areaID = waterfowl;
+			var layerID = "0";
+			var label = $("#waterfowl option:selected").text();
+			console.log ("WATERFOWL ID: " + areaID + ", WATERFOWL LABEL: " + label);
 			
 			if (typeof label != 'undefined'){
 				label = label;
@@ -536,6 +563,8 @@ require(["esri/urlUtils",
 			$("#gmu").val('420');
 			$("#elkzone").val('420');
 			$("#chunt").val('420');
+			$("#waterfowl").val('420');
+			
 		})
 
 		
