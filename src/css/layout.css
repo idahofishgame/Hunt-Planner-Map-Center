@@ -10,6 +10,7 @@ body {
 
 img.ri {
 	position: absolute;
+	z-index: 10001 !important;
 	max-width: 80%;
 	top: 10%;
 	left: 10%;
@@ -26,11 +27,11 @@ img.ri:empty {
 }
 
 @media screen and (orientation: portrait) {
-  img.ri { max-width: 90%; }
+  img.ri { max-width: 50%; }
 }
 
 @media screen and (orientation: landscape) {
-  img.ri { max-height: 90%; }
+  img.ri { max-height: 50%; }
 }
 
 .simpleGeocoder {
@@ -138,7 +139,16 @@ input[type=checkbox] {
 	font-size: 14px !important;
 }
 
-#btnPDF, #btnCoordZoom, #btnGeosearch {
+.bootstrap-select.btn-group{
+	margin-bottom:5px !important;
+	margin-left:5px !important;
+}
+
+.bootstrap-select > .btn {
+	width:80% !important;
+}
+
+#btnQuery, #btnPDF, #btnCoordZoom, #btnGeosearch {
 	color: #fff;
 	border: 1px solid transparent;
 	border-radius: 4px;
