@@ -1,5 +1,6 @@
 require(["esri/urlUtils",
 	"esri/map",
+	"esri/config",
 	"esri/dijit/LocateButton",
 	"esri/dijit/Scalebar",
 	"esri/geometry/webMercatorUtils",
@@ -11,6 +12,7 @@ require(["esri/urlUtils",
 	"esri/layers/FeatureLayer",
 	"esri/layers/GraphicsLayer", 
 	"esri/layers/ArcGISDynamicMapServiceLayer",
+	"esri/layers/WMSLayer",
 	"esri/layers/ImageParameters",
 	"esri/dijit/Geocoder",
 	"esri/tasks/LegendLayer",
@@ -47,7 +49,7 @@ require(["esri/urlUtils",
 	"dijit/form/Button",
 	"dojo/fx",
 	"dojo/domReady!"], 
-	function(urlUtils, Map, LocateButton, Scalebar, webMercatorUtils, BasemapLayer, Basemap, BasemapGallery, GoogleMapsLayer, arcgisUtils, FeatureLayer, GraphicsLayer, ArcGISDynamicMapServiceLayer, ImageParameters, Geocoder, LegendLayer, GeometryService, Measurement, Draw, Graphic, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, TextSymbol, Color, Font, PrintParameters, PrintTemplate, PrintTask, InfoTemplate, Multipoint, PictureMarkerSymbol, Popup, PopupTemplate, QueryTask, Query, TOC, connect, dom, domClass, domConstruct, parser, registry, on, query, BootstrapMap) {
+	function(urlUtils, Map, esriConfig, LocateButton, Scalebar, webMercatorUtils, BasemapLayer, Basemap, BasemapGallery, GoogleMapsLayer, arcgisUtils, FeatureLayer, GraphicsLayer, ArcGISDynamicMapServiceLayer, WMSLayer, ImageParameters, Geocoder, LegendLayer, GeometryService, Measurement, Draw, Graphic, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, TextSymbol, Color, Font, PrintParameters, PrintTemplate, PrintTask, InfoTemplate, Multipoint, PictureMarkerSymbol, Popup, PopupTemplate, QueryTask, Query, TOC, connect, dom, domClass, domConstruct, parser, registry, on, query, BootstrapMap) {
 		
 	// Proxy settings
 		esriConfig.defaults.io.proxyUrl = "http://fishandgame.idaho.gov/gis_proxy/proxy.ashx?";
@@ -145,7 +147,6 @@ require(["esri/urlUtils",
 		});
 		
 		$("#basemapDiv").click (function(){
-			console.log("BasemapDiv Clicked");
 			map.removeLayer(googleLayer);
 			$("#basemapModal").modal('hide');
 		});
@@ -175,28 +176,24 @@ require(["esri/urlUtils",
 		});
 				
 		$("#googleRoads").click (function(){
-				console.log ("Clicked Google Roads");
 				map.addLayer(googleLayer);
 				map.reorderLayer(googleLayer, 1);
 				googleLayer.setMapTypeId(agsjs.layers.GoogleMapsLayer.MAP_TYPE_ROADMAP);
 		});
 		
 		$("#googleSatellite").click (function(){
-				console.log ("Clicked Google Satellite");
 				map.addLayer(googleLayer);
 				map.reorderLayer(googleLayer, 1);
 				googleLayer.setMapTypeId(agsjs.layers.GoogleMapsLayer.MAP_TYPE_SATELLITE);
 		});
 		
 		$("#googleHybrid").click (function(){
-				console.log ("Clicked Google Hybrid");
 				map.addLayer(googleLayer);
 				map.reorderLayer(googleLayer, 1);
 				googleLayer.setMapTypeId(agsjs.layers.GoogleMapsLayer.MAP_TYPE_HYBRID);
 		});
 		
 		$("#googleTerrain").click (function(){
-				console.log ("Clicked Google Terrain");
 				map.addLayer(googleLayer);
 				map.reorderLayer(googleLayer, 1);
 				googleLayer.setMapTypeId(agsjs.layers.GoogleMapsLayer.MAP_TYPE_TERRAIN);
@@ -267,18 +264,18 @@ require(["esri/urlUtils",
 		
 		//add layers (or groups of layers) to the map.
 		huntLayers = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Data/Hunting/MapServer",
-			{id:"Hunt Area"});
+			{id:"Hunt_Area"});
 		adminLayers = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Data/AdministrativeBoundaries/MapServer",
 			{id:"Adminstrative Boundary"});
 		surfaceMgmtLayer = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/Basemaps/SurfaceMgmt_WildlifeTracts/MapServer/0",
 			{
-				id:"Surface Management",
+				id:"Surface_Management",
 				opacity: 0.5
 				//outFields:["*"],
 				//infoTemplate:surfMgmtPopupTemplate
 			});
 		trailLayers = new ArcGISDynamicMapServiceLayer("http://gis2.idaho.gov/arcgis/rest/services/DPR/IDTrailsSimple/MapServer",
-			{id:"Trails and Roads"});
+			{id:"Trails_and_Roads"});
 		campgroundLayer = new FeatureLayer("https://gis2.idaho.gov/arcgis/rest/services/ADM/Campgrounds/MapServer/0",
 			{
 				id:"Campgrounds",
@@ -287,21 +284,29 @@ require(["esri/urlUtils",
 			});
 		fireLayer0 = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/External/InciWeb_FireClosures/MapServer/0",
 			{
-				id:"Fire Closure",
+				id:"Fire_Closure",
 				outFields:['NAME', 'URL', 'UPDATE_'],
 				infoTemplate:closurePopupTemplate
 			});
-		fireLayer1 = new FeatureLayer("http://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/1",
-			{id:"Large Fires",});	
+		//fireLayer1 = new FeatureLayer("http://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/1",
+			//{id:"Large Fires",});	
 		fireLayer2 = new FeatureLayer("http://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/2",
 			{
-				id:"Fire Perimeter",
+				id:"Fire_Perimeter",
 				outFields:['acres', 'active', 'fire_name'],
 				infoTemplate:perimeterPopupTemplate
 			});
-		fireLayer3 = new FeatureLayer("http://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/3",
-			{id:"MODIS Fire Detection"});	
-		
+		//fireLayer3 = new FeatureLayer("http://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/3",
+			//{id:"MODIS_Fire_Detection"});
+		    esriConfig.defaults.io.corsEnabledServers.push("activefiremaps.fs.fed.us");
+    fireLayer3 = new WMSLayer("http://activefiremaps.fs.fed.us/cgi-bin/mapserv.exe?map=conus.map&",{
+        id:"MODIS_Fire_Detection",
+				opacity:"0.5",
+				version:"1.1.1",
+        visibleLayers:[4],
+        format:"png"
+    });
+	
 		//add the Table of Contents.  Layers can be toggled on/off. Symbology is displayed.  Each "layer group" has a transparency slider.
 		map.on('layers-add-result', function(evt){
 			// overwrite the default visibility of service. TOC will honor the overwritten value.
@@ -323,11 +328,11 @@ require(["esri/urlUtils",
 						title: "Land Management Layer",
 						collapsed: true,
 						slider:true
-					//}, {
-						//layer: trailLayers,
-						//title: "Motorized & Non-motorized Trails",
-						//collapsed: true,
-						//slider: true
+					}, {
+						layer: trailLayers,
+						title: "Roads & Trails",
+						collapsed: true,
+						slider: true
 					}, {
 						layer: campgroundLayer,
 						title: "Campgrounds",
@@ -338,12 +343,15 @@ require(["esri/urlUtils",
 				toc.startup();
 				
 				toc.on('load', function(){
-					if (console) 
-						console.log('TOC loaded');
 					//toggle layers/on by click root/layer labels (as well as checking checkbox)
 					$('.agsjsTOCServiceLayerLabel').click(function(){
 						$(this).siblings('span').children('input').click();
 					});
+					$("#TOCNode_Surface_Management .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by BLM. <a href='http://cloud.insideidaho.org/webApps/metadataViewer/default.aspx?path=G%3a%5cdata%5canonymous%5cblm%5cRLTY_SMA_PUB_24K_POLY.shp.xml' target='_blank'>Learn More</a></div>");
+					$("#TOCNode_Trails_and_Roads .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by IDPR. <a href='http://www.trails.idaho.gov/trails/' target='_blank'>Learn More</a></div>");
+					$("#TOCNode_Campgrounds .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by IDPR. <a href='http://parksandrecreation.idaho.gov/activities/camping' target='_blank'>Learn More</a></div>");
+					$("#TOCNode_fireLayers_2 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Maintained by GeoMAC. <a href='http://wildfire.usgs.gov/geomac/' target='_blank'>Learn More</a></div>");
+					$("#TOCNode_fireLayers_3 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Maintained by USFS-RSAC. <a href='http://activefiremaps.fs.fed.us/' target='_blank'>Learn More</a></div>");
 					//$('.agsjsTOCRootLayerLabel').click(function(){
 						//$(this).siblings('span').children('input').click();
 					//});
@@ -356,7 +364,6 @@ require(["esri/urlUtils",
 		trailLayers.hide();
 		campgroundLayer.hide();
 		fireLayer0.hide();
-		fireLayer1.hide();
 		fireLayer2.hide();
 		fireLayer3.hide();
 		map.reorderLayer(surfaceMgmtLayer, 0);
@@ -375,13 +382,14 @@ require(["esri/urlUtils",
 			}
 		}
 		
+		//Enable mobile scrolling by calling $('.selectpicker').selectpicker('mobile'). The method for detecting the browser is left up to the user. This enables the device's native menu for select menus.
+		if( /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ) {
+			$('.selectpicker').selectpicker('mobile');
+		}
+
 		//get the variables of areaID (hunt area, IOG area, or Access Yes! area), layerID (which layer to apply the ID query to), and label (what will appear in the legend)	
 		window.onload = function(){
-			//set the dropdown lists back to default value ("None").
-			$("#gmu").val('420'); //420 = value of none
-			$("#elkzone").val('420');
-			$("#chunt").val('420');
-			$("#waterfowl").val('420');
+			$('.selectpicker').selectpicker('val', '');
 			var areaID = getVariableByName('val');
 			var layerID = getVariableByName('lyr');
 			var label = getVariableByName('lbl');
@@ -394,17 +402,16 @@ require(["esri/urlUtils",
 			if (typeof areaID != 'undefined'){
 				doQuery(areaID, layerID, label);
 			}
-			$("#queryLabel").text(label);
+			$("#queryLabel1").text(label);
+			$("#queryLabel1Div").show();
 		}
 		
 		//toggle query layer on/off when checkbox is toggled on/off
 		$("#queryCheckbox").change(function(){	
 		 if ($(this).prop('checked')) {
 		  queryLayer.show();
-		  console.log("QUERY SHOW");
 		 } else {
 		  queryLayer.hide();
-		  console.log("QUERY HIDE");
 		 }
 		});
 		//uncheck fire Layer Checkboxes
@@ -462,133 +469,227 @@ require(["esri/urlUtils",
 					fireLayer3.hide();
 				 }
 			});		
+		
+		var gmuID, elkID, chuntID, waterfowlID, newHighlight1, newHighlight2, newHighlight3, newHighlight4;
+		
+		$("#btnQuery").click(function(){
+		
+			$("#loading").show();
 			
-		//get variable values from the dropdown lists in the hunt modal window and run doQuery.
-		$(".target1").change(function(){
-			$("#elkzone").val('420');
-			$("#chunt").val('420');
-			$("#waterfowl").val('420');
-			var gmu = $('#gmu').val();
-			var areaID = gmu;
-			var layerID = "0";
-			var label = $("#gmu option:selected").text();
-			console.log ("GMU ID: " + areaID + ", GMU LABEL: " + label);
+			queryLayer.clear();
 			
-			if (typeof label != 'undefined'){
-				label = label;
-			} else {
-				label = "Selected Hunt Area";
+			//get variable values from the dropdown lists in the hunt modal window and run doQuery.
+			if ($("#gmu").val()){
+				var gmuTypeValue = "";
+				$("#gmu option:selected").each(function() {
+					gmuTypeValue += "'" + $(this).val() + "',";
+				})
+			//Remove trailing comma
+				gmuID = gmuTypeValue.substring(0,gmuTypeValue.length - 1);
+				var layerID = "0";
+				var label0 = $("#gmu option:selected").map(function(){
+					return $(this).text();
+				}).get();
+				var label = label0.join(", ");
+				
+				if (typeof label != 'undefined'){
+					label = label;
+				} else {
+					label = "Selected Hunt Area";
+				}
+				if (typeof gmuID != 'undefined'){
+					doQuery1(gmuID, layerID, label);
+				}
+				$("#queryLabel1").text(label);
+				$("#queryLabel1Div").show();
 			}
-			if (typeof areaID != 'undefined'){
-				doQuery(areaID, layerID, label);
+			
+			if ($("#elkzone").val()){
+				var elkzoneTypeValue = "";
+				$("#elkzone option:selected").each(function() {
+					elkzoneTypeValue += "'" + $(this).val() + "',";
+				})
+			//Remove trailing comma
+				elkID = elkzoneTypeValue.substring(0,elkzoneTypeValue.length - 1);
+				var layerID = "0";
+				var label0 = $("#elkzone option:selected").map(function(){
+					return $(this).text();
+				}).get();
+				var label = "Elk Zones: " + label0.join(", ");
+				
+				if (typeof label != 'undefined'){
+					label = label;
+				} else {
+					label = "Selected Hunt Area";
+				}
+				if (typeof elkID != 'undefined'){
+					doQuery2(elkID, layerID, label);
+				}
+				$("#queryLabel2").text(label);
+				$("#queryLabel2Div").show();
 			}
-			$("#queryLabel").text(label);
+			
+			if ($("#chunt").val()){
+				var chuntTypeValue = "";
+				$("#chunt option:selected").each(function() {
+					chuntTypeValue += "'" + $(this).val() + "',";
+				})
+			//Remove trailing comma
+				chuntID = chuntTypeValue.substring(0,chuntTypeValue.length - 1);
+				var layerID = "0";
+				var label0 = $("#chunt option:selected").map(function(){
+					return $(this).text();
+				}).get();
+				var label = label0.join(", ");
+				
+				if (typeof label != 'undefined'){
+					label = label;
+				} else {
+					label = "Selected Hunt Area";
+				}
+				if (typeof chuntID != 'undefined'){
+					doQuery3(chuntID, layerID, label);
+				}
+				$("#queryLabel3").text(label);
+				$("#queryLabel3Div").show();
+			}
+			
+			if ($("#waterfowl").val()){
+				var waterfowlTypeValue = "";
+				$("#waterfowl option:selected").each(function() {
+					waterfowlTypeValue += "'" + $(this).val() + "',";
+				})
+			//Remove trailing comma
+				waterfowlID = waterfowlTypeValue.substring(0,waterfowlTypeValue.length - 1);
+				var layerID = "0";
+				var label0 = $("#waterfowl option:selected").map(function(){
+					return $(this).text();
+				}).get();
+				var label = label0.join(", ");
+				
+				if (typeof label != 'undefined'){
+					label = label;
+				} else {
+					label = "Selected Hunt Area";
+				}
+				if (typeof waterfowlID != 'undefined'){
+					doQuery4(waterfowlID, layerID, label);
+				}
+				$("#queryLabel4").text(label);
+				$("#queryLabel4Div").show();
+			}
 			
 			$("#huntModal").modal('hide');
 		});
-		
-		
-		$(".target2").change(function(){
-			$("#gmu").val('420');
-			$("#chunt").val('420');
-			$("#waterfowl").val('420');
-			var elkzone = $('#elkzone').val();
-			var areaID = elkzone;
-			var layerID = "0";
-			var label = ($("#elkzone option:selected").text()) + " Elk Zone";
-			console.log ("ELK ZONE ID: " + areaID + ", ELK ZONE LABEL: " + label);
 			
-			if (typeof label != 'undefined'){
-				label = label;
-			} else {
-				label = "Selected Hunt Area";
-			}
-			if (typeof areaID != 'undefined'){
-				doQuery(areaID, layerID, label);
-			}
-			$("#queryLabel").text(label);
-			
-			$("#huntModal").modal('hide');
-		});
-		
-		$(".target3").change(function(){
-			$("#elkzone").val('420');
-			$("#gmu").val('420');
-			$("#waterfowl").val('420');
-			var chunt = $('#chunt').val();
-			var areaID = chunt;
-			var layerID = "0";
-			var label = $("#chunt option:selected").text();
-			console.log ("CHUNT ID: " + areaID + ", CHUNT LABEL: " + label);
-			
-			if (typeof label != 'undefined'){
-				label = label;
-			} else {
-				label = "Selected Hunt Area";
-			}
-			if (typeof areaID != 'undefined'){
-				doQuery(areaID, layerID, label);
-			}
-			$("#queryLabel").text(label);
-			
-			$("#huntModal").modal('hide');
-		});
-		
-		$(".target4").change(function(){
-			$("#elkzone").val('420');
-			$("#gmu").val('420');
-			$("#chunt").val('420');
-			var waterfowl = $('#waterfowl').val();
-			var areaID = waterfowl;
-			var layerID = "0";
-			var label = $("#waterfowl option:selected").text();
-			console.log ("WATERFOWL ID: " + areaID + ", WATERFOWL LABEL: " + label);
-			
-			if (typeof label != 'undefined'){
-				label = label;
-			} else {
-				label = "Selected Hunt Area";
-			}
-			if (typeof areaID != 'undefined'){
-				doQuery(areaID, layerID, label);
-			}
-			$("#queryLabel").text(label);
-			
-			$("#huntModal").modal('hide');
-		});
-		
 		$("#btnClearHighlighted").click(function(){
 			queryLayer.clear();
 			$("#queryLabelDiv").hide();
-			$("#gmu").val('420');
-			$("#elkzone").val('420');
-			$("#chunt").val('420');
-			$("#waterfowl").val('420');
-			
+			$('.selectpicker').selectpicker('val', '');
+			$("#queryLabel1Div").hide();
+			$("#queryLabel2Div").hide();
+			$("#queryLabel3Div").hide();
+			$("#queryLabel4Div").hide();
 		})
-
 		
 		function doQuery(areaID, layerID, label) {
 			//initialize query tasks
-			newQueryTask = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/" + layerID);
+			newQueryTask1 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/" + layerID);
 
 			//initialize query
-			newQuery = new Query();
-			newQuery.returnGeometry = true;
-			newQuery.outFields = ["ID"]
+			newQuery1 = new Query();
+			newQuery1.returnGeometry = true;
+			newQuery1.outFields = ["ID"]
 			newHighlight = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
 				new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
 				new Color([154,32,219]), 3),
 				new Color([154,32,219,0.1])
 			);
-			newQuery.where = "ID = '"+ areaID + "'"
-			console.log ("Area Query " + newQuery.where + ", LayerID = " + layerID);
-			newQueryTask.execute (newQuery, showResults);
+			
+			
+			newQuery1.where = "ID IN (" + areaID + ")";
+			newQueryTask1.execute (newQuery1, showResults);
+		}
+		
+		function doQuery1(gmuID, layerID, label) {
+			//initialize query tasks
+			newQueryTask1 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/" + layerID);
+
+			//initialize query
+			newQuery1 = new Query();
+			newQuery1.returnGeometry = true;
+			newQuery1.outFields = ["ID"]
+			newHighlight1 = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+				new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+				new Color([154,32,219]), 3),
+				new Color([154,32,219,0.1])
+			);
+			
+			
+			newQuery1.where = "ID IN (" + gmuID + ")";
+			newQueryTask1.execute (newQuery1, showResults1);
+		}
+		
+		function doQuery2(elkID, layerID, label) {
+			//initialize query tasks
+			newQueryTask2 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/" + layerID);
+
+			//initialize query
+			newQuery2 = new Query();
+			newQuery2.returnGeometry = true;
+			newQuery2.outFields = ["ID"]
+			newHighlight2 = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+				new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+				new Color([0,255,255]), 3),
+				new Color([0,255,255,0.1])
+			);
+			
+			
+			newQuery2.where = "ID IN (" + elkID + ")";
+			newQueryTask2.execute (newQuery2, showResults2);
+		}
+		
+		function doQuery3(chuntID, layerID, label) {
+			//initialize query tasks
+			newQueryTask3 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/" + layerID);
+
+			//initialize query
+			newQuery3 = new Query();
+			newQuery3.returnGeometry = true;
+			newQuery3.outFields = ["ID"]
+			newHighlight3 = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+				new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+				new Color([18,237,18]), 3),
+				new Color([18,237,18,0.1])
+			);
+			
+			
+			newQuery3.where = "ID IN (" + chuntID + ")";
+			newQueryTask3.execute (newQuery3, showResults3);
+		}
+		
+		function doQuery4(waterfowlID, layerID, label) {
+			//initialize query tasks
+			newQueryTask4 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/" + layerID);
+
+			//initialize query
+			newQuery4 = new Query();
+			newQuery4.returnGeometry = true;
+			newQuery4.outFields = ["ID"]
+			newHighlight4 = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+				new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+				new Color([255,157,0]), 3),
+				new Color([255,157,0,0.1])
+			);
+			
+			
+			newQuery4.where = "ID IN (" + waterfowlID + ")";
+			newQueryTask4.execute (newQuery4, showResults4);
 		}
 			
 		function showResults(featureSet) {
 			//remove all query layer graphics
-			queryLayer.clear();
+			//queryLayer.clear();
 
 			//Performance enhancer - assign featureSet array to a single variable.
 			var newFeatures = featureSet.features;
@@ -616,6 +717,127 @@ require(["esri/urlUtils",
 			$("#queryCheckbox").prop('checked', true);
 		}
 
+		function showResults1(featureSet) {
+			//remove all query layer graphics
+			//queryLayer.clear();
+
+			//Performance enhancer - assign featureSet array to a single variable.
+			var newFeatures1 = featureSet.features;
+
+			//Loop through each feature returned
+			for (var i=0, il=newFeatures1.length; i<il; i++) {
+				//Get the current feature from the featureSet.
+				//Feature is a graphic
+				var newGraphic1 = newFeatures1[i];
+				newGraphic1.setSymbol(newHighlight1);
+
+				//Set the infoTemplate.
+				//newGraphic.setInfoTemplate(infoTemplate);
+
+				//Add graphic to the map graphics layer.
+				queryLayer.add(newGraphic1);
+				
+				//Zoom to full extent.
+				zoomToState();
+			}
+			
+			//Populate the queryLabel Div that will show the query result label in the legend.
+			$("#queryLabelDiv").show();
+			$("#queryCheckbox").prop('checked', true);
+		}
+		
+		function showResults2(featureSet) {
+			//remove all query layer graphics
+			//queryLayer.clear();
+
+			//Performance enhancer - assign featureSet array to a single variable.
+			var newFeatures2 = featureSet.features;
+
+			//Loop through each feature returned
+			for (var i=0, il=newFeatures2.length; i<il; i++) {
+				//Get the current feature from the featureSet.
+				//Feature is a graphic
+				var newGraphic2 = newFeatures2[i];
+				newGraphic2.setSymbol(newHighlight2);
+
+				//Set the infoTemplate.
+				//newGraphic.setInfoTemplate(infoTemplate);
+
+				//Add graphic to the map graphics layer.
+				queryLayer.add(newGraphic2);
+				
+				//Zoom to full extent.
+				zoomToState();
+			}
+			
+			//Populate the queryLabel Div that will show the query result label in the legend.
+			$("#queryLabelDiv").show();
+			$("#queryCheckbox").prop('checked', true);
+		}
+		
+		function showResults3(featureSet) {
+			//remove all query layer graphics
+			//queryLayer.clear();
+
+			//Performance enhancer - assign featureSet array to a single variable.
+			var newFeatures3 = featureSet.features;
+
+			//Loop through each feature returned
+			for (var i=0, il=newFeatures3.length; i<il; i++) {
+				//Get the current feature from the featureSet.
+				//Feature is a graphic
+				var newGraphic3 = newFeatures3[i];
+				newGraphic3.setSymbol(newHighlight3);
+
+				//Set the infoTemplate.
+				//newGraphic.setInfoTemplate(infoTemplate);
+
+				//Add graphic to the map graphics layer.
+				queryLayer.add(newGraphic3);
+				
+				//Zoom to full extent.
+				zoomToState();
+			}
+			//Populate the queryLabel Div that will show the query result label in the legend.
+			$("#queryLabelDiv").show();
+			$("#queryCheckbox").prop('checked', true);
+		}
+		
+		function showResults4(featureSet) {
+			//remove all query layer graphics
+			//queryLayer.clear();
+
+			//Performance enhancer - assign featureSet array to a single variable.
+			var newFeatures4 = featureSet.features;
+
+			//Loop through each feature returned
+			for (var i=0, il=newFeatures4.length; i<il; i++) {
+				//Get the current feature from the featureSet.
+				//Feature is a graphic
+				var newGraphic4 = newFeatures4[i];
+				newGraphic4.setSymbol(newHighlight4);
+
+				//Set the infoTemplate.
+				//newGraphic.setInfoTemplate(infoTemplate);
+
+				//Add graphic to the map graphics layer.
+				queryLayer.add(newGraphic4);
+				
+				//Zoom to full extent.
+				zoomToState();
+			}
+			
+			//Populate the queryLabel Div that will show the query result label in the legend.
+			$("#queryLabelDiv").show();
+			$("#queryCheckbox").prop('checked', true);
+		}
+		
+		function zoomToState(){
+			var stateExtent = new esri.geometry.Extent(-119.925, 40.439, -109.137, 50.199);
+			map.setExtent(stateExtent);
+			$("#loading").hide();
+		};
+		
 		// Create geocoder widget
 		var geocoder = new Geocoder({
 			maxLocations: 10,
@@ -680,7 +902,6 @@ require(["esri/urlUtils",
 			// Graphic components
 			attributes = { address:place.address, lat:pt.getLatitude().toFixed(2), lon:pt.getLongitude().toFixed(2) };   
 			infoTemplate = new InfoTemplate("${address}","Latitude: ${lat}<br/>Longitude: ${lon}");
-			console.log("placeLayer loaded");
 			graphic = new Graphic(pt,symbol,attributes,infoTemplate);
 			// Add to map
 			placeLayer.add(graphic);  
@@ -729,7 +950,6 @@ require(["esri/urlUtils",
 			labelSymbol.setHorizontalAlignment("left");
 			labelSymbol.setVerticalAlignment("middle");
 			labelSymbol.setOffset(17, 0);
-			console.log("zoomToLabel: " + longitude + ", " + latitude);
 			zoomToGraphic = new Graphic(pt, symbol);
 			zoomToLabel = new Graphic(pt, labelSymbol);
 			zoomToLayer.add(zoomToGraphic);
@@ -765,7 +985,6 @@ require(["esri/urlUtils",
 		});*/
 		
 		measurement.on("measure-end", function () {
-			console.log(measurement.activeTool);
 			measurement.setTool(measurement.activeTool, false);
 			var resultValue = measurement.resultValue.domNode.innerHTML;
 			var copyResultValue = document.getElementById('Results');
@@ -795,7 +1014,6 @@ require(["esri/urlUtils",
 		function activateTool() {
 			var tool;
 			/* if (this.label === "Add Text") {
-			console.log ("Add Text");
 			toolbar.activate(Draw.POINT);
 			} else { */
 			tool = this.label.toUpperCase().replace(/ /g, "_");
@@ -849,7 +1067,6 @@ require(["esri/urlUtils",
 			//change the tooltip text for the Draw.POINT tool.
 			esri.bundle.toolbars.draw.addPoint = "Click to add text to the map.";
 			pointTool = new Draw(map);
-			console.log("Activate point tool");
 			pointTool.activate(Draw.POINT);
 			pointTool.on("draw-end", addText);
 		}
@@ -879,7 +1096,6 @@ require(["esri/urlUtils",
 		
 	//Create PDF using PrintTask	
   $("#btnPDF").click (function(){
-		console.log("Start Printing");
     submitPrint(); 
   });
 	
@@ -891,7 +1107,7 @@ require(["esri/urlUtils",
 	var printParams = new PrintParameters();
 		printParams.map = map;
 		var status = dojo.byId("printStatus");
-		status.innerHTML = "Creating PDF Map...";
+		status.innerHTML = "Creating Map...";
 		$("#loadingPrint").show();
 		
 	var template = new PrintTemplate();
@@ -899,27 +1115,30 @@ require(["esri/urlUtils",
 	template.layoutOptions = {
 		"titleText": printTitle
 	};
-	template.format = "PDF";
-	template.layout = "Custom_IDFG_PrintTemplate_Landscape_8x11";
+	var format = $("#format").val();
+	template.format = format;
+	var layout = $("#layout").val();
+	template.layout = layout;
+	template.exportOptions = {
+		dpi: 300
+	};
 	printParams.template = template;
 	
-	var printServiceUrl ='https://fishandgame.idaho.gov/gis/rest/services/CustomIDFG_WebExportWebMapTask/GPServer/Export%20Web%20Map';
+	var printServiceUrl ='https://fishandgame.idaho.gov/gis/rest/services/Custom_IDFG_ExportWebMapTask/GPServer/Export%20Web%20Map';
   var printTask = new esri.tasks.PrintTask(printServiceUrl);	
 	
 	var deferred = printTask.execute(printParams);
-      deferred.addCallback(function (response){
-        //console.log("response = " + response.url);  
+      deferred.addCallback(function (response){  
 				//alert(JSON.stringify(response));		
         status.innerHTML = "";
 		    //open the map PDF or image in a new browser window.
 			var new_url_for_map = response.url.replace("sslifwisiis","fishandgame.idaho.gov");
 			var currentTime = new Date();
 			var unique_PDF_url = new_url_for_map += "?ts="+currentTime.getTime();
-				console.log("response = " + unique_PDF_url);
 				//PDFwindow = window.open(new_url_for_map);
 				if (typeof(PDFwindow) == 'undefined') {
 					//alert("Your browser tried to open the PDF in a new window.  Although this is a safe file, your security settings prevented it //from being opened in a new window. Please disable your pop-up blocker and try creating a PDF again.");
-					$("#div_for_pdf").html("<a href='" + unique_PDF_url + "'>CLICK HERE TO DOWNLOAD PDF MAP</a><br/><br/>");
+					$("#div_for_pdf").html("<a href='" + unique_PDF_url + "'>CLICK HERE TO DOWNLOAD YOUR MAP</a><br/><br/>");
 					$("#div_for_pdf a").attr('target', '_blank');
 					$("#div_for_pdf").click(function(){
 						$("#pdfModal").modal('hide');
@@ -1069,7 +1288,6 @@ require(["esri/urlUtils",
 				$('#lg-menu').toggleClass('#sidebar hidden-xs').toggleClass('#sidebar visible-xs');
 				$('#xs-menu').toggleClass('#sidebar visible-xs').toggleClass('#sidebar hidden-xs');
 				/*$('#btnShow').toggle();*/
-		});
-			
+		});			
 	});
-});
+})
