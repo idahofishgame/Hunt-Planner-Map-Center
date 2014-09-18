@@ -252,11 +252,11 @@
 						<div id="queryLabelDiv" class="agsjsTOCNode" style="display: none;">
 							<div class="agsjsTOCServiceLayer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 15px;">
 								<span class="agsjsTOCContent" data-dojo-attach-point="contentNode">
-									<p style="font-size:15px; margin-left:28px; margin-bottom:-5px"> Highlighted Hunt Areas </p>
 									<span data-dojo-attach-point="checkContainerNode">
-										<input id="queryCheckbox" type="checkbox"></input>
+										<input id="queryCheckbox" type="checkbox" style="margin-left:-10px;" ></input>
 									</span>
-									<div id="queryLabel1Div"  style="display: none; margin-left:27px; margin-top:-20px">
+									<label for="queryCheckbox" style="font-size:15px; margin-bottom:5px"> Highlighted Hunt Areas </label>
+									<div id="queryLabel1Div"  style="display: none; margin-left:27px;">
 										<img class="agsjsTOCIcon" data-dojo-attach-point="iconNode" src="src/images/queryIMG.png"/>
 										<span id="queryLabel1" class="agsjsTOCServiceLayerLabel" data-dojo-attach-point="labelNode"></span>
 									</div>
@@ -531,7 +531,7 @@
                <strong>Use the toolbar located on the lefthand side of the map to modify the maps appearance and access tools for measuring, drawing and printing.</strong>
 								
 								<h4><i class="glyphicon glyphicon-flash"></i> Highlight a Hunt Area</h4>
-                <p>Select a single or multiple hunt areas from the dropdown lists and the map will highlight the boundary(ies).</p>
+                <p>Select a hunt area from the list and the map will zoom and highlight the boundary in purple.</p>
 
 								<h4><i class="glyphicon glyphicon-list"></i> Turn Layers On/Off</h4>
                 <p>Using the checkboxes, you may turn on and off layers of administrative boundaries, land management overlay, trails, campgrounds and wildfire activity.  Use the slider above each layer group to modify the transparency.<br/>								

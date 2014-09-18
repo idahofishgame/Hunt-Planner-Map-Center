@@ -477,6 +477,10 @@ require(["esri/urlUtils",
 			$("#loading").show();
 			
 			queryLayer.clear();
+			$("#queryLabel1Div").hide();
+			$("#queryLabel2Div").hide();
+			$("#queryLabel3Div").hide();
+			$("#queryLabel4Div").hide();
 			
 			//get variable values from the dropdown lists in the hunt modal window and run doQuery.
 			if ($("#gmu").val()){
