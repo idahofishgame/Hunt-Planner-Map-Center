@@ -1,6 +1,7 @@
 require(["esri/urlUtils",
 	"esri/map",
 	"esri/config",
+	"esri/SpatialReference",
 	"esri/dijit/LocateButton",
 	"esri/dijit/Scalebar",
 	"esri/geometry/webMercatorUtils",
@@ -29,7 +30,8 @@ require(["esri/urlUtils",
 	"esri/tasks/PrintParameters",
 	"esri/tasks/PrintTemplate",
 	"esri/tasks/PrintTask",
-	"esri/InfoTemplate", 
+	"esri/InfoTemplate",
+	"esri/geometry/Point",
 	"esri/geometry/Multipoint", 
 	"esri/symbols/PictureMarkerSymbol",
 	"esri/dijit/Popup",
@@ -49,19 +51,20 @@ require(["esri/urlUtils",
 	"dijit/form/Button",
 	"dojo/fx",
 	"dojo/domReady!"], 
-	function(urlUtils, Map, esriConfig, LocateButton, Scalebar, webMercatorUtils, BasemapLayer, Basemap, BasemapGallery, GoogleMapsLayer, arcgisUtils, FeatureLayer, GraphicsLayer, ArcGISDynamicMapServiceLayer, WMSLayer, ImageParameters, Geocoder, LegendLayer, GeometryService, Measurement, Draw, Graphic, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, TextSymbol, Color, Font, PrintParameters, PrintTemplate, PrintTask, InfoTemplate, Multipoint, PictureMarkerSymbol, Popup, PopupTemplate, QueryTask, Query, TOC, connect, dom, domClass, domConstruct, parser, registry, on, query, BootstrapMap) {
+	function(urlUtils, Map, esriConfig, SpatialReference, LocateButton, Scalebar, webMercatorUtils, BasemapLayer, Basemap, BasemapGallery, GoogleMapsLayer, arcgisUtils, FeatureLayer, GraphicsLayer, ArcGISDynamicMapServiceLayer, WMSLayer, ImageParameters, Geocoder, LegendLayer, GeometryService, Measurement, Draw, Graphic, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, TextSymbol, Color, Font, PrintParameters, PrintTemplate, PrintTask, InfoTemplate, Point, Multipoint, PictureMarkerSymbol, Popup, PopupTemplate, QueryTask, Query, TOC, connect, dom, domClass, domConstruct, parser, registry, on, query, BootstrapMap) {
 		
-	// Proxy settings
-		esriConfig.defaults.io.proxyUrl = "http://fishandgame.idaho.gov/gis_proxy/proxy.ashx?";
-        esriConfig.defaults.io.alwaysUseProxy = false;
+		//Proxy settings
+		esriConfig.defaults.io.proxyUrl = "http://fishandgame.idaho.gov/ifwis/gis_proxy/proxy.ashx?";
+		esriConfig.defaults.io.alwaysUseProxy = false;
 		
 		urlUtils.addProxyRule({
 			urlPrefix: "http://fishandgame.idaho.gov",
-			proxyUrl: "http://fishandgame.idaho.gov/gis_proxy/proxy.ashx"
+			proxyUrl: "http://fishandgame.idaho.gov/ifwis/gis_proxy/proxy.ashx"
     });
 		
 		// call the parser to create the dijit layout dijits
 		parser.parse(); // note djConfig.parseOnLoad = false;
+
 		
 		//create a popup div
 		var popup = Popup({
@@ -99,8 +102,7 @@ require(["esri/urlUtils",
 		});
 		
 		var placeLayer, zoomToLayer, zoomToLabelLayer, drawToolbarLayer, drawTextLayer;
-		
-		 map.on("load", function() {
+		map.on("load", function() {
 		//after map loads, connect to listen to mouse move & drag events
 			map.on("mouse-move", showCoordinates);
 			map.on("mouse-drag", showCoordinates);
@@ -122,7 +124,7 @@ require(["esri/urlUtils",
 			map.reorderLayer(drawTextLayer,1);
 		});
 		
-		//hide the loading icon
+		//hide the loading icon after the window has loaded.
 		$(window).load(function(){
 			$("#loading").hide();
 		});
@@ -132,7 +134,7 @@ require(["esri/urlUtils",
 			//the map is in web mercator but display coordinates in geographic (lat, long)
 			var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
 			//display mouse coordinates
-			dom.byId("info").innerHTML = mp.x.toFixed(3) + ", " + mp.y.toFixed(3);
+			$("#info").html(mp.x.toFixed(3) + ", " + mp.y.toFixed(3));
 		}
 		
 		//add the basemap gallery, in this case we'll display maps from ArcGIS.com including bing maps
@@ -147,6 +149,7 @@ require(["esri/urlUtils",
 		});
 		
 		$("#basemapDiv").click (function(){
+			//If a google basemap was previously selected, remove it to see the esri basemap (google maps are ' on top of' esri maps)
 			map.removeLayer(googleLayer);
 			$("#basemapModal").modal('hide');
 		});
@@ -155,7 +158,7 @@ require(["esri/urlUtils",
 			$("#basemapModal").modal('hide');
 		});
 		
-		//Add the USA Topo basemap to the basemap gallery.
+		//Add the USA Topo basemap to the basemap gallery. It is not part of the gallery by default.  You can add other esri or custom basemaps.
 		var layer = new esri.dijit.BasemapLayer({url:"http://services.arcgisonline.com/ArcGIS/rest/services/USA_Topo_Maps/MapServer"});
 		var basemap = new esri.dijit.Basemap({
 			layers:[layer],
@@ -163,7 +166,7 @@ require(["esri/urlUtils",
 			thumbnailUrl:"src/images/usa_topo.jpg"
 		});
 		basemapGallery.add(basemap);
-		
+
 		//Add Google Map basemap layers
 		googleLayer = new agsjs.layers.GoogleMapsLayer({
 			id: 'google',
@@ -198,15 +201,6 @@ require(["esri/urlUtils",
 				map.reorderLayer(googleLayer, 1);
 				googleLayer.setMapTypeId(agsjs.layers.GoogleMapsLayer.MAP_TYPE_TERRAIN);
 		});
-						
-		//popup window template for the surface management feature layer
-		/* var surfMgmtPopupTemplate = new PopupTemplate({
-			title: "Land Management Info",
-			description: "{AGNCY_NAME}",
-			fieldInfos:[{
-				fieldName: "AGNCY_NAME", visible: true
-				}]
-			}); */
 
 		//popup window template for the Campground feature layer
 		var campgroundPopupTemplate = new PopupTemplate({
@@ -271,8 +265,6 @@ require(["esri/urlUtils",
 			{
 				id:"Surface_Management",
 				opacity: 0.5
-				//outFields:["*"],
-				//infoTemplate:surfMgmtPopupTemplate
 			});
 		trailLayers = new ArcGISDynamicMapServiceLayer("http://gis2.idaho.gov/arcgis/rest/services/DPR/IDTrailsSimple/MapServer",
 			{id:"Trails_and_Roads"});
@@ -287,18 +279,14 @@ require(["esri/urlUtils",
 				id:"Fire_Closure",
 				outFields:['NAME', 'URL', 'UPDATE_'],
 				infoTemplate:closurePopupTemplate
-			});
-		//fireLayer1 = new FeatureLayer("http://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/1",
-			//{id:"Large Fires",});	
+			});	
 		fireLayer2 = new FeatureLayer("http://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/2",
 			{
 				id:"Fire_Perimeter",
 				outFields:['acres', 'active', 'fire_name'],
 				infoTemplate:perimeterPopupTemplate
 			});
-		//fireLayer3 = new FeatureLayer("http://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/3",
-			//{id:"MODIS_Fire_Detection"});
-		    esriConfig.defaults.io.corsEnabledServers.push("activefiremaps.fs.fed.us");
+		esriConfig.defaults.io.corsEnabledServers.push("activefiremaps.fs.fed.us");
     fireLayer3 = new WMSLayer("http://activefiremaps.fs.fed.us/cgi-bin/mapserv.exe?map=conus.map&",{
         id:"MODIS_Fire_Detection",
 				opacity:"0.5",
@@ -352,14 +340,14 @@ require(["esri/urlUtils",
 					$("#TOCNode_Campgrounds .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by IDPR. <a href='http://parksandrecreation.idaho.gov/activities/camping' target='_blank'>Learn More</a></div>");
 					$("#TOCNode_fireLayers_2 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Maintained by GeoMAC. <a href='http://wildfire.usgs.gov/geomac/' target='_blank'>Learn More</a></div>");
 					$("#TOCNode_fireLayers_3 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Maintained by USFS-RSAC. <a href='http://activefiremaps.fs.fed.us/' target='_blank'>Learn More</a></div>");
-					//$('.agsjsTOCRootLayerLabel').click(function(){
-						//$(this).siblings('span').children('input').click();
-					//});
+/* 					$('.agsjsTOCRootLayerLabel').click(function(){
+						$(this).siblings('span').children('input').click();
+					}); */
 				});
 		});
 		
 		map.addLayers([surfaceMgmtLayer, adminLayers, fireLayer3, fireLayer2, fireLayer0, huntLayers, trailLayers, campgroundLayer]);
-		adminLayers.hide(); //So none of the layers are "on" when the map loads.
+		adminLayers.hide(); //So none of the layers are "on" except the GMU layer when the map loads.
 		surfaceMgmtLayer.hide();
 		trailLayers.hide();
 		campgroundLayer.hide();
@@ -368,8 +356,12 @@ require(["esri/urlUtils",
 		fireLayer3.hide();
 		map.reorderLayer(surfaceMgmtLayer, 0);
 		
+		//Enable mobile scrolling by calling $('.selectpicker').selectpicker('mobile'). The method for detecting the browser is left up to the user. This enables the device's native menu for select menus.
+		if( /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ) {
+			$('.selectpicker').selectpicker('mobile');
+		}
 		
-		//function to get variable values from the URL to query for hunt planner hunt area.
+		//function to get variable values from the URL to query for hunt planner hunt area and/or zoom to a specific center coordinate and zoom level if using a "shared" map view link.
 		function getVariableByName(name) {
 			var query = window.location.search.substring(1);
 			var vars = query.split("&");
@@ -382,17 +374,16 @@ require(["esri/urlUtils",
 			}
 		}
 		
-		//Enable mobile scrolling by calling $('.selectpicker').selectpicker('mobile'). The method for detecting the browser is left up to the user. This enables the device's native menu for select menus.
-		if( /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ) {
-			$('.selectpicker').selectpicker('mobile');
-		}
-
-		//get the variables of areaID (hunt area, IOG area, or Access Yes! area), layerID (which layer to apply the ID query to), and label (what will appear in the legend)	
+		//get the variables of areaID (hunt area, IOG area, or Access Yes! area), layerID (which layer to apply the ID query to), and label (what will appear in the legend).
+		var areaID, layerID, label, urlZoom, urlX, urlY, homeURL, zoomLevel, centerpoint, cX, cY, newURL, extentI, extentC;	
 		window.onload = function(){
 			$('.selectpicker').selectpicker('val', '');
-			var areaID = getVariableByName('val');
-			var layerID = getVariableByName('lyr');
-			var label = getVariableByName('lbl');
+			areaID = getVariableByName('val');
+			layerID = getVariableByName('lyr');
+			label = getVariableByName('lbl');
+			urlZoom = getVariableByName('zoom');
+			urlX = getVariableByName('X');
+			urlY = getVariableByName('Y');
 			if (typeof label != 'undefined'){
 				var cleanLabel = label.split('+').join(' ');
 				label = cleanLabel;
@@ -404,7 +395,46 @@ require(["esri/urlUtils",
 			}
 			$("#queryLabel1").text(label);
 			$("#queryLabel1Div").show();
-		}
+			
+			if (typeof urlZoom != 'undefined'){
+				var point = new Point(urlX, urlY, new SpatialReference({ wkid: 4326}));
+				map.setLevel(urlZoom);
+				map.centerAt(point);
+			}
+			//Create a url for "sharing" the current map view by getting the zoom and map center coordinate variables for the current extent.
+			homeURL = window.location.href;
+			zoomLevel = map.getZoom();
+			centerpoint = webMercatorUtils.webMercatorToGeographic(map.extent.getCenter());
+			cX = parseFloat(centerpoint.x.toFixed(3));
+			cY = parseFloat(centerpoint.y.toFixed(3));
+			newURL ="?zoom=" + zoomLevel + "&X=" + cX + "&Y=" + cY;
+			//If the url contains an lyr parameter.
+			if (window.location.href.indexOf("lyr") > 0){
+				$("#viewURL").append(homeURL);
+			//If url has no lyr parameter.	
+			} else {	
+				$("#viewURL").empty();
+				homeURL = window.location.href;
+				$("#viewURL").append(homeURL + newURL);
+			}
+		};
+		
+		//On extent change, change the share url zoom and coordinate parameters and refresh the "share" url.
+		map.on("extent-change", function(){
+			if (window.location.href.indexOf("lyr") > 0){
+				$("#viewURL").empty();
+				$("#viewURL").append(homeURL);
+			} else {
+				$("#viewURL").empty();
+				homeURL = window.location.href;
+				zoomLevel = map.getZoom();
+				centerpoint = webMercatorUtils.webMercatorToGeographic(map.extent.getCenter());
+				cX = parseFloat(centerpoint.x.toFixed(3));
+				cY = parseFloat(centerpoint.y.toFixed(3));
+				newURL ="?zoom=" + zoomLevel + "&X=" + cX + "&Y=" + cY;
+				$("#viewURL").append(homeURL + newURL);
+			}
+		});
 		
 		//toggle query layer on/off when checkbox is toggled on/off
 		$("#queryCheckbox").change(function(){	
@@ -470,8 +500,7 @@ require(["esri/urlUtils",
 				 }
 			});		
 		
-		var gmuID, elkID, chuntID, waterfowlID, newHighlight1, newHighlight2, newHighlight3, newHighlight4;
-		
+		var gmuID, elkID, chuntID, waterfowlID, gameDistributionID, newHighlight1, newHighlight2, newHighlight3, newHighlight4, newHighlight5;
 		$("#btnQuery").click(function(){
 		
 			$("#loading").show();
@@ -481,6 +510,7 @@ require(["esri/urlUtils",
 			$("#queryLabel2Div").hide();
 			$("#queryLabel3Div").hide();
 			$("#queryLabel4Div").hide();
+			$("#queryLabel5Div").hide();
 			
 			//get variable values from the dropdown lists in the hunt modal window and run doQuery.
 			if ($("#gmu").val()){
@@ -583,6 +613,31 @@ require(["esri/urlUtils",
 				$("#queryLabel4Div").show();
 			}
 			
+			if ($("#gameDistribution").val()){
+				var gameDistributionTypeValue = "";
+				$("#gameDistribution option:selected").each(function() {
+					gameDistributionTypeValue += "'" + $(this).val() + "',";
+				})
+			//Remove trailing comma
+				gameDistributionID = gameDistributionTypeValue.substring(0,gameDistributionTypeValue.length - 1);
+				var layerID = "3";
+				var label0 = $("#gameDistribution option:selected").map(function(){
+					return $(this).text();
+				}).get();
+				var label = label0.join(", ") + " General Distribution";
+				
+				if (typeof label != 'undefined'){
+					label = label;
+				} else {
+					label = "Selected Game Distribution";
+				}
+				if (typeof gameDistributionID != 'undefined'){
+					doQuery5(gameDistributionID, layerID, label);
+				}
+				$("#queryLabel5").text(label);
+				$("#queryLabel5Div").show();
+			}
+			
 			$("#huntModal").modal('hide');
 		});
 			
@@ -594,6 +649,7 @@ require(["esri/urlUtils",
 			$("#queryLabel2Div").hide();
 			$("#queryLabel3Div").hide();
 			$("#queryLabel4Div").hide();
+			$("#queryLabel5Div").hide();
 		})
 		
 		function doQuery(areaID, layerID, label) {
@@ -609,7 +665,6 @@ require(["esri/urlUtils",
 				new Color([154,32,219]), 3),
 				new Color([154,32,219,0.1])
 			);
-			
 			
 			newQuery1.where = "ID IN (" + areaID + ")";
 			newQueryTask1.execute (newQuery1, showResults);
@@ -629,7 +684,6 @@ require(["esri/urlUtils",
 				new Color([154,32,219,0.1])
 			);
 			
-			
 			newQuery1.where = "ID IN (" + gmuID + ")";
 			newQueryTask1.execute (newQuery1, showResults1);
 		}
@@ -647,7 +701,6 @@ require(["esri/urlUtils",
 				new Color([0,255,255]), 3),
 				new Color([0,255,255,0.1])
 			);
-			
 			
 			newQuery2.where = "ID IN (" + elkID + ")";
 			newQueryTask2.execute (newQuery2, showResults2);
@@ -667,7 +720,6 @@ require(["esri/urlUtils",
 				new Color([18,237,18,0.1])
 			);
 			
-			
 			newQuery3.where = "ID IN (" + chuntID + ")";
 			newQueryTask3.execute (newQuery3, showResults3);
 		}
@@ -686,15 +738,29 @@ require(["esri/urlUtils",
 				new Color([255,157,0,0.1])
 			);
 			
-			
 			newQuery4.where = "ID IN (" + waterfowlID + ")";
 			newQueryTask4.execute (newQuery4, showResults4);
 		}
+
+		function doQuery5(gameDistributionID, layerID, label) {
+			//initialize query tasks
+			newQueryTask5 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/" + layerID);
+
+			//initialize query
+			newQuery5 = new Query();
+			newQuery5.returnGeometry = true;
+			newQuery5.outFields = ["ID"]
+			newHighlight5 = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+				new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+				new Color([255,0,225]), 3),
+				new Color([255,0,225,0.1])
+			);
+			
+			newQuery5.where = "ID IN (" + gameDistributionID + ")";
+			newQueryTask5.execute (newQuery5, showResults5);
+		}
 			
 		function showResults(featureSet) {
-			//remove all query layer graphics
-			//queryLayer.clear();
-
 			//Performance enhancer - assign featureSet array to a single variable.
 			var newFeatures = featureSet.features;
 
@@ -705,15 +771,14 @@ require(["esri/urlUtils",
 				var newGraphic = newFeatures[i];
 				newGraphic.setSymbol(newHighlight);
 
-				//Set the infoTemplate.
-				//newGraphic.setInfoTemplate(infoTemplate);
-
 				//Add graphic to the map graphics layer.
 				queryLayer.add(newGraphic);
 				
 				//Zoom to graphics extent.
-				var selectionExtent = esri.graphicsExtent(newFeatures);
-				map.setExtent(selectionExtent.expand(1.25), true);
+				if (urlZoom == '') {
+					var selectionExtent = esri.graphicsExtent(newFeatures);
+					map.setExtent(selectionExtent.expand(1.25), true);
+				}
 			}
 			
 			//Populate the queryLabel Div that will show the query result label in the legend.
@@ -722,9 +787,6 @@ require(["esri/urlUtils",
 		}
 
 		function showResults1(featureSet) {
-			//remove all query layer graphics
-			//queryLayer.clear();
-
 			//Performance enhancer - assign featureSet array to a single variable.
 			var newFeatures1 = featureSet.features;
 
@@ -734,9 +796,6 @@ require(["esri/urlUtils",
 				//Feature is a graphic
 				var newGraphic1 = newFeatures1[i];
 				newGraphic1.setSymbol(newHighlight1);
-
-				//Set the infoTemplate.
-				//newGraphic.setInfoTemplate(infoTemplate);
 
 				//Add graphic to the map graphics layer.
 				queryLayer.add(newGraphic1);
@@ -751,9 +810,6 @@ require(["esri/urlUtils",
 		}
 		
 		function showResults2(featureSet) {
-			//remove all query layer graphics
-			//queryLayer.clear();
-
 			//Performance enhancer - assign featureSet array to a single variable.
 			var newFeatures2 = featureSet.features;
 
@@ -763,9 +819,6 @@ require(["esri/urlUtils",
 				//Feature is a graphic
 				var newGraphic2 = newFeatures2[i];
 				newGraphic2.setSymbol(newHighlight2);
-
-				//Set the infoTemplate.
-				//newGraphic.setInfoTemplate(infoTemplate);
 
 				//Add graphic to the map graphics layer.
 				queryLayer.add(newGraphic2);
@@ -780,9 +833,6 @@ require(["esri/urlUtils",
 		}
 		
 		function showResults3(featureSet) {
-			//remove all query layer graphics
-			//queryLayer.clear();
-
 			//Performance enhancer - assign featureSet array to a single variable.
 			var newFeatures3 = featureSet.features;
 
@@ -792,9 +842,6 @@ require(["esri/urlUtils",
 				//Feature is a graphic
 				var newGraphic3 = newFeatures3[i];
 				newGraphic3.setSymbol(newHighlight3);
-
-				//Set the infoTemplate.
-				//newGraphic.setInfoTemplate(infoTemplate);
 
 				//Add graphic to the map graphics layer.
 				queryLayer.add(newGraphic3);
@@ -808,9 +855,6 @@ require(["esri/urlUtils",
 		}
 		
 		function showResults4(featureSet) {
-			//remove all query layer graphics
-			//queryLayer.clear();
-
 			//Performance enhancer - assign featureSet array to a single variable.
 			var newFeatures4 = featureSet.features;
 
@@ -821,11 +865,31 @@ require(["esri/urlUtils",
 				var newGraphic4 = newFeatures4[i];
 				newGraphic4.setSymbol(newHighlight4);
 
-				//Set the infoTemplate.
-				//newGraphic.setInfoTemplate(infoTemplate);
-
 				//Add graphic to the map graphics layer.
 				queryLayer.add(newGraphic4);
+				
+				//Zoom to full extent.
+				zoomToState();
+			}
+			
+			//Populate the queryLabel Div that will show the query result label in the legend.
+			$("#queryLabelDiv").show();
+			$("#queryCheckbox").prop('checked', true);
+		}
+		
+			function showResults5(featureSet) {
+			//Performance enhancer - assign featureSet array to a single variable.
+			var newFeatures5 = featureSet.features;
+
+			//Loop through each feature returned
+			for (var i=0, il=newFeatures5.length; i<il; i++) {
+				//Get the current feature from the featureSet.
+				//Feature is a graphic
+				var newGraphic5 = newFeatures5[i];
+				newGraphic5.setSymbol(newHighlight5);
+
+				//Add graphic to the map graphics layer.
+				queryLayer.add(newGraphic5);
 				
 				//Zoom to full extent.
 				zoomToState();
@@ -898,15 +962,15 @@ require(["esri/urlUtils",
 			new Color ([29,0,255]));
 
 		//add graphic to show geocode results
-		function addPlaceGraphic(item,symbol)  {
+				function addPlaceGraphic(item,symbol)  {
 			var place = {};
-			var attributes,infoTemplate,pt, graphic;
+			var attributes,pt, graphic;
 			pt = item.feature.geometry;
 			place.address = item.name;
 			// Graphic components
 			attributes = { address:place.address, lat:pt.getLatitude().toFixed(2), lon:pt.getLongitude().toFixed(2) };   
-			infoTemplate = new InfoTemplate("${address}","Latitude: ${lat}<br/>Longitude: ${lon}");
-			graphic = new Graphic(pt,symbol,attributes,infoTemplate);
+			//infoTemplate = new InfoTemplate("${address}","Latitude: ${lat}<br/>Longitude: ${lon}"); !!!WILL NOT PRINT IF INFOTEMPLATE IS USED!!!
+			graphic = new Graphic(pt,symbol,attributes);
 			// Add to map
 			placeLayer.add(graphic);  
 		}
@@ -934,9 +998,6 @@ require(["esri/urlUtils",
 		//zoom to the coordinate and add a graphic
 		function zoomToCoordinate(){
 			var zoomToGraphic;
-			//if(zoomToGraphic) {
-						 //zoomToLayer.remove(zoomToGraphic);
-					//}
 			var longitude = $("#longitudeInput").val();
 			var latitude = $("#latitudeInput").val();
 			var symbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 28,
@@ -983,10 +1044,6 @@ require(["esri/urlUtils",
 			pointSymbol:pms
 		}, dom.byId("measurementDiv"));
 		measurement.startup();
-		
-		/*$("#measurementModal").draggable({
-			handle:".modal-header"
-		});*/
 		
 		measurement.on("measure-end", function () {
 			measurement.setTool(measurement.activeTool, false);
@@ -1035,11 +1092,6 @@ require(["esri/urlUtils",
 			var symbol;
 			toolbar.deactivate();
 			switch (evt.geometry.type) {
-				/*case "point":
-					symbol= new TextSymbol($("#userTextBox").val()).setColor(
-						new Color([255, 0, 0])).setFont(
-						new Font("16pt").setWeight(Font.WEIGHT_BOLD)).setHorizontalAlignment("left");
-					break;*/
 				case "multipoint":
 					symbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 15,
 						new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
@@ -1089,88 +1141,101 @@ require(["esri/urlUtils",
 			drawTextLayer.add(textGraphic);
 		};
 		
-	//clear all shape graphics
-	$("#btnClearGraphic").click (function(){
-		drawToolbarLayer.clear();
-	});
-	//clear all text graphics
-	$("#btnClearText").click (function(){
-		drawTextLayer.clear();
-	});
+		//clear all shape graphics
+		$("#btnClearGraphic").click (function(){
+			drawToolbarLayer.clear();
+		});
+		//clear all text graphics
+		$("#btnClearText").click (function(){
+			drawTextLayer.clear();
+		});
+				
+		//Create PDF using PrintTask	
+		$("#btnPDF").click (function(){
+			$("#div_for_pdf").hide();
+			submitPrint(); 
+		});
 		
-	//Create PDF using PrintTask	
-  $("#btnPDF").click (function(){
-    submitPrint(); 
-  });
-	
-	$("#pdfModal").on('hidden.bs.modal', function(){
-		dojo.byId("printStatus").innerHTML = "";
-	});
+		$("#pdfModal").on('hidden.bs.modal', function(){
+			dojo.byId("printStatus").innerHTML = "";
+		});
 		
 	function submitPrint() {
-	var printParams = new PrintParameters();
+		var printParams = new PrintParameters();
 		printParams.map = map;
 		var status = dojo.byId("printStatus");
 		status.innerHTML = "Creating Map...";
 		$("#loadingPrint").show();
 		
-	var template = new PrintTemplate();
-	var printTitle = $("#txtTitle").val();
-	template.layoutOptions = {
-		"titleText": printTitle
-	};
-	var format = $("#format").val();
-	template.format = format;
-	var layout = $("#layout").val();
-	template.layout = layout;
-	template.exportOptions = {
-		dpi: 300
-	};
-	printParams.template = template;
-	
-	var printServiceUrl ='https://fishandgame.idaho.gov/gis/rest/services/Custom_IDFG_ExportWebMapTask/GPServer/Export%20Web%20Map';
-  var printTask = new esri.tasks.PrintTask(printServiceUrl);	
-	
-	var deferred = printTask.execute(printParams);
-      deferred.addCallback(function (response){  
-				//alert(JSON.stringify(response));		
-        status.innerHTML = "";
-		    //open the map PDF or image in a new browser window.
-			var new_url_for_map = response.url.replace("sslifwisiis","fishandgame.idaho.gov");
-			var currentTime = new Date();
-			var unique_PDF_url = new_url_for_map += "?ts="+currentTime.getTime();
-				//PDFwindow = window.open(new_url_for_map);
-				if (typeof(PDFwindow) == 'undefined') {
-					//alert("Your browser tried to open the PDF in a new window.  Although this is a safe file, your security settings prevented it //from being opened in a new window. Please disable your pop-up blocker and try creating a PDF again.");
-					$("#div_for_pdf").html("<a href='" + unique_PDF_url + "'>CLICK HERE TO DOWNLOAD YOUR MAP</a><br/><br/>");
-					$("#div_for_pdf a").attr('target', '_blank');
-					$("#div_for_pdf").click(function(){
-						$("#pdfModal").modal('hide');
-						$("#div_for_pdf").html("");
-					});
-				} else {
-					window.open(new_url_for_map);
-					$("#pdfModal").modal('hide');
-				}
-				$("#loadingPrint").hide();
-				
-				
-      });
-	  
-      deferred.addErrback(function (error) {
-        console.log("Print Task Error = " + error);
+		var template = new PrintTemplate();
+		var printTitle = $("#txtTitle").val();
+		template.layoutOptions = {
+			"titleText": printTitle
+		};
+		var format = $("#format").val();
+		template.format = format;
+		var layout = $("#layout").val();
+		template.layout = layout;
+		template.exportOptions = {
+			dpi: 300
+		};
+		printParams.template = template;
 		
-        status.innerHTML = error;
-				
+		var printServiceUrl ='https://fishandgame.idaho.gov/gis/rest/services/Custom_IDFG_ExportWebMapTask/GPServer/Export%20Web%20Map';
+		var printTask = new esri.tasks.PrintTask(printServiceUrl);	
+		
+		var deferred = printTask.execute(printParams);
+				deferred.addCallback(function (response){  
+					//alert(JSON.stringify(response));		
+					status.innerHTML = "";
+					//open the map PDF or image in a new browser window.
+				var new_url_for_map = response.url.replace("sslifwisiis","fishandgame.idaho.gov");
+				var currentTime = new Date();
+				var unique_PDF_url = new_url_for_map += "?ts="+currentTime.getTime();
+					//PDFwindow = window.open(new_url_for_map);
+					if (typeof(PDFwindow) == 'undefined') {
+						$("#div_for_pdf").html("<a href='" + unique_PDF_url + "'>CLICK HERE TO DOWNLOAD YOUR MAP</a><br/><br/>");
+						$("#div_for_pdf a").attr('target', '_blank');
+						$("#div_for_pdf").click(function(){
+							$("#pdfModal").modal('hide');
+							$("#div_for_pdf").html("");
+						});
+					} else {
+						window.open(new_url_for_map);
+						$("#pdfModal").modal('hide');
+					}
+					$("#div_for_pdf").show();
+					$("#loadingPrint").hide();
+					
+				});
+			
+				deferred.addErrback(function (error) {
+					console.log("Print Task Error = " + error);
+			
+					status.innerHTML = error;				
       });
 	};
 	
 	// Show modal dialog, hide nav
 	$(document).ready(function(){
-		// Close menu (THIS CODE DOESN'T SEEN NECESSARY AFTER I ADDED THE OFF-CANVAS SIDEBAR TOGGLE CODE BELOW.)
-			//$('.nav a').on('click', function(){
-			//$(".navbar-toggle").click();
-		//});
+		//populate the Game Distribution dropdown with JSON vars.
+		$.each(gameAnimalList, function(){
+			$('#gameDistribution').append('<option value="' + this.ID + '">' + this.NAME + '</option>');
+		});
+		// legend nav1 menu is selected
+		$("#legendNav1").click(function(e){
+			$("#legendCollapse").collapse('toggle');
+			// Bootstrap work-around
+			$("body").css("margin-right","0px");
+			$(".navbar").css("margin-right","0px");
+		});
+		// legend nav2 menu is selected
+		$("#legendNav2").click(function(e){
+			$("#legendCollapse").collapse('toggle');
+			// Bootstrap work-around
+			$("body").css("margin-right","0px");
+			$(".navbar").css("margin-right","0px");
+		});
 		// hunt nav1 menu is selected
 		$("#huntNav1").click(function(e){
 			$("#huntModal").modal("show"); 
@@ -1181,20 +1246,6 @@ require(["esri/urlUtils",
 		// hunt nav2 menu is selected
 		$("#huntNav2").click(function(e){
 			$("#huntModal").modal("show"); 
-			// Bootstrap work-around
-			$("body").css("margin-right","0px");
-			$(".navbar").css("margin-right","0px");
-		});
-		// legend nav1 menu is selected
-		$("#legendNav1").click(function(e){
-			$("#legendModal").modal("show"); 
-			// Bootstrap work-around
-			$("body").css("margin-right","0px");
-			$(".navbar").css("margin-right","0px");
-		});
-		// legend nav2 menu is selected
-		$("#legendNav2").click(function(e){
-			$("#legendModal").modal("show"); 
 			// Bootstrap work-around
 			$("body").css("margin-right","0px");
 			$(".navbar").css("margin-right","0px");
@@ -1279,6 +1330,20 @@ require(["esri/urlUtils",
 		// help nav2 menu is selected
 		$("#helpNav2").click(function(e){
 			$("#helpModal").modal("show"); 
+			// Bootstrap work-around
+			$("body").css("margin-right","0px");
+			$(".navbar").css("margin-right","0px");
+		});
+		// share nav1 menu is selected
+		$("#shareNav1").click(function(e){
+			$("#shareModal").modal("show"); 
+			// Bootstrap work-around
+			$("body").css("margin-right","0px");
+			$(".navbar").css("margin-right","0px");
+		});
+		// share nav2 menu is selected
+		$("#shareNav2").click(function(e){
+			$("#shareModal").modal("show"); 
 			// Bootstrap work-around
 			$("body").css("margin-right","0px");
 			$(".navbar").css("margin-right","0px");

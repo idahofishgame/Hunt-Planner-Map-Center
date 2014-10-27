@@ -1,6 +1,7 @@
 body {
   padding-top: 50px;
 	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+	font-size: 14px;
 }
 
 #mapDiv {
@@ -41,23 +42,6 @@ img.ri:empty {
 .tooltip {
 	opacity: 1 !important;
 }
-
-/* Option 2: Geosearch in nav;
-.simpleGeocoder .esriGeocoderContainer {
-	width: 180px;
-}
-.simpleGeocoder .esriGeocoder input {
-	width: 118px;
-}
-@media (max-width: 767px) {
-	.navbar-form .form-group {
-		float: left;
-	}
-	.simpleGeocoder {
-		margin-right: 7px;
-	}
-}
-*/
 
 .esriSimpleSlider{
 	top: 10px !important;
@@ -170,7 +154,7 @@ input[type=checkbox] {
 	background-image: none !important;
 }
 
-#gmu, #elkzone, #chunt, #waterfowl, #userTextBox, #longitudeInput, #latitudeInput, #txtTitle {
+#gmu, #elkzone, #chunt, #waterfowl, #gameDistribution, #userTextBox, #longitudeInput, #latitudeInput, #txtTitle {
 	margin-right: 5px;
 	border-radius: 4px;
 }
@@ -185,7 +169,7 @@ input[type=checkbox] {
 	padding: 2px 4px 4px;
 }
 
-#btnClearHighlighted, #btnCloseHighlighted, #btnCloseLegend, #btnCloseBasemap, #btnClear, #btnClearGraphic, #btnClearText, #btnClearPlace, #btnCloseSearch, #clearMeasureResults, #btnCloseMeasurement, #btnCloseDraw, #btnClosePrint, #btnCloseHelp {
+#btnClearHighlighted, .btnClose, #btnClear, #btnClearGraphic, #btnClearText, #btnClearPlace, #clearMeasureResults, #btnCloseLandDisclaimer {
 	text-align: center !important;
 	vertical-align: middle !important;
 	border: 1px solid #cccccc!important;
@@ -244,8 +228,8 @@ input[type=checkbox] {
 	webkit-box-shadow: 0 3px 20px #000;
 	box-shadow: 0 3px 20px #000;
 	font-family: 'Trebuchet MS', 'Helvetica Neue', Arial, Helvetica, sans-serif;
-	
 }
+
 .esriPopup.myTheme{
 	z-index: 55;
 }
@@ -269,30 +253,30 @@ input[type=checkbox] {
 }
 
 .esriPopup.myTheme .titleButton {
-		position: absolute !important;
-		width: 16px !important;
-		height: 16px !important;
-		cursor: pointer !important;
+	position: absolute !important;
+	width: 16px !important;
+	height: 16px !important;
+	cursor: pointer !important;
 }
 
 .esriPopup.myTheme .titleButton.close {
-		background: url('../images/Close.png') no-repeat scroll !important;
+	background: url('../images/Close.png') no-repeat scroll !important;
 }
 
 .esriPopup.myTheme .titleButton.prev{
-		background: url('../images/prev.png') no-repeat scroll !important;
+	background: url('../images/prev.png') no-repeat scroll !important;
 }
 
 .esriPopup.myTheme .titleButton.next{
-		background: url('../images/next.png') no-repeat scroll !important;
+	background: url('../images/next.png') no-repeat scroll !important;
 }
 
 .esriPopup.myTheme .titleButton.maximize {
-		background: url('../images/maximize.png') no-repeat scroll !important;
+	background: url('../images/maximize.png') no-repeat scroll !important;
 }
 
 .esriPopup.myTheme .pointer.bottom {
-		background: url('../images/pointer.png') no-repeat scroll !important;		
+	background: url('../images/pointer.png') no-repeat scroll !important;		
 }
 		
 .esriPopup.myTheme .contentPane,
@@ -303,9 +287,9 @@ input[type=checkbox] {
 }
 
 .wrapper, .row {
-   height: 100%;
-   margin-left:0;
-   margin-right:0;
+  height: 100%;
+  margin-left:0;
+  margin-right:0;
 }
 
 .wrapper:before, .wrapper:after,
@@ -335,7 +319,7 @@ input[type=checkbox] {
 
 #sidebar {
 	padding: 0px;
-	padding-top: 5px;
+	padding-top: 10px;
 }
 
 #sidebar, #sidebar a, #sidebar-footer a {
@@ -348,6 +332,32 @@ input[type=checkbox] {
 #sidebar .nav li>a:hover {
 	background-color:#677054;
 	color: #ffffff;
+}
+#sidebar .nav li>a {
+	padding-top: 5px !important;
+}
+
+.nav a {
+	cursor: pointer;
+}
+.navbar-inverse .navbar-nav > li > a { 
+	color: #A2A379; padding-right: 10px; padding-left: 10px;
+}
+
+.panel-title {
+	font-size: 14px;
+}
+
+#legendCollapse {
+	width: 100%;
+	height: 400px !important;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	color: black;
+}
+
+#legendNav1, #huntNav1, #kmlNav1, #basemapNav1, #geosearchNav1, #measurementNav1, #drawNav1, #pdfNav1, #helpNav1, #shareNav1{
+	font-size: 16px;
 }
 
 /*
