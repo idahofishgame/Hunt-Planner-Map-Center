@@ -169,7 +169,7 @@ input[type=checkbox] {
 	padding: 2px 4px 4px;
 }
 
-#btnClearHighlighted, .btnClose, #btnClear, #btnClearGraphic, #btnClearText, #btnClearPlace, #clearMeasureResults, #btnCloseLandDisclaimer {
+#btnClearHighlighted, .btnClose, #btnClear, #btnClearUpload, #btnClearGraphic, #btnClearText, #btnClearPlace, #clearMeasureResults, #btnCloseLandDisclaimer {
 	text-align: center !important;
 	vertical-align: middle !important;
 	border: 1px solid #cccccc!important;
@@ -193,6 +193,12 @@ input[type=checkbox] {
 
 .agsjsTOCContent {
 	white-space: normal !important;
+}
+
+.disclaimer{
+	font-size: 12px;
+	color: #999;
+	margin-left: 40px;
 }
 
 .starter-template {
@@ -350,13 +356,14 @@ input[type=checkbox] {
 
 #legendCollapse {
 	width: 100%;
-	height: 400px !important;
+	height: 350px !important;
 	overflow-y: scroll;
 	overflow-x: hidden;
 	color: black;
+	background-color: #F1F1F1;
 }
 
-#legendNav1, #huntNav1, #kmlNav1, #basemapNav1, #geosearchNav1, #measurementNav1, #drawNav1, #pdfNav1, #helpNav1, #shareNav1{
+#legendNav1, #huntNav1, #kmlNav1, #basemapNav1, #uploadNav1, #geosearchNav1, #measurementNav1, #drawNav1, #pdfNav1, #helpNav1, #shareNav1{
 	font-size: 16px;
 }
 

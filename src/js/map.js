@@ -1,57 +1,63 @@
-require(["esri/urlUtils",
-	"esri/map",
+﻿require([
 	"esri/config",
-	"esri/SpatialReference",
+	"esri/urlUtils",
+	"esri/map",
 	"esri/dijit/LocateButton",
 	"esri/dijit/Scalebar",
+	"esri/request",
+	"esri/geometry/scaleUtils",
+	"esri/layers/FeatureLayer",
+	"esri/renderers/SimpleRenderer",
+	"esri/symbols/PictureMarkerSymbol",
+	"esri/symbols/SimpleMarkerSymbol",
+	"esri/symbols/SimpleFillSymbol",
+	"esri/symbols/SimpleLineSymbol",
+	"esri/symbols/TextSymbol",
+	"esri/symbols/Font",
+	"esri/Color",
+	"esri/geometry/Point",
+	"esri/geometry/Multipoint", 
+	"esri/arcgis/utils",
 	"esri/geometry/webMercatorUtils",
+	"esri/layers/GraphicsLayer",
 	"esri/dijit/BasemapLayer",
 	"esri/dijit/Basemap",
 	"esri/dijit/BasemapGallery",
 	"agsjs/layers/GoogleMapsLayer",
-	"esri/arcgis/utils",
-	"esri/layers/FeatureLayer",
-	"esri/layers/GraphicsLayer", 
+	"esri/InfoTemplate",
+	"esri/dijit/Popup",
+	"esri/dijit/PopupTemplate",
 	"esri/layers/ArcGISDynamicMapServiceLayer",
 	"esri/layers/WMSLayer",
-	"esri/layers/ImageParameters",
+	"esri/tasks/QueryTask",
+	"esri/tasks/query",
+	"agsjs/dijit/TOC",
 	"esri/dijit/Geocoder",
-	"esri/tasks/LegendLayer",
 	"esri/tasks/GeometryService",
 	"esri/dijit/Measurement",
 	"esri/toolbars/draw",
 	"esri/graphic",
-	"esri/symbols/SimpleMarkerSymbol",
-	"esri/symbols/SimpleLineSymbol",
-	"esri/symbols/SimpleFillSymbol",
-	"esri/symbols/TextSymbol",
-	"esri/Color",
-	"esri/symbols/Font",
 	"esri/tasks/PrintParameters",
 	"esri/tasks/PrintTemplate",
 	"esri/tasks/PrintTask",
-	"esri/InfoTemplate",
-	"esri/geometry/Point",
-	"esri/geometry/Multipoint", 
-	"esri/symbols/PictureMarkerSymbol",
-	"esri/dijit/Popup",
-	"esri/dijit/PopupTemplate",
-	"esri/tasks/QueryTask",
-	"esri/tasks/query",
-	"agsjs/dijit/TOC",
-	"dojo/_base/connect",
 	"dojo/dom",
 	"dojo/dom-class",
 	"dojo/dom-construct",
-	"dojo/parser",
-	"dijit/registry",
+	"dojo/json",
 	"dojo/on",
+	"dojo/parser",
 	"dojo/query",
+	"dojo/sniff",
+	"dojo/_base/connect",
+	"dojo/_base/array",
+	"dojo/_base/lang",
+	"dijit/registry",
 	"application/bootstrapmap",
-	"dijit/form/Button",
-	"dojo/fx",
-	"dojo/domReady!"], 
-	function(urlUtils, Map, esriConfig, SpatialReference, LocateButton, Scalebar, webMercatorUtils, BasemapLayer, Basemap, BasemapGallery, GoogleMapsLayer, arcgisUtils, FeatureLayer, GraphicsLayer, ArcGISDynamicMapServiceLayer, WMSLayer, ImageParameters, Geocoder, LegendLayer, GeometryService, Measurement, Draw, Graphic, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, TextSymbol, Color, Font, PrintParameters, PrintTemplate, PrintTask, InfoTemplate, Point, Multipoint, PictureMarkerSymbol, Popup, PopupTemplate, QueryTask, Query, TOC, connect, dom, domClass, domConstruct, parser, registry, on, query, BootstrapMap) {
+	"dojo/domReady!"
+],
+	function (
+	esriConfig, urlUtils, Map, LocateButton, Scalebar, request, scaleUtils, FeatureLayer, SimpleRenderer, PictureMarkerSymbol, SimpleMarkerSymbol, SimpleFillSymbol, SimpleLineSymbol, TextSymbol, Font, Color, Point, Multipoint, arcgisUtils, webMercatorUtils, GraphicsLayer, BasemapLayer, Basemap, BasemapGallery, GoogleMapsLayer, InfoTemplate, Popup, PopupTemplate, ArcGISDynamicMapServiceLayer, WMSLayer, QueryTask, Query, TOC, Geocoder, GeometryService, Measurement, Draw, Graphic, PrintParameters, PrintTemplate, PrintTask, dom, domClass, domConstruct, JSON, on, parser, query, sniff, connect, arrayUtils, lang, registry, BootstrapMap
+) {
 		
 		//Proxy settings
 		esriConfig.defaults.io.proxyUrl = "http://fishandgame.idaho.gov/ifwis/gis_proxy/proxy.ashx?";
@@ -64,7 +70,12 @@ require(["esri/urlUtils",
 		
 		// call the parser to create the dijit layout dijits
 		parser.parse(); // note djConfig.parseOnLoad = false;
-
+		
+		//hide the loading icon after the window has loaded.
+		$(window).load(function(){
+			$("#loading").hide();
+			clearFileInputField(uploadForm);
+		});
 		
 		//create a popup div
 		var popup = Popup({
@@ -81,6 +92,7 @@ require(["esri/urlUtils",
 		
 		//create a domClass to customize the look of the popup window
 		domClass.add(map.infoWindow.domNode, "myTheme");
+		
 
 		//LocateButton will zoom to where you are.  If tracking is enabled and the button becomes a toggle that creates an event to watch for location changes.
 		var locateSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 20,
@@ -89,11 +101,11 @@ require(["esri/urlUtils",
 			new Color ([199,0,255, 0.8]));
 		
 		geoLocate = new LocateButton({
-        map: map,
-				symbol: locateSymbol
-				//useTracking: true
-      }, "LocateButton");
-      geoLocate.startup();
+			map: map,
+			symbol: locateSymbol
+			//useTracking: true
+    }, "LocateButton");
+    geoLocate.startup();
 		
 		//add scalebar
 		scalebar = new Scalebar({
@@ -101,14 +113,16 @@ require(["esri/urlUtils",
 			scalebarUnit: "dual"
 		});
 		
-		var placeLayer, zoomToLayer, zoomToLabelLayer, drawToolbarLayer, drawTextLayer;
+		var queryLayer, queryLabelLayer, placeLayer, zoomToLayer, zoomToLabelLayer, drawToolbarLayer, drawTextLayer;
 		map.on("load", function() {
 		//after map loads, connect to listen to mouse move & drag events
 			map.on("mouse-move", showCoordinates);
 			map.on("mouse-drag", showCoordinates);
-		//add graphics layer for the hunt areas query
+		//add graphics layer for the hunt areas queries
 			queryLayer = new GraphicsLayer();
 			map.addLayer(queryLayer);
+			queryLabelLayer = new GraphicsLayer();
+			map.addLayer(queryLabelLayer);
 		//add graphics layers for graphic outputs from the various tools (Place Search, Coordinate Search w/label, Draw shapes, Draw text)	
 			placeLayer = new GraphicsLayer();
 			map.addLayer(placeLayer);
@@ -123,11 +137,7 @@ require(["esri/urlUtils",
 			map.addLayer(drawTextLayer);
 			map.reorderLayer(drawTextLayer,1);
 		});
-		
-		//hide the loading icon after the window has loaded.
-		$(window).load(function(){
-			$("#loading").hide();
-		});
+	
 		
 		//show coordinates as the user scrolls around the map. In Desktop, it displays where ever the mouse is hovering.  In mobile, the user must tap the screen to get the coordinates.
 		function showCoordinates(evt) {
@@ -149,7 +159,7 @@ require(["esri/urlUtils",
 		});
 		
 		$("#basemapDiv").click (function(){
-			//If a google basemap was previously selected, remove it to see the esri basemap (google maps are ' on top of' esri maps)
+			//If a google basemap was previously selected, remove it to see the esri basemap (google maps are 'on top of' esri maps)
 			map.removeLayer(googleLayer);
 			$("#basemapModal").modal('hide');
 		});
@@ -167,7 +177,7 @@ require(["esri/urlUtils",
 		});
 		basemapGallery.add(basemap);
 
-		//Add Google Map basemap layers
+		//Add Google Map basemap layers to the basemap gallery.  NOTE: GOOGLE BASEMAPS WILL NOT PRINT. Make sure your users know they must select an if they are going to create a Printable Map. 
 		googleLayer = new agsjs.layers.GoogleMapsLayer({
 			id: 'google',
 			apiOptions: {
@@ -215,7 +225,7 @@ require(["esri/urlUtils",
 				fieldName: "Type", visible: true,
 				fieldName: "URL", visible: true
 				}]
-			});	
+		});	
 		campgroundPopupTemplate.setContent(
 			"<b>Name: </b>${NAME}<br/>" +
 			"<b>Phone: </b>${Phone}</br>" +
@@ -227,8 +237,8 @@ require(["esri/urlUtils",
 			"<b>Site Administrator: </b>${Type}</br>"
 		);
 		
-		//popup window template for the fire closure feature layer
-		var closurePopupTemplate = new PopupTemplate({
+		//popup window template for the fire closure feature layer.  NO WILDFIRES AT THIS TIME.  Keep for next year.
+		/* var closurePopupTemplate = new PopupTemplate({
 			title: "Fire Closure Info",
 			fieldInfos:[{
 				fieldName: "NAME", visible: true,
@@ -240,10 +250,10 @@ require(["esri/urlUtils",
 			"<b>Name: </b>${NAME}<br/>" +
 			"<b>Effective Date: </b>${UPDATE_}<br/>" +
 			"<a style='cursor:pointer;' href='${URL}' target='_blank'>InciWeb Description</a>"
-		);
+		); */
 		
-		//popup window template for the fire perimeter feature layer
-		var perimeterPopupTemplate = new PopupTemplate({
+		//popup window template for the fire perimeter feature layer. NO WILDFIRES AT THIS TIME.  Keep for next year.
+/* 		var perimeterPopupTemplate = new PopupTemplate({
 			title: "{fire_name} Fire",
 			fieldInfos:[{
 				fieldName: "fire_name", visible: true,
@@ -254,7 +264,7 @@ require(["esri/urlUtils",
 		perimeterPopupTemplate.setContent(
 			"<b>Acres: </b>${acres}<br/>" +
 			"<b>Active (Y/N): </b>${active}</br>"
-		);
+		); */
 		
 		//add layers (or groups of layers) to the map.
 		huntLayers = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Data/Hunting/MapServer",
@@ -274,18 +284,18 @@ require(["esri/urlUtils",
 				outFields:["*"],
 				infoTemplate:campgroundPopupTemplate
 			});
-		fireLayer0 = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/External/InciWeb_FireClosures/MapServer/0",
+		/* fireLayer0 = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/External/InciWeb_FireClosures/MapServer/0",
 			{
 				id:"Fire_Closure",
-				outFields:['NAME', 'URL', 'UPDATE_'],
+				outFields:['NAME', 'URL', 'UPDATE_']
 				infoTemplate:closurePopupTemplate
-			});	
-		fireLayer2 = new FeatureLayer("http://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/2",
+			});	 */
+/* 		fireLayer2 = new FeatureLayer("http://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/2",
 			{
 				id:"Fire_Perimeter",
-				outFields:['acres', 'active', 'fire_name'],
+				outFields:['acres', 'active', 'fire_name']
 				infoTemplate:perimeterPopupTemplate
-			});
+			}); */
 		esriConfig.defaults.io.corsEnabledServers.push("activefiremaps.fs.fed.us");
     fireLayer3 = new WMSLayer("http://activefiremaps.fs.fed.us/cgi-bin/mapserv.exe?map=conus.map&",{
         id:"MODIS_Fire_Detection",
@@ -296,7 +306,7 @@ require(["esri/urlUtils",
     });
 	
 		//add the Table of Contents.  Layers can be toggled on/off. Symbology is displayed.  Each "layer group" has a transparency slider.
-		map.on('layers-add-result', function(evt){
+		map.on('load', function(evt){
 			// overwrite the default visibility of service. TOC will honor the overwritten value.
 			trailLayers.setVisibleLayers([2,3,4,5,6,7,8,9,10,11]);
 				toc = new TOC({
@@ -318,7 +328,7 @@ require(["esri/urlUtils",
 						slider:true
 					}, {
 						layer: trailLayers,
-						title: "Roads & Trails",
+						title: "Roads & Trails (zoom in to activate)",
 						collapsed: true,
 						slider: true
 					}, {
@@ -338,7 +348,7 @@ require(["esri/urlUtils",
 					$("#TOCNode_Surface_Management .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by BLM. <a href='http://cloud.insideidaho.org/webApps/metadataViewer/default.aspx?path=G%3a%5cdata%5canonymous%5cblm%5cRLTY_SMA_PUB_24K_POLY.shp.xml' target='_blank'>Learn More</a></div>");
 					$("#TOCNode_Trails_and_Roads .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by IDPR. <a href='http://www.trails.idaho.gov/trails/' target='_blank'>Learn More</a></div>");
 					$("#TOCNode_Campgrounds .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by IDPR. <a href='http://parksandrecreation.idaho.gov/activities/camping' target='_blank'>Learn More</a></div>");
-					$("#TOCNode_fireLayers_2 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Maintained by GeoMAC. <a href='http://wildfire.usgs.gov/geomac/' target='_blank'>Learn More</a></div>");
+					//$("#TOCNode_fireLayers_2 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Maintained by GeoMAC. <a href='http://wildfire.usgs.gov/geomac/' target='_blank'>Learn More</a></div>");
 					$("#TOCNode_fireLayers_3 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Maintained by USFS-RSAC. <a href='http://activefiremaps.fs.fed.us/' target='_blank'>Learn More</a></div>");
 /* 					$('.agsjsTOCRootLayerLabel').click(function(){
 						$(this).siblings('span').children('input').click();
@@ -346,15 +356,68 @@ require(["esri/urlUtils",
 				});
 		});
 		
-		map.addLayers([surfaceMgmtLayer, adminLayers, fireLayer3, fireLayer2, fireLayer0, huntLayers, trailLayers, campgroundLayer]);
+		map.addLayers([surfaceMgmtLayer, adminLayers, fireLayer3, /*fireLayer2, fireLayer0,*/ huntLayers, trailLayers, campgroundLayer]);
 		adminLayers.hide(); //So none of the layers are "on" except the GMU layer when the map loads.
 		surfaceMgmtLayer.hide();
 		trailLayers.hide();
 		campgroundLayer.hide();
-		fireLayer0.hide();
-		fireLayer2.hide();
+		//fireLayer0.hide();
+		//fireLayer2.hide();
 		fireLayer3.hide();
 		map.reorderLayer(surfaceMgmtLayer, 0);
+		
+		//uncheck fire Layer Checkboxes
+		$("#fireLayersCheckbox").prop("checked", false);
+		//$("#fireLayer0Checkbox").prop("checked", false);
+		//$("#fireLayer2Checkbox").prop("checked", false);
+		$("#fireLayer3Checkbox").prop("checked", false);
+		//toggle all fireLayers off when the fireLayersCheckbox is unchecked.
+		$("#fireLayersCheckbox").change(function(){
+		 if($(this).prop('checked')){
+			//fireLayer0.show();
+			//fireLayer2.show();
+			fireLayer3.show();
+			//$("#fireLayer0Checkbox").prop("checked", true);
+			//$("#fireLayer2Checkbox").prop("checked", true);
+			$("#fireLayer3Checkbox").prop("checked", true);
+		 } else { 
+				//fireLayer0.hide();
+				//fireLayer2.hide();
+				fireLayer3.hide();
+				//$("#fireLayer0Checkbox").prop("checked", false);
+				//$("#fireLayer2Checkbox").prop("checked", false);
+				$("#fireLayer3Checkbox").prop("checked", false);
+		 }
+		});
+		  //toggle fireLayer0 on/off when checkbox is toggled on/off
+/* 			$("#fireLayer0Checkbox").change(function(){	
+			 if ($(this).prop('checked')) {
+				fireLayer0.show();
+				$("#fireLayersCheckbox").prop("checked", true);
+			 } else {
+				fireLayer0.hide();
+			 }
+			}); */
+			//toggle fireLayer2 on/off when checkbox is toggled on/off
+	/* 		$("#fireLayer2Checkbox").change(function(){	
+				 if ($(this).prop('checked')) {
+					fireLayer2.show();
+					$("#fireLayersCheckbox").prop("checked", true);
+				 } else {
+					fireLayer2.hide();
+				 }
+			}); */
+			//toggle fireLayer3 on/off when checkbox is toggled on/off
+			$("#fireLayer3Checkbox").change(function(){	
+				 if ($(this).prop('checked')) {
+					fireLayer3.show();
+					$("#fireLayersCheckbox").prop("checked", true);
+					
+				 } else {
+					fireLayer3.hide();
+					$("#fireLayersCheckbox").prop("checked", false);
+				 }
+			});	
 		
 		//Enable mobile scrolling by calling $('.selectpicker').selectpicker('mobile'). The method for detecting the browser is left up to the user. This enables the device's native menu for select menus.
 		if( /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ) {
@@ -411,12 +474,14 @@ require(["esri/urlUtils",
 			//If the url contains an lyr parameter.
 			if (window.location.href.indexOf("lyr") > 0){
 				$("#viewURL").append(homeURL);
+				//window.history.pushState(null,null,window.location.href.slice(0,(window.location.href).indexOf('?')));
 			//If url has no lyr parameter.	
 			} else {	
 				$("#viewURL").empty();
 				homeURL = window.location.href;
 				$("#viewURL").append(homeURL + newURL);
 			}
+				
 		};
 		
 		//On extent change, change the share url zoom and coordinate parameters and refresh the "share" url.
@@ -440,77 +505,28 @@ require(["esri/urlUtils",
 		$("#queryCheckbox").change(function(){	
 		 if ($(this).prop('checked')) {
 		  queryLayer.show();
+			queryLabelLayer.show();
 		 } else {
 		  queryLayer.hide();
+			queryLabelLayer.hide();
 		 }
 		});
-		//uncheck fire Layer Checkboxes
-		$("#fireLayersCheckbox").prop("checked", false);
-		$("#fireLayer0Checkbox").prop("checked", false);
-		$("#fireLayer1Checkbox").prop("checked", false);
-		$("#fireLayer2Checkbox").prop("checked", false);
-		$("#fireLayer3Checkbox").prop("checked", false);
-		//toggle all fireLayers off when the fireLayersCheckbox is unchecked.
-		$("#fireLayersCheckbox").change(function(){	
-		 if ($(this).prop('checked')== false) { 
-				fireLayer0.hide();
-				fireLayer1.hide();
-				fireLayer2.hide();
-				fireLayer3.hide();
-				$("#fireLayer0Checkbox").prop("checked", false);
-				$("#fireLayer1Checkbox").prop("checked", false);
-				$("#fireLayer2Checkbox").prop("checked", false);
-				$("#fireLayer3Checkbox").prop("checked", false);
-		 }
-		});
-		  //toggle fireLayer0 on/off when checkbox is toggled on/off
-			$("#fireLayer0Checkbox").change(function(){	
-			 if ($(this).prop('checked')) {
-				fireLayer0.show();
-				$("#fireLayersCheckbox").prop("checked", true);
-			 } else {
-				fireLayer0.hide();
-			 }
-			});
-			//toggle fireLayer1 on/off when checkbox is toggled on/off
-			$("#fireLayer1Checkbox").change(function(){	
-			 if ($(this).prop('checked')) {
-				fireLayer1.show();
-				$("#fireLayersCheckbox").prop("checked", true);
-			 } else {
-				fireLayer1.hide();
-			 }
-			});
-			//toggle fireLayer2 on/off when checkbox is toggled on/off
-			$("#fireLayer2Checkbox").change(function(){	
-				 if ($(this).prop('checked')) {
-					fireLayer2.show();
-					$("#fireLayersCheckbox").prop("checked", true);
-				 } else {
-					fireLayer2.hide();
-				 }
-			});
-			//toggle fireLayer3 on/off when checkbox is toggled on/off
-			$("#fireLayer3Checkbox").change(function(){	
-				 if ($(this).prop('checked')) {
-					fireLayer3.show();
-					$("#fireLayersCheckbox").prop("checked", true);
-				 } else {
-					fireLayer3.hide();
-				 }
-			});		
-		
+
 		var gmuID, elkID, chuntID, waterfowlID, gameDistributionID, newHighlight1, newHighlight2, newHighlight3, newHighlight4, newHighlight5;
+		
 		$("#btnQuery").click(function(){
 		
 			$("#loading").show();
 			
 			queryLayer.clear();
+			queryLabelLayer.clear();
 			$("#queryLabel1Div").hide();
 			$("#queryLabel2Div").hide();
 			$("#queryLabel3Div").hide();
 			$("#queryLabel4Div").hide();
 			$("#queryLabel5Div").hide();
+			$("#kmlNav1").hide();
+			$("#kmlNav2").hide();
 			
 			//get variable values from the dropdown lists in the hunt modal window and run doQuery.
 			if ($("#gmu").val()){
@@ -520,7 +536,7 @@ require(["esri/urlUtils",
 				})
 			//Remove trailing comma
 				gmuID = gmuTypeValue.substring(0,gmuTypeValue.length - 1);
-				var layerID = "0";
+				//var layerID = "3";
 				var label0 = $("#gmu option:selected").map(function(){
 					return $(this).text();
 				}).get();
@@ -532,10 +548,15 @@ require(["esri/urlUtils",
 					label = "Selected Hunt Area";
 				}
 				if (typeof gmuID != 'undefined'){
-					doQuery1(gmuID, layerID, label);
+					doQuery1(gmuID, label);
 				}
 				$("#queryLabel1").text(label);
 				$("#queryLabel1Div").show();
+				
+				//Create a KML of the user-selected GMUs, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
+				var gmuKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/3/query?where=ID in (" + gmuID + ")&outfields=NAME&f=kmz"
+				$("#gmuKML").attr("href", gmuKMLlink);
+				$("#gmuKML").show();
 			}
 			
 			if ($("#elkzone").val()){
@@ -545,7 +566,7 @@ require(["esri/urlUtils",
 				})
 			//Remove trailing comma
 				elkID = elkzoneTypeValue.substring(0,elkzoneTypeValue.length - 1);
-				var layerID = "0";
+				//var layerID = "4";
 				var label0 = $("#elkzone option:selected").map(function(){
 					return $(this).text();
 				}).get();
@@ -557,10 +578,15 @@ require(["esri/urlUtils",
 					label = "Selected Hunt Area";
 				}
 				if (typeof elkID != 'undefined'){
-					doQuery2(elkID, layerID, label);
+					doQuery2(elkID, label);
 				}
 				$("#queryLabel2").text(label);
 				$("#queryLabel2Div").show();
+				
+				//Create a KML of the user-selected Elk Zones, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
+				var elkzoneKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/4/query?where=ID in (" + elkID + ")&outfields=NAME&f=kmz"
+				$("#elkzoneKML").attr("href", elkzoneKMLlink);
+				$("#elkzoneKML").show();
 			}
 			
 			if ($("#chunt").val()){
@@ -570,7 +596,7 @@ require(["esri/urlUtils",
 				})
 			//Remove trailing comma
 				chuntID = chuntTypeValue.substring(0,chuntTypeValue.length - 1);
-				var layerID = "0";
+				//var layerID = "5";
 				var label0 = $("#chunt option:selected").map(function(){
 					return $(this).text();
 				}).get();
@@ -582,10 +608,15 @@ require(["esri/urlUtils",
 					label = "Selected Hunt Area";
 				}
 				if (typeof chuntID != 'undefined'){
-					doQuery3(chuntID, layerID, label);
+					doQuery3(chuntID, label);
 				}
 				$("#queryLabel3").text(label);
 				$("#queryLabel3Div").show();
+				
+				//Create a KML of the user-selected controlled hunts, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
+				var chuntKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/5/query?where=ID in (" + chuntID + ")&outfields=BigGame,HuntArea&f=kmz"
+				$("#chuntKML").attr("href", chuntKMLlink);
+				$("#chuntKML").show();
 			}
 			
 			if ($("#waterfowl").val()){
@@ -595,7 +626,7 @@ require(["esri/urlUtils",
 				})
 			//Remove trailing comma
 				waterfowlID = waterfowlTypeValue.substring(0,waterfowlTypeValue.length - 1);
-				var layerID = "0";
+				//var layerID = "6";
 				var label0 = $("#waterfowl option:selected").map(function(){
 					return $(this).text();
 				}).get();
@@ -607,10 +638,15 @@ require(["esri/urlUtils",
 					label = "Selected Hunt Area";
 				}
 				if (typeof waterfowlID != 'undefined'){
-					doQuery4(waterfowlID, layerID, label);
+					doQuery4(waterfowlID, label);
 				}
 				$("#queryLabel4").text(label);
 				$("#queryLabel4Div").show();
+				
+				//Create a KML of the user-selected waterfowl hunt areas, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
+				var waterfowlKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/6/query?where=ID in (" + waterfowlID + ")&outfields=NAME&f=kmz"
+				$("#waterfowlKML").attr("href", waterfowlKMLlink);
+				$("#waterfowlKML").show();
 			}
 			
 			if ($("#gameDistribution").val()){
@@ -620,7 +656,7 @@ require(["esri/urlUtils",
 				})
 			//Remove trailing comma
 				gameDistributionID = gameDistributionTypeValue.substring(0,gameDistributionTypeValue.length - 1);
-				var layerID = "3";
+				//var layerID = "7";
 				var label0 = $("#gameDistribution option:selected").map(function(){
 					return $(this).text();
 				}).get();
@@ -632,17 +668,30 @@ require(["esri/urlUtils",
 					label = "Selected Game Distribution";
 				}
 				if (typeof gameDistributionID != 'undefined'){
-					doQuery5(gameDistributionID, layerID, label);
+					doQuery5(gameDistributionID, label);
 				}
 				$("#queryLabel5").text(label);
 				$("#queryLabel5Div").show();
+				
+				//Create a KML of the user-selected game animal distributions, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
+				var gameDistributionKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/7/query?where=ID in (" + gameDistributionID + ")&outfields=NAME&f=kmz"
+				$("#gameDistributionKML").attr("href", gameDistributionKMLlink);
+				$("#gameDistributionKML").show();
 			}
 			
+		if ($("#gmu").val() != null || $("#elkzone").val() != null || $("#chunt").val() != null || $("#waterfowl").val() != null || $("#gameDistribution").val() != null){
+			$("#kmlNav1").show();
+			$("#kmlNav2").show();
+			$("#kmlNav1").effect("highlight", {color: 'yellow'}, 3000);
+			$("#kmlNav2").effect("highlight", {color: 'yellow'}, 3000);
+		}
+		
 			$("#huntModal").modal('hide');
 		});
 			
 		$("#btnClearHighlighted").click(function(){
 			queryLayer.clear();
+			queryLabelLayer.clear();
 			$("#queryLabelDiv").hide();
 			$('.selectpicker').selectpicker('val', '');
 			$("#queryLabel1Div").hide();
@@ -650,34 +699,41 @@ require(["esri/urlUtils",
 			$("#queryLabel3Div").hide();
 			$("#queryLabel4Div").hide();
 			$("#queryLabel5Div").hide();
+			$("#kmlNav1").hide();
+			$("#kmlNav2").hide();
+			$("#gmuKML").hide();
+			$("#elkzoneKML").hide();
+			$("#chuntKML").hide();
+			$("#waterfowlKML").hide();
+			$("#gameDistributionKML").hide();
 		})
 		
 		function doQuery(areaID, layerID, label) {
 			//initialize query tasks
-			newQueryTask1 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/" + layerID);
+			newQueryTask = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/" + layerID);
 
 			//initialize query
-			newQuery1 = new Query();
-			newQuery1.returnGeometry = true;
-			newQuery1.outFields = ["ID"]
+			newQuery = new Query();
+			newQuery.returnGeometry = true;
+			newQuery.outFields = ["ID"]
 			newHighlight = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
 				new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
 				new Color([154,32,219]), 3),
 				new Color([154,32,219,0.1])
 			);
 			
-			newQuery1.where = "ID IN (" + areaID + ")";
-			newQueryTask1.execute (newQuery1, showResults);
+			newQuery.where = "ID IN (" + areaID + ")";
+			newQueryTask.execute (newQuery, showResults);
 		}
 		
-		function doQuery1(gmuID, layerID, label) {
+		function doQuery1(gmuID, label) {
 			//initialize query tasks
-			newQueryTask1 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/" + layerID);
+			newQueryTask1 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/3");
 
 			//initialize query
 			newQuery1 = new Query();
 			newQuery1.returnGeometry = true;
-			newQuery1.outFields = ["ID"]
+			newQuery1.outFields = ["ID", "NAME"]
 			newHighlight1 = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
 				new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
 				new Color([154,32,219]), 3),
@@ -688,14 +744,14 @@ require(["esri/urlUtils",
 			newQueryTask1.execute (newQuery1, showResults1);
 		}
 		
-		function doQuery2(elkID, layerID, label) {
+		function doQuery2(elkID, label) {
 			//initialize query tasks
-			newQueryTask2 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/" + layerID);
+			newQueryTask2 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/4");
 
 			//initialize query
 			newQuery2 = new Query();
 			newQuery2.returnGeometry = true;
-			newQuery2.outFields = ["ID"]
+			newQuery2.outFields = ["ID", "NAME"]
 			newHighlight2 = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
 				new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
 				new Color([0,255,255]), 3),
@@ -706,14 +762,14 @@ require(["esri/urlUtils",
 			newQueryTask2.execute (newQuery2, showResults2);
 		}
 		
-		function doQuery3(chuntID, layerID, label) {
+		function doQuery3(chuntID, label) {
 			//initialize query tasks
-			newQueryTask3 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/" + layerID);
+			newQueryTask3 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/5");
 
 			//initialize query
 			newQuery3 = new Query();
 			newQuery3.returnGeometry = true;
-			newQuery3.outFields = ["ID"]
+			newQuery3.outFields = ["ID", "BigGame", "HuntArea"]
 			newHighlight3 = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
 				new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
 				new Color([18,237,18]), 3),
@@ -724,14 +780,14 @@ require(["esri/urlUtils",
 			newQueryTask3.execute (newQuery3, showResults3);
 		}
 		
-		function doQuery4(waterfowlID, layerID, label) {
+		function doQuery4(waterfowlID, label) {
 			//initialize query tasks
-			newQueryTask4 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/" + layerID);
+			newQueryTask4 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/6");
 
 			//initialize query
 			newQuery4 = new Query();
 			newQuery4.returnGeometry = true;
-			newQuery4.outFields = ["ID"]
+			newQuery4.outFields = ["ID", "Area_Name"]
 			newHighlight4 = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
 				new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
 				new Color([255,157,0]), 3),
@@ -742,14 +798,14 @@ require(["esri/urlUtils",
 			newQueryTask4.execute (newQuery4, showResults4);
 		}
 
-		function doQuery5(gameDistributionID, layerID, label) {
+		function doQuery5(gameDistributionID, label) {
 			//initialize query tasks
-			newQueryTask5 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/" + layerID);
+			newQueryTask5 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/7");
 
 			//initialize query
 			newQuery5 = new Query();
 			newQuery5.returnGeometry = true;
-			newQuery5.outFields = ["ID"]
+			newQuery5.outFields = ["ID", "NAME"]
 			newHighlight5 = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
 				new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
 				new Color([255,0,225]), 3),
@@ -763,16 +819,38 @@ require(["esri/urlUtils",
 		function showResults(featureSet) {
 			//Performance enhancer - assign featureSet array to a single variable.
 			var newFeatures = featureSet.features;
-
 			//Loop through each feature returned
 			for (var i=0, il=newFeatures.length; i<il; i++) {
 				//Get the current feature from the featureSet.
 				//Feature is a graphic
+				var geometry = featureSet.geometry;
 				var newGraphic = newFeatures[i];
+				var polyExtent = newGraphic.geometry.getExtent();
+				var polyCenter = polyExtent.getCenter();
 				newGraphic.setSymbol(newHighlight);
+				var queryMapLabel = label;
 
 				//Add graphic to the map graphics layer.
 				queryLayer.add(newGraphic);
+				
+				//Add label to the graphics.		
+				var font = new esri.symbol.Font();
+				font.setSize("10pt");
+				font.setFamily("Helvetica");
+				font.setWeight(Font.WEIGHT_BOLD);
+				var textSymbol = new TextSymbol(queryMapLabel);
+				textSymbol.setColor (new esri.Color([154,32,219]));
+				textSymbol.setFont(font);
+				textSymbol.setHorizontalAlignment("center");
+				textSymbol.setVerticalAlignment("middle");
+				textSymbol.setOffset(17, 0);
+				//Add label at the selected area center.
+				var pt = new Point(polyCenter,map.spatialReference);
+				var queryMapLabelGraphic = new Graphic (pt, textSymbol);
+				queryLabelLayer.add(queryMapLabelGraphic);
+				
+				var selectionExtent = esri.graphicsExtent(newFeatures);
+				map.setExtent(selectionExtent.expand(1.25), true);
 				
 				//Zoom to graphics extent.
 				if (urlZoom == '') {
@@ -789,16 +867,34 @@ require(["esri/urlUtils",
 		function showResults1(featureSet) {
 			//Performance enhancer - assign featureSet array to a single variable.
 			var newFeatures1 = featureSet.features;
-
 			//Loop through each feature returned
 			for (var i=0, il=newFeatures1.length; i<il; i++) {
 				//Get the current feature from the featureSet.
 				//Feature is a graphic
+				var geometry = featureSet.geometry;
 				var newGraphic1 = newFeatures1[i];
+				var polyExtent = newGraphic1.geometry.getExtent();
+				var polyCenter = polyExtent.getCenter();
 				newGraphic1.setSymbol(newHighlight1);
-
+				queryMapLabel1 = "UNIT " + newGraphic1.attributes.NAME;
 				//Add graphic to the map graphics layer.
 				queryLayer.add(newGraphic1);
+				
+				//Add label to the graphics.		
+				var font = new esri.symbol.Font();
+				font.setSize("10pt");
+				font.setFamily("Helvetica");
+				font.setWeight(Font.WEIGHT_BOLD);
+				var textSymbol = new TextSymbol(queryMapLabel1);
+				textSymbol.setColor (new esri.Color([154,32,219]));
+				textSymbol.setFont(font);
+				textSymbol.setHorizontalAlignment("center");
+				textSymbol.setVerticalAlignment("middle");
+				textSymbol.setOffset(17, 0);
+				//Add label at the selected area center.
+				var pt = new Point(polyCenter,map.spatialReference);
+				var queryMapLabel1Graphic = new Graphic (pt, textSymbol);
+				queryLabelLayer.add(queryMapLabel1Graphic);
 				
 				//Zoom to full extent.
 				zoomToState();
@@ -812,16 +908,34 @@ require(["esri/urlUtils",
 		function showResults2(featureSet) {
 			//Performance enhancer - assign featureSet array to a single variable.
 			var newFeatures2 = featureSet.features;
-
 			//Loop through each feature returned
 			for (var i=0, il=newFeatures2.length; i<il; i++) {
 				//Get the current feature from the featureSet.
 				//Feature is a graphic
+				var geometry = featureSet.geometry;
 				var newGraphic2 = newFeatures2[i];
+				var polyExtent = newGraphic2.geometry.getExtent();
+				var polyCenter = polyExtent.getCenter();
 				newGraphic2.setSymbol(newHighlight2);
-
+				var queryMapLabel2 = newGraphic2.attributes.NAME + " Elk Zone";
 				//Add graphic to the map graphics layer.
 				queryLayer.add(newGraphic2);
+				
+				//Add label to the graphics.		
+				var font = new esri.symbol.Font();
+				font.setSize("10pt");
+				font.setFamily("Helvetica");
+				font.setWeight(Font.WEIGHT_BOLD);
+				var textSymbol = new TextSymbol(queryMapLabel2);
+				textSymbol.setColor (new esri.Color([30,201,201]));
+				textSymbol.setFont(font);
+				textSymbol.setHorizontalAlignment("center");
+				textSymbol.setVerticalAlignment("middle");
+				textSymbol.setOffset(17, 0);
+				//Add label at the selected area center.
+				var pt = new Point(polyCenter,map.spatialReference);
+				var queryMapLabel2Graphic = new Graphic (pt, textSymbol);
+				queryLabelLayer.add(queryMapLabel2Graphic);
 				
 				//Zoom to full extent.
 				zoomToState();
@@ -835,16 +949,35 @@ require(["esri/urlUtils",
 		function showResults3(featureSet) {
 			//Performance enhancer - assign featureSet array to a single variable.
 			var newFeatures3 = featureSet.features;
-
 			//Loop through each feature returned
 			for (var i=0, il=newFeatures3.length; i<il; i++) {
 				//Get the current feature from the featureSet.
 				//Feature is a graphic
+				var geometry = featureSet.geometry;
 				var newGraphic3 = newFeatures3[i];
+				var polyExtent = newGraphic3.geometry.getExtent();
+				var polyCenter = polyExtent.getCenter();
 				newGraphic3.setSymbol(newHighlight3);
+				var queryMapLabel3 = newGraphic3.attributes.BigGame + " - " + newGraphic3.attributes.HuntArea;
 
 				//Add graphic to the map graphics layer.
 				queryLayer.add(newGraphic3);
+				
+				//Add label to the graphics.		
+				var font = new esri.symbol.Font();
+				font.setSize("10pt");
+				font.setFamily("Helvetica");
+				font.setWeight(Font.WEIGHT_BOLD);
+				var textSymbol = new TextSymbol(queryMapLabel3);
+				textSymbol.setColor (new esri.Color([69,198,69]));
+				textSymbol.setFont(font);
+				textSymbol.setHorizontalAlignment("center");
+				textSymbol.setVerticalAlignment("middle");
+				textSymbol.setOffset(17, 0);
+				//Add label at the selected area center.
+				var pt = new Point(polyCenter,map.spatialReference);
+				var queryMapLabel3Graphic = new Graphic (pt, textSymbol);
+				queryLabelLayer.add(queryMapLabel3Graphic);
 				
 				//Zoom to full extent.
 				zoomToState();
@@ -857,16 +990,34 @@ require(["esri/urlUtils",
 		function showResults4(featureSet) {
 			//Performance enhancer - assign featureSet array to a single variable.
 			var newFeatures4 = featureSet.features;
-
 			//Loop through each feature returned
 			for (var i=0, il=newFeatures4.length; i<il; i++) {
 				//Get the current feature from the featureSet.
 				//Feature is a graphic
+				var geometry = featureSet.geometry;
 				var newGraphic4 = newFeatures4[i];
+				var polyExtent = newGraphic4.geometry.getExtent();
+				var polyCenter = polyExtent.getCenter();
 				newGraphic4.setSymbol(newHighlight4);
-
+				var queryMapLabel4 = newGraphic4.attributes.Area_Name;
 				//Add graphic to the map graphics layer.
 				queryLayer.add(newGraphic4);
+				
+				//Add label to the graphics.		
+				var font = new esri.symbol.Font();
+				font.setSize("10pt");
+				font.setFamily("Helvetica");
+				font.setWeight(Font.WEIGHT_BOLD);
+				var textSymbol = new TextSymbol(queryMapLabel4);
+				textSymbol.setColor (new esri.Color([232,146,18]));
+				textSymbol.setFont(font);
+				textSymbol.setHorizontalAlignment("center");
+				textSymbol.setVerticalAlignment("middle");
+				textSymbol.setOffset(17, 0);
+				//Add label at the selected area center.
+				var pt = new Point(polyCenter,map.spatialReference);
+				var queryMapLabel4Graphic = new Graphic (pt, textSymbol);
+				queryLabelLayer.add(queryMapLabel4Graphic);
 				
 				//Zoom to full extent.
 				zoomToState();
@@ -877,7 +1028,7 @@ require(["esri/urlUtils",
 			$("#queryCheckbox").prop('checked', true);
 		}
 		
-			function showResults5(featureSet) {
+		function showResults5(featureSet) {
 			//Performance enhancer - assign featureSet array to a single variable.
 			var newFeatures5 = featureSet.features;
 
@@ -906,6 +1057,163 @@ require(["esri/urlUtils",
 			$("#loading").hide();
 		};
 		
+		//Allow users to add GPX data to the map.  Other formats may be added later, such as KML.
+		var layer, name;
+		var layers=[];
+		var portalUrl = 'http://www.arcgis.com';
+		
+		 on(dom.byId("uploadForm"), "change", function (evt) {
+			var fileName = evt.target.value.toLowerCase();
+			if (sniff("ie")) { //filename is full path in IE so extract the file name
+				var arr = fileName.split("\\");
+				fileName = arr[arr.length - 1];
+			}
+			if (fileName.indexOf(".gpx") !== -1) {//is file a gpx - if not notify user 
+				generateFeatureCollection(fileName);
+			}else{
+				$("#upload-status").html('<p style="color:red">INVALID FILE TYPE. Choose a .gpx file</p>');
+		 }
+		});
+
+      function generateFeatureCollection(fileName) {
+       
+        name = fileName.split(".");
+        //Chrome and IE add c:\fakepath to the value - we need to remove it
+        //See this link for more info: http://davidwalsh.name/fakepath
+        name = name[0].replace("c:\\fakepath\\","");
+        
+        $("#upload-status").html("<b>Loading… </b>" + name); 
+        
+        //Define the input params for generate see the rest doc for details
+        //http://www.arcgis.com/apidocs/rest/index.html?generate.html
+        var params = {
+          'name': name,
+          'targetSR': map.spatialReference,
+          'maxRecordCount': 1000,
+          'enforceInputFileSizeLimit': true,
+          'enforceOutputJsonSizeLimit': true
+        };
+        //generalize features for display Here we generalize at 1:40,000 which is approx 10 meters 
+        //This should work well when using web mercator.  
+        var extent = scaleUtils.getExtentForScale(map,40000); 
+        var resolution = extent.getWidth() / map.width;
+        params.generalize = true;
+        params.maxAllowableOffset = resolution;
+        params.reducePrecision = true;
+        params.numberOfDigitsAfterDecimal = 0;
+        
+        var myContent = {
+          'filetype': 'gpx',
+          'publishParameters': JSON.stringify(params),
+          'f': 'json',
+          'callback.html': 'textarea'
+        };
+        //use the rest generate operation to generate a feature collection from the zipped shapefile 
+        request({
+          url: portalUrl + '/sharing/rest/content/features/generate',
+          content: myContent,
+          form: dom.byId('uploadForm'),
+          handleAs: 'json',
+          load: lang.hitch(this, function (response) {
+            if (response.error) {
+              errorHandler(response.error);
+              return;
+            }
+						var layerName = response.featureCollection.layers[0].layerDefinition.name;
+            $("#upload-status").html("<b>Loaded: </b>" + layerName);
+            addGPXToMap(response.featureCollection);
+          }),
+          error: lang.hitch(this, errorHandler)
+        });
+      }
+      function errorHandler(error) {
+        $("#upload-status").html("<p style='color:red'>" + error.message + "</p>");
+      }
+      function addGPXToMap(featureCollection) {
+        //add the GPX to the map and zoom to the feature collection extent
+        //If you want to persist the feature collection when you reload browser you could store the collection in 
+        //local storage by serializing the layer using featureLayer.toJson()  see the 'Feature Collection in Local Storage' sample
+        //for an example of how to work with local storage. 
+        var fullExtent;
+				layers = [];
+        arrayUtils.forEach(featureCollection.layers, function (layer) {
+          var infoTemplate = new InfoTemplate("", "${*}");
+					infoTemplate.setTitle(name + " Attributes");
+          layer = new FeatureLayer(layer, {
+						outfields:["*"],
+            infoTemplate: infoTemplate
+          });
+          //change default symbol if desired. Comment this out and the layer will draw with the default symbology
+          changeRenderer(layer);
+					fullExtent = fullExtent ? fullExtent.union(layer.fullExtent) : layer.fullExtent;
+          layers.push(layer);
+					
+        });
+        map.addLayers(layers);
+				map.setExtent(fullExtent.expand(1.25), true);
+        $("#upload-status").html("");
+				$("#uploadModal").modal('hide');
+				clearFileInputField('uploadForm');
+				$("#uploadLabelDiv").show();
+				$("#uploadCheckbox").prop('checked', true);
+      }
+			
+      function changeRenderer(layer) {
+        //change the default symbol for the feature collection for polygons and points
+        var symbol = null;
+        switch (layer.geometryType) {
+        case 'esriGeometryPoint':
+          symbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 10,
+							new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+							new Color([0,0,0]), 1),
+							new Color ([255,0,0]));
+          break;
+        case 'esriGeometryPolygon':
+          symbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, 
+						new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, 
+						new Color([255, 0, 0]), 1), 
+						new Color([255, 0, 0]));
+          break;
+        }
+        if (symbol) {
+          layer.setRenderer(new SimpleRenderer(symbol));
+        }
+				if (layer.geometryType == 'esriGeometryPoint'){
+					$("#uploadLabel1Div").show();
+				}
+					if (layer.geometryType == 'esriGeometryPolyline'){
+					$("#uploadLabel2Div").show();
+				}
+      }
+		
+		//Clear the gpx upload form file name.
+		function clearFileInputField(tagId){ 
+			dojo.byId(tagId).innerHTML = dojo.byId(tagId).innerHTML;
+		}
+		
+		function layerVisibility(layer) {
+      (layer.visible) ? layer.hide() : layer.show();
+    }
+			
+		//Clear the uploaded GPX files from the map.
+		$("#btnClearUpload").click (function(){
+			jQuery.each(layers, function(index, value){
+					layerVisibility(layers[index]);
+				});
+				
+			$("#uploadLabelDiv").hide();
+			$("#uploadLabel1Div").hide();
+			$("#uploadLabel2Div").hide();
+			$("#uploadCheckbox").prop('checked', false);
+		});
+		
+		//toggle GPX layers on/off when checkbox is toggled on/off
+		$("#uploadCheckbox").change(function(){	
+			jQuery.each(layers, function(index, value){
+				layerVisibility(layers[index]);
+			});
+		});		
+
 		// Create geocoder widget
 		var geocoder = new Geocoder({
 			maxLocations: 10,
@@ -962,7 +1270,7 @@ require(["esri/urlUtils",
 			new Color ([29,0,255]));
 
 		//add graphic to show geocode results
-				function addPlaceGraphic(item,symbol)  {
+		function addPlaceGraphic(item,symbol)  {
 			var place = {};
 			var attributes,pt, graphic;
 			pt = item.feature.geometry;
@@ -984,7 +1292,6 @@ require(["esri/urlUtils",
 		function zoomToPlaces(places) {
 			var multiPoint = new Multipoint(map.spatialReference);
 			for (var i = 0; i < places.length; i++) {
-				//multiPoint.addPoint(places[i].location);
 				multiPoint.addPoint(places[i].feature.geometry);
 			}
 			map.setExtent(multiPoint.getExtent().expand(2.0));
@@ -1029,7 +1336,6 @@ require(["esri/urlUtils",
 		});
 
 		//add the measurement tools
-		//esriConfig.defaults.geometryService = new GeometryService("https://fishandgame.idaho.gov/gis/rest/services/Utilities/Geometry/GeometryServer");
 		var pms = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 10,
 			new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
 				new Color([165, 24, 221, .55], 1)));
@@ -1092,27 +1398,31 @@ require(["esri/urlUtils",
 			var symbol;
 			toolbar.deactivate();
 			switch (evt.geometry.type) {
+				/*case "point":
+					symbol= new TextSymbol($("#userTextBox").val()).setColor(
+						new Color([255, 0, 0])).setFont(
+						new Font("16pt").setWeight(Font.WEIGHT_BOLD)).setHorizontalAlignment("left");
+					break;*/
 				case "multipoint":
 					symbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 15,
 						new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
-						new Color([255,255,0]),0.5),
-						new Color([255,255,0]));
+						new Color([255,114,0]),0.5),
+						new Color([255,114,0]));
 					break;
 				case "polyline":
 					symbol = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
-						new Color([255,255,0]),2);
+						new Color([255,114,0]),2);
 					break;
 				default:
 					symbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
 					new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
-					new Color([255,255,0]),2),
-					new Color([255,255,0,0.25]));
+					new Color([255,114,0]),2),
+					new Color([255,114,0,0.25]));
 					break; 
 			}
 			var drawGraphic = new Graphic(evt.geometry, symbol);
 			drawToolbarLayer.add(drawGraphic);
 		}
-		
 		
 		//fire the text graphic in a separate graphics layer than the other draw symbols otherwise it will show as just a point when using the PrintTask GP Tool.
 		$("#dijit_form_Button_10_label").on("click", drawPoint);
@@ -1132,7 +1442,7 @@ require(["esri/urlUtils",
 			var userText = $("#userTextBox").val();
 			var textSymbol= new TextSymbol(userText);
 			textSymbol.setColor (new esri.Color("black"));
-			var font = new Font();
+			var font = new esri.symbol.Font();
 			font.setSize("14pt");
 			font.setFamily("Helvetica");
 			font.setWeight(Font.WEIGHT_BOLD);
@@ -1149,7 +1459,7 @@ require(["esri/urlUtils",
 		$("#btnClearText").click (function(){
 			drawTextLayer.clear();
 		});
-				
+		
 		//Create PDF using PrintTask	
 		$("#btnPDF").click (function(){
 			$("#div_for_pdf").hide();
@@ -1160,203 +1470,249 @@ require(["esri/urlUtils",
 			dojo.byId("printStatus").innerHTML = "";
 		});
 		
-	function submitPrint() {
-		var printParams = new PrintParameters();
-		printParams.map = map;
-		var status = dojo.byId("printStatus");
-		status.innerHTML = "Creating Map...";
-		$("#loadingPrint").show();
-		
-		var template = new PrintTemplate();
-		var printTitle = $("#txtTitle").val();
-		template.layoutOptions = {
-			"titleText": printTitle
-		};
-		var format = $("#format").val();
-		template.format = format;
-		var layout = $("#layout").val();
-		template.layout = layout;
-		template.exportOptions = {
-			dpi: 300
-		};
-		printParams.template = template;
-		
-		var printServiceUrl ='https://fishandgame.idaho.gov/gis/rest/services/Custom_IDFG_ExportWebMapTask/GPServer/Export%20Web%20Map';
-		var printTask = new esri.tasks.PrintTask(printServiceUrl);	
-		
-		var deferred = printTask.execute(printParams);
-				deferred.addCallback(function (response){  
-					//alert(JSON.stringify(response));		
-					status.innerHTML = "";
-					//open the map PDF or image in a new browser window.
+		function submitPrint() {
+			var printParams = new PrintParameters();
+			printParams.map = map;
+			var status = dojo.byId("printStatus");
+			status.innerHTML = "Creating Map...";
+			$("#loadingPrint").show();
+			
+			var template = new PrintTemplate();
+			var printTitle = $("#txtTitle").val();
+			template.layoutOptions = {
+				"titleText": printTitle
+			};
+			var format = $("#format").val();
+			template.format = format;
+			var layout = $("#layout").val();
+			template.layout = layout;
+			template.exportOptions = {
+				dpi: 300
+			};
+			printParams.template = template;
+			
+			var printServiceUrl ='https://fishandgame.idaho.gov/gis/rest/services/Custom_IDFG_ExportWebMapTask/GPServer/Export%20Web%20Map';
+			var printTask = new esri.tasks.PrintTask(printServiceUrl);	
+			
+			var deferred = printTask.execute(printParams);
+			deferred.addCallback(function (response){  
+				//alert(JSON.stringify(response));		
+				status.innerHTML = "";
+				//open the map PDF or image in a new browser window.
 				var new_url_for_map = response.url.replace("sslifwisiis","fishandgame.idaho.gov");
 				var currentTime = new Date();
 				var unique_PDF_url = new_url_for_map += "?ts="+currentTime.getTime();
-					//PDFwindow = window.open(new_url_for_map);
-					if (typeof(PDFwindow) == 'undefined') {
-						$("#div_for_pdf").html("<a href='" + unique_PDF_url + "'>CLICK HERE TO DOWNLOAD YOUR MAP</a><br/><br/>");
-						$("#div_for_pdf a").attr('target', '_blank');
-						$("#div_for_pdf").click(function(){
-							$("#pdfModal").modal('hide');
-							$("#div_for_pdf").html("");
-						});
-					} else {
-						window.open(new_url_for_map);
+				//PDFwindow = window.open(new_url_for_map);
+				if (typeof(PDFwindow) == 'undefined') {
+					$("#div_for_pdf").html("<a href='" + unique_PDF_url + "'>CLICK HERE TO DOWNLOAD YOUR MAP</a><br/><br/>");
+					$("#div_for_pdf a").attr('target', '_blank');
+					$("#div_for_pdf").click(function(){
 						$("#pdfModal").modal('hide');
-					}
-					$("#div_for_pdf").show();
-					$("#loadingPrint").hide();
-					
-				});
+						$("#div_for_pdf").html("");
+					});
+				} else {
+					window.open(new_url_for_map);
+					$("#pdfModal").modal('hide');
+				}
+				$("#div_for_pdf").show();
+				$("#loadingPrint").hide();
+			});
 			
-				deferred.addErrback(function (error) {
-					console.log("Print Task Error = " + error);
+			deferred.addErrback(function (error) {
+				console.log("Print Task Error = " + error);
+				status.innerHTML = error;
+			});
+		};
+				
+		// Show modal dialog, hide nav
+		$(document).ready(function(){
+			//populate the GMU dropdown with JSON vars.
+			var gmuList = [{"ID":"1","NAME":"UNIT 1"},{"ID":"13","NAME":"UNIT 10"},{"ID":"14","NAME":"UNIT 10A"},{"ID":"15","NAME":"UNIT 11"},{"ID":"16","NAME":"UNIT 11A"},{"ID":"17","NAME":"UNIT 12"},{"ID":"18","NAME":"UNIT 13"},{"ID":"19","NAME":"UNIT 14"},{"ID":"20","NAME":"UNIT 15"},{"ID":"21","NAME":"UNIT 16"},{"ID":"22","NAME":"UNIT 16A"},{"ID":"23","NAME":"UNIT 17"},{"ID":"24","NAME":"UNIT 18"},{"ID":"25","NAME":"UNIT 19"},{"ID":"26","NAME":"UNIT 19A"},{"ID":"2","NAME":"UNIT 2"},{"ID":"27","NAME":"UNIT 20"},{"ID":"28","NAME":"UNIT 20A"},{"ID":"29","NAME":"UNIT 21"},{"ID":"30","NAME":"UNIT 21A"},{"ID":"31","NAME":"UNIT 22"},{"ID":"32","NAME":"UNIT 23"},{"ID":"33","NAME":"UNIT 24"},{"ID":"34","NAME":"UNIT 25"},{"ID":"35","NAME":"UNIT 26"},{"ID":"36","NAME":"UNIT 27"},{"ID":"37","NAME":"UNIT 28"},{"ID":"38","NAME":"UNIT 29"},{"ID":"3","NAME":"UNIT 3"},{"ID":"39","NAME":"UNIT 30"},{"ID":"40","NAME":"UNIT 30A"},{"ID":"41","NAME":"UNIT 31"},{"ID":"42","NAME":"UNIT 32"},{"ID":"43","NAME":"UNIT 32A"},{"ID":"44","NAME":"UNIT 33"},{"ID":"45","NAME":"UNIT 34"},{"ID":"46","NAME":"UNIT 35"},{"ID":"47","NAME":"UNIT 36"},{"ID":"48","NAME":"UNIT 36A"},{"ID":"49","NAME":"UNIT 36B"},{"ID":"50","NAME":"UNIT 37"},{"ID":"51","NAME":"UNIT 37A"},{"ID":"52","NAME":"UNIT 38"},{"ID":"53","NAME":"UNIT 39"},{"ID":"4","NAME":"UNIT 4"},{"ID":"54","NAME":"UNIT 40"},{"ID":"55","NAME":"UNIT 41"},{"ID":"56","NAME":"UNIT 42"},{"ID":"57","NAME":"UNIT 43"},{"ID":"58","NAME":"UNIT 44"},{"ID":"59","NAME":"UNIT 45"},{"ID":"60","NAME":"UNIT 46"},{"ID":"61","NAME":"UNIT 47"},{"ID":"62","NAME":"UNIT 48"},{"ID":"63","NAME":"UNIT 49"},{"ID":"5","NAME":"UNIT 4A"},{"ID":"6","NAME":"UNIT 5"},{"ID":"64","NAME":"UNIT 50"},{"ID":"65","NAME":"UNIT 51"},{"ID":"66","NAME":"UNIT 52"},{"ID":"67","NAME":"UNIT 52A"},{"ID":"68","NAME":"UNIT 53"},{"ID":"69","NAME":"UNIT 54"},{"ID":"70","NAME":"UNIT 55"},{"ID":"71","NAME":"UNIT 56"},{"ID":"72","NAME":"UNIT 57"},{"ID":"73","NAME":"UNIT 58"},{"ID":"74","NAME":"UNIT 59"},{"ID":"75","NAME":"UNIT 59A"},{"ID":"7","NAME":"UNIT 6"},{"ID":"76","NAME":"UNIT 60"},{"ID":"77","NAME":"UNIT 60A"},{"ID":"78","NAME":"UNIT 61"},{"ID":"79","NAME":"UNIT 62"},{"ID":"80","NAME":"UNIT 62A"},{"ID":"81","NAME":"UNIT 63"},{"ID":"82","NAME":"UNIT 63A"},{"ID":"83","NAME":"UNIT 64"},{"ID":"84","NAME":"UNIT 65"},{"ID":"85","NAME":"UNIT 66"},{"ID":"86","NAME":"UNIT 66A"},{"ID":"87","NAME":"UNIT 67"},{"ID":"88","NAME":"UNIT 68"},{"ID":"89","NAME":"UNIT 68A"},{"ID":"90","NAME":"UNIT 69"},{"ID":"8","NAME":"UNIT 7"},{"ID":"91","NAME":"UNIT 70"},{"ID":"92","NAME":"UNIT 71"},{"ID":"93","NAME":"UNIT 72"},{"ID":"94","NAME":"UNIT 73"},{"ID":"95","NAME":"UNIT 73A"},{"ID":"96","NAME":"UNIT 74"},{"ID":"97","NAME":"UNIT 75"},{"ID":"98","NAME":"UNIT 76"},{"ID":"99","NAME":"UNIT 77"},{"ID":"100","NAME":"UNIT 78"},{"ID":"9","NAME":"UNIT 8"},{"ID":"10","NAME":"UNIT 8A"},{"ID":"11","NAME":"UNIT 9"},];
+			$.each(gmuList, function(){
+				$('#gmu').append('<option value="' + this.ID + '">' + this.NAME + '</option>');
+			});
+			//populate the Elk Zone dropdown with JSON vars.
+			var ElkZoneList = [{"ID":"93","NAME":"Bannock"},{"ID":"2","NAME":"Bear River"},{"ID":"3","NAME":"Beaverhead"},{"ID":"5","NAME":"Big Desert"},{"ID":"6","NAME":"Boise River"},{"ID":"7","NAME":"Brownlee"},{"ID":"8","NAME":"Diamond Creek"},{"ID":"9","NAME":"Dworshak"},{"ID":"10","NAME":"Elk City"},{"ID":"11","NAME":"Hells Canyon"},{"ID":"12","NAME":"Island Park"},{"ID":"13","NAME":"Lemhi"},{"ID":"14","NAME":"Lolo"},{"ID":"15","NAME":"McCall"},{"ID":"16","NAME":"Middle Fork"},{"ID":"52","NAME":"Owyhee"},{"ID":"18","NAME":"Palisades"},{"ID":"19","NAME":"Palouse"},{"ID":"20","NAME":"Panhandle"},{"ID":"21","NAME":"Pioneer"},{"ID":"22","NAME":"Salmon"},{"ID":"23","NAME":"Sawtooth"},{"ID":"24","NAME":"Selway"},{"ID":"4","NAME":"Smoky - Bennett"},{"ID":"26","NAME":"Snake River"},{"ID":"60","NAME":"South Hills"},{"ID":"28","NAME":"Tex Creek"},{"ID":"29","NAME":"Weiser River"},];
+			$.each(ElkZoneList, function(){
+				$('#elkzone').append('<option value="' + this.ID + '">' + this.NAME + '</option>');
+			});
+			//populate the controlled hunts dropdown with JSON vars.
+			var chuntsList = [{"ID":"1","NAME1":"Goat","NAME2":"1"},{"ID":"2","NAME1":"Goat","NAME2":"22"},{"ID":"3","NAME1":"Goat","NAME2":"18*"},{"ID":"4","NAME1":"Goat","NAME2":"36A-3*"},{"ID":"5","NAME1":"Goat","NAME2":"36A-4*"},{"ID":"6","NAME1":"Goat","NAME2":"36B*"},{"ID":"7","NAME1":"Goat","NAME2":"50*"},{"ID":"8","NAME1":"Goat","NAME2":"27-2*"},{"ID":"9","NAME1":"Goat","NAME2":"36A-1*"},{"ID":"10","NAME1":"Goat","NAME2":"36A-2*"},{"ID":"11","NAME1":"Goat","NAME2":"39"},{"ID":"12","NAME1":"Goat","NAME2":"67"},{"ID":"13","NAME1":"Goat","NAME2":"10-1"},{"ID":"14","NAME1":"Goat","NAME2":"27-4*"},{"ID":"15","NAME1":"Goat","NAME2":"27-5"},{"ID":"16","NAME1":"Goat","NAME2":"43*"},{"ID":"17","NAME1":"Goat","NAME2":"37A*"},{"ID":"18","NAME1":"Goat","NAME2":"7*"},{"ID":"19","NAME1":"Goat","NAME2":"10-2*"},{"ID":"20","NAME1":"Goat","NAME2":"36-1*"},{"ID":"21","NAME1":"Moose","NAME2":"69-1"},{"ID":"22","NAME1":"Moose","NAME2":"2"},{"ID":"23","NAME1":"Moose","NAME2":"3"},{"ID":"24","NAME1":"Moose","NAME2":"4"},{"ID":"25","NAME1":"Moose","NAME2":"4A"},{"ID":"26","NAME1":"Moose","NAME2":"5"},{"ID":"27","NAME1":"Moose","NAME2":"6"},{"ID":"28","NAME1":"Moose","NAME2":"7"},{"ID":"29","NAME1":"Moose","NAME2":"8"},{"ID":"30","NAME1":"Moose","NAME2":"8A"},{"ID":"31","NAME1":"Moose","NAME2":"9"},{"ID":"32","NAME1":"Moose","NAME2":"36A"},{"ID":"33","NAME1":"Moose","NAME2":"50"},{"ID":"34","NAME1":"Moose","NAME2":"51"},{"ID":"35","NAME1":"Moose","NAME2":"60"},{"ID":"36","NAME1":"Moose","NAME2":"62"},{"ID":"37","NAME1":"Moose","NAME2":"62A"},{"ID":"38","NAME1":"Moose","NAME2":"63A"},{"ID":"39","NAME1":"Moose","NAME2":"64"},{"ID":"40","NAME1":"Moose","NAME2":"65"},{"ID":"41","NAME1":"Moose","NAME2":"66A"},{"ID":"42","NAME1":"Moose","NAME2":"70"},{"ID":"43","NAME1":"Moose","NAME2":"72"},{"ID":"44","NAME1":"Moose","NAME2":"74"},{"ID":"45","NAME1":"Moose","NAME2":"75"},{"ID":"46","NAME1":"Moose","NAME2":"1-1"},{"ID":"47","NAME1":"Moose","NAME2":"1-2"},{"ID":"48","NAME1":"Moose","NAME2":"1-3"},{"ID":"49","NAME1":"Moose","NAME2":"1-4"},{"ID":"50","NAME1":"Moose","NAME2":"10-4"},{"ID":"51","NAME1":"Moose","NAME2":"10A-4"},{"ID":"52","NAME1":"Moose","NAME2":"10A-5"},{"ID":"53","NAME1":"Moose","NAME2":"61-1"},{"ID":"54","NAME1":"Moose","NAME2":"61-2"},{"ID":"55","NAME1":"Moose","NAME2":"61-3"},{"ID":"56","NAME1":"Moose","NAME2":"66-1"},{"ID":"57","NAME1":"Moose","NAME2":"66-2"},{"ID":"58","NAME1":"Moose","NAME2":"67-1"},{"ID":"59","NAME1":"Moose","NAME2":"67-2"},{"ID":"60","NAME1":"Moose","NAME2":"69-2"},{"ID":"61","NAME1":"Moose","NAME2":"69-3*"},{"ID":"62","NAME1":"Moose","NAME2":"71-1"},{"ID":"63","NAME1":"Moose","NAME2":"71-2"},{"ID":"64","NAME1":"Moose","NAME2":"76-1"},{"ID":"65","NAME1":"Moose","NAME2":"76-2"},{"ID":"66","NAME1":"Moose","NAME2":"76-3"},{"ID":"67","NAME1":"Moose","NAME2":"59*"},{"ID":"68","NAME1":"Moose","NAME2":"29*"},{"ID":"69","NAME1":"Moose","NAME2":"55*"},{"ID":"70","NAME1":"Moose","NAME2":"73*"},{"ID":"71","NAME1":"Moose","NAME2":"60A"},{"ID":"72","NAME1":"Moose","NAME2":"77"},{"ID":"73","NAME1":"Moose","NAME2":"78"},{"ID":"74","NAME1":"Moose","NAME2":"10-1"},{"ID":"75","NAME1":"Moose","NAME2":"10-2"},{"ID":"76","NAME1":"Moose","NAME2":"10-3"},{"ID":"77","NAME1":"Moose","NAME2":"10-5"},{"ID":"78","NAME1":"Moose","NAME2":"10-6"},{"ID":"79","NAME1":"Moose","NAME2":"10A-1"},{"ID":"80","NAME1":"Moose","NAME2":"10A-2"},{"ID":"81","NAME1":"Moose","NAME2":"10A-3"},{"ID":"82","NAME1":"Moose","NAME2":"12-1"},{"ID":"83","NAME1":"Moose","NAME2":"12-2"},{"ID":"84","NAME1":"Moose","NAME2":"12-4"},{"ID":"85","NAME1":"Moose","NAME2":"12-3"},{"ID":"86","NAME1":"Moose","NAME2":"12-5"},{"ID":"87","NAME1":"Moose","NAME2":"14"},{"ID":"88","NAME1":"Moose","NAME2":"16"},{"ID":"89","NAME1":"Moose","NAME2":"44*"},{"ID":"90","NAME1":"Moose","NAME2":"63"},{"ID":"91","NAME1":"Moose","NAME2":"27"},{"ID":"92","NAME1":"Rocky Mtn Sheep","NAME2":"26L"},{"ID":"93","NAME1":"Rocky Mtn Sheep","NAME2":"37A"},{"ID":"94","NAME1":"California Sheep","NAME2":"40"},{"ID":"95","NAME1":"California Sheep","NAME2":"42-1 and 42-2"},{"ID":"96","NAME1":"California Sheep","NAME2":"55"},{"ID":"97","NAME1":"Rocky Mtn Sheep","NAME2":"11"},{"ID":"98","NAME1":"Rocky Mtn Sheep","NAME2":"19*"},{"ID":"99","NAME1":"Rocky Mtn Sheep","NAME2":"20A"},{"ID":"100","NAME1":"Rocky Mtn Sheep","NAME2":"21"},{"ID":"101","NAME1":"Rocky Mtn Sheep","NAME2":"26*"},{"ID":"102","NAME1":"Rocky Mtn Sheep","NAME2":"27-1"},{"ID":"103","NAME1":"Rocky Mtn Sheep","NAME2":"27-2"},{"ID":"104","NAME1":"Rocky Mtn Sheep","NAME2":"27-3*"},{"ID":"105","NAME1":"Rocky Mtn Sheep","NAME2":"27-5"},{"ID":"106","NAME1":"Rocky Mtn Sheep","NAME2":"27L*"},{"ID":"107","NAME1":"Rocky Mtn Sheep","NAME2":"28-1"},{"ID":"108","NAME1":"Rocky Mtn Sheep","NAME2":"30*"},{"ID":"109","NAME1":"Rocky Mtn Sheep","NAME2":"37*"},{"ID":"110","NAME1":"Rocky Mtn Sheep","NAME2":"17L"},{"ID":"111","NAME1":"Rocky Mtn Sheep","NAME2":"36A*"},{"ID":"112","NAME1":"Rocky Mtn Sheep","NAME2":"28-2"},{"ID":"113","NAME1":"Rocky Mtn Sheep","NAME2":"28-3"},{"ID":"114","NAME1":"Rocky Mtn Sheep","NAME2":"36B*"},{"ID":"115","NAME1":"Rocky Mtn Sheep","NAME2":"20*"},{"ID":"116","NAME1":"California Sheep","NAME2":"41-2"},{"ID":"117","NAME1":"California Sheep","NAME2":"41-1"},{"ID":"118","NAME1":"California Sheep","NAME2":"46-1* and 46-2*"},{"ID":"119","NAME1":"Rocky Mtn Sheep","NAME2":"36"},{"ID":"120","NAME1":"Rocky Mtn Sheep","NAME2":"27-4*"},{"ID":"121","NAME1":"Antelope","NAME2":"40-2*"},{"ID":"122","NAME1":"Antelope","NAME2":"46-2*"},{"ID":"123","NAME1":"Antelope","NAME2":"39"},{"ID":"124","NAME1":"Antelope","NAME2":"29"},{"ID":"125","NAME1":"Antelope","NAME2":"30*"},{"ID":"126","NAME1":"Antelope","NAME2":"32*"},{"ID":"127","NAME1":"Antelope","NAME2":"36B*"},{"ID":"128","NAME1":"Antelope","NAME2":"37*"},{"ID":"129","NAME1":"Antelope","NAME2":"41"},{"ID":"130","NAME1":"Antelope","NAME2":"42*"},{"ID":"131","NAME1":"Antelope","NAME2":"44-1*"},{"ID":"132","NAME1":"Antelope","NAME2":"45-1"},{"ID":"133","NAME1":"Antelope","NAME2":"60A*"},{"ID":"134","NAME1":"Antelope","NAME2":"61"},{"ID":"135","NAME1":"Antelope","NAME2":"30A"},{"ID":"136","NAME1":"Antelope","NAME2":"40-1"},{"ID":"137","NAME1":"Antelope","NAME2":"46-1"},{"ID":"138","NAME1":"Antelope","NAME2":"47"},{"ID":"139","NAME1":"Antelope","NAME2":"49"},{"ID":"140","NAME1":"Antelope","NAME2":"50"},{"ID":"141","NAME1":"Antelope","NAME2":"54-1"},{"ID":"142","NAME1":"Antelope","NAME2":"58"},{"ID":"143","NAME1":"Antelope","NAME2":"68"},{"ID":"144","NAME1":"Antelope","NAME2":"52A*"},{"ID":"145","NAME1":"Antelope","NAME2":"52*"},{"ID":"146","NAME1":"Antelope","NAME2":"59*"},{"ID":"147","NAME1":"Antelope","NAME2":"51*"},{"ID":"148","NAME1":"Antelope","NAME2":"63-1"},{"ID":"149","NAME1":"Antelope","NAME2":"63-2"},{"ID":"150","NAME1":"Antelope","NAME2":"45-3X"},{"ID":"152","NAME1":"Antelope","NAME2":"45-2*"},{"ID":"153","NAME1":"Antelope","NAME2":"46-3X*"},{"ID":"154","NAME1":"Antelope","NAME2":"76"},{"ID":"155","NAME1":"Antelope","NAME2":"21A*"},{"ID":"156","NAME1":"Antelope","NAME2":"44-2*"},{"ID":"157","NAME1":"Antelope","NAME2":"54-2"},{"ID":"158","NAME1":"Antelope","NAME2":"36A*"},{"ID":"159","NAME1":"Antelope","NAME2":"54-3"},{"ID":"160","NAME1":"Deer","NAME2":"8AX"},{"ID":"161","NAME1":"Deer","NAME2":"33*"},{"ID":"162","NAME1":"Deer","NAME2":"47-2*"},{"ID":"163","NAME1":"Deer","NAME2":"50"},{"ID":"164","NAME1":"Deer","NAME2":"51*"},{"ID":"165","NAME1":"Deer","NAME2":"58*"},{"ID":"166","NAME1":"Deer","NAME2":"60-1*"},{"ID":"167","NAME1":"Deer","NAME2":"60-2*"},{"ID":"168","NAME1":"Deer","NAME2":"8-1X"},{"ID":"169","NAME1":"Deer","NAME2":"8A"},{"ID":"170","NAME1":"Deer","NAME2":"10A"},{"ID":"171","NAME1":"Deer","NAME2":"11"},{"ID":"172","NAME1":"Deer","NAME2":"11A"},{"ID":"173","NAME1":"Deer","NAME2":"13"},{"ID":"174","NAME1":"Deer","NAME2":"14"},{"ID":"175","NAME1":"Deer","NAME2":"18"},{"ID":"176","NAME1":"Deer","NAME2":"19A"},{"ID":"177","NAME1":"Deer","NAME2":"20A"},{"ID":"178","NAME1":"Deer","NAME2":"22"},{"ID":"179","NAME1":"Deer","NAME2":"23"},{"ID":"180","NAME1":"Deer","NAME2":"25"},{"ID":"181","NAME1":"Deer","NAME2":"26"},{"ID":"182","NAME1":"Deer","NAME2":"27"},{"ID":"183","NAME1":"Deer","NAME2":"30A"},{"ID":"184","NAME1":"Deer","NAME2":"31"},{"ID":"185","NAME1":"Deer","NAME2":"32"},{"ID":"186","NAME1":"Deer","NAME2":"32A"},{"ID":"187","NAME1":"Deer","NAME2":"36A"},{"ID":"188","NAME1":"Deer","NAME2":"39-1"},{"ID":"189","NAME1":"Deer","NAME2":"40"},{"ID":"190","NAME1":"Deer","NAME2":"41-1"},{"ID":"191","NAME1":"Deer","NAME2":"42"},{"ID":"192","NAME1":"Deer","NAME2":"43"},{"ID":"193","NAME1":"Deer","NAME2":"44"},{"ID":"194","NAME1":"Deer","NAME2":"45-1"},{"ID":"195","NAME1":"Deer","NAME2":"47-1"},{"ID":"196","NAME1":"Deer","NAME2":"48"},{"ID":"197","NAME1":"Deer","NAME2":"49"},{"ID":"198","NAME1":"Deer","NAME2":"52"},{"ID":"199","NAME1":"Deer","NAME2":"52A"},{"ID":"200","NAME1":"Deer","NAME2":"54"},{"ID":"201","NAME1":"Deer","NAME2":"55-1"},{"ID":"202","NAME1":"Deer","NAME2":"56"},{"ID":"203","NAME1":"Deer","NAME2":"57"},{"ID":"204","NAME1":"Deer","NAME2":"61"},{"ID":"205","NAME1":"Deer","NAME2":"62"},{"ID":"206","NAME1":"Deer","NAME2":"63A"},{"ID":"207","NAME1":"Deer","NAME2":"66"},{"ID":"208","NAME1":"Deer","NAME2":"67"},{"ID":"209","NAME1":"Deer","NAME2":"68AX"},{"ID":"210","NAME1":"Deer","NAME2":"69"},{"ID":"211","NAME1":"Deer","NAME2":"70"},{"ID":"212","NAME1":"Deer","NAME2":"73"},{"ID":"213","NAME1":"Deer","NAME2":"1*"},{"ID":"214","NAME1":"Deer","NAME2":"68A"},{"ID":"215","NAME1":"Deer","NAME2":"39-2"},{"ID":"216","NAME1":"Deer","NAME2":"64*"},{"ID":"217","NAME1":"Deer","NAME2":"53"},{"ID":"218","NAME1":"Deer","NAME2":"21X*"},{"ID":"219","NAME1":"Deer","NAME2":"28-2"},{"ID":"220","NAME1":"Deer","NAME2":"50X*"},{"ID":"221","NAME1":"Deer","NAME2":"32X"},{"ID":"222","NAME1":"Deer","NAME2":"36AX*"},{"ID":"223","NAME1":"Deer","NAME2":"15X"},{"ID":"224","NAME1":"Deer","NAME2":"16X"},{"ID":"225","NAME1":"Deer","NAME2":"11X"},{"ID":"226","NAME1":"Deer","NAME2":"41-2*"},{"ID":"227","NAME1":"Deer","NAME2":"78"},{"ID":"228","NAME1":"Deer","NAME2":"45-2"},{"ID":"229","NAME1":"Deer","NAME2":"55-2*"},{"ID":"230","NAME1":"Deer","NAME2":"38"},{"ID":"231","NAME1":"Deer","NAME2":"40X*"},{"ID":"232","NAME1":"Deer","NAME2":"37*"},{"ID":"233","NAME1":"Deer","NAME2":"45-3*"},{"ID":"234","NAME1":"Deer","NAME2":"1X"},{"ID":"235","NAME1":"Deer","NAME2":"8-2X*"},{"ID":"236","NAME1":"Deer","NAME2":"21"},{"ID":"237","NAME1":"Deer","NAME2":"28-1"},{"ID":"238","NAME1":"Deer","NAME2":"30"},{"ID":"239","NAME1":"Deer","NAME2":"36B"},{"ID":"240","NAME1":"Deer","NAME2":"63AX"},{"ID":"241","NAME1":"Deer","NAME2":"72*"},{"ID":"242","NAME1":"Deer","NAME2":"11AX"},{"ID":"243","NAME1":"Deer","NAME2":"38X"},{"ID":"244","NAME1":"Deer","NAME2":"10AX"},{"ID":"245","NAME1":"Deer","NAME2":"3X"},{"ID":"246","NAME1":"Deer","NAME2":"21A"},{"ID":"247","NAME1":"Deer","NAME2":"39X"},{"ID":"248","NAME1":"Deer","NAME2":"55-3*"},{"ID":"249","NAME1":"Deer","NAME2":"73X"},{"ID":"250","NAME1":"Deer","NAME2":"74"},{"ID":"251","NAME1":"Elk","NAME2":"33-2*"},{"ID":"252","NAME1":"Elk","NAME2":"58-1*"},{"ID":"253","NAME1":"Elk","NAME2":"60-1*"},{"ID":"254","NAME1":"Elk","NAME2":"8-1*"},{"ID":"256","NAME1":"Elk","NAME2":"10A"},{"ID":"257","NAME1":"Elk","NAME2":"22-1"},{"ID":"258","NAME1":"Elk","NAME2":"22-2"},{"ID":"259","NAME1":"Elk","NAME2":"23-2"},{"ID":"260","NAME1":"Elk","NAME2":"23-3"},{"ID":"261","NAME1":"Elk","NAME2":"23-4"},{"ID":"262","NAME1":"Elk","NAME2":"24-1"},{"ID":"263","NAME1":"Elk","NAME2":"24-2"},{"ID":"264","NAME1":"Elk","NAME2":"32-1"},{"ID":"265","NAME1":"Elk","NAME2":"32-2"},{"ID":"266","NAME1":"Elk","NAME2":"36A-1"},{"ID":"267","NAME1":"Elk","NAME2":"39-1"},{"ID":"268","NAME1":"Elk","NAME2":"40*"},{"ID":"269","NAME1":"Elk","NAME2":"48-2"},{"ID":"270","NAME1":"Elk","NAME2":"48-3"},{"ID":"271","NAME1":"Elk","NAME2":"60-2*"},{"ID":"272","NAME1":"Elk","NAME2":"70*"},{"ID":"273","NAME1":"Elk","NAME2":"1"},{"ID":"274","NAME1":"Elk","NAME2":"2"},{"ID":"275","NAME1":"Elk","NAME2":"3-2"},{"ID":"276","NAME1":"Elk","NAME2":"11-1"},{"ID":"277","NAME1":"Elk","NAME2":"11A"},{"ID":"278","NAME1":"Elk","NAME2":"13"},{"ID":"279","NAME1":"Elk","NAME2":"18-1"},{"ID":"280","NAME1":"Elk","NAME2":"19A"},{"ID":"281","NAME1":"Elk","NAME2":"22-3"},{"ID":"282","NAME1":"Elk","NAME2":"23-1"},{"ID":"283","NAME1":"Elk","NAME2":"24-3"},{"ID":"284","NAME1":"Elk","NAME2":"29"},{"ID":"285","NAME1":"Elk","NAME2":"30"},{"ID":"286","NAME1":"Elk","NAME2":"30A"},{"ID":"287","NAME1":"Elk","NAME2":"31-1"},{"ID":"288","NAME1":"Elk","NAME2":"32A-1"},{"ID":"289","NAME1":"Elk","NAME2":"37"},{"ID":"290","NAME1":"Elk","NAME2":"37A"},{"ID":"291","NAME1":"Elk","NAME2":"43-1"},{"ID":"292","NAME1":"Elk","NAME2":"44-1"},{"ID":"293","NAME1":"Elk","NAME2":"48-1"},{"ID":"294","NAME1":"Elk","NAME2":"49"},{"ID":"295","NAME1":"Elk","NAME2":"51"},{"ID":"296","NAME1":"Elk","NAME2":"58-2"},{"ID":"297","NAME1":"Elk","NAME2":"61"},{"ID":"298","NAME1":"Elk","NAME2":"66A-2"},{"ID":"299","NAME1":"Elk","NAME2":"76-1"},{"ID":"300","NAME1":"Elk","NAME2":"30-1*"},{"ID":"301","NAME1":"Elk","NAME2":"33-1*"},{"ID":"302","NAME1":"Elk","NAME2":"45*"},{"ID":"303","NAME1":"Elk","NAME2":"52A*"},{"ID":"304","NAME1":"Elk","NAME2":"66*"},{"ID":"305","NAME1":"Elk","NAME2":"75*"},{"ID":"306","NAME1":"Elk","NAME2":"66A-1*"},{"ID":"307","NAME1":"Elk","NAME2":"31-2"},{"ID":"308","NAME1":"Elk","NAME2":"36A-2*"},{"ID":"309","NAME1":"Elk","NAME2":"50-1"},{"ID":"310","NAME1":"Elk","NAME2":"44-2*"},{"ID":"311","NAME1":"Elk","NAME2":"8-2*"},{"ID":"312","NAME1":"Elk","NAME2":"8X*"},{"ID":"313","NAME1":"Elk","NAME2":"59*"},{"ID":"314","NAME1":"Elk","NAME2":"11-2"},{"ID":"315","NAME1":"Elk","NAME2":"14-2"},{"ID":"316","NAME1":"Elk","NAME2":"48-4*"},{"ID":"317","NAME1":"Elk","NAME2":"50-3"},{"ID":"318","NAME1":"Elk","NAME2":"63X"},{"ID":"319","NAME1":"Elk","NAME2":"39-3"},{"ID":"320","NAME1":"Elk","NAME2":"39-2*"},{"ID":"321","NAME1":"Elk","NAME2":"46*"},{"ID":"322","NAME1":"Elk","NAME2":"76-2*"},{"ID":"323","NAME1":"Elk","NAME2":"32A-2"},{"ID":"324","NAME1":"Elk","NAME2":"41"},{"ID":"325","NAME1":"Elk","NAME2":"45X"},{"ID":"326","NAME1":"Elk","NAME2":"67"},{"ID":"327","NAME1":"Elk","NAME2":"5-1"},{"ID":"328","NAME1":"Elk","NAME2":"5-2"},{"ID":"329","NAME1":"Elk","NAME2":"62*"},{"ID":"330","NAME1":"Elk","NAME2":"16"},{"ID":"331","NAME1":"Elk","NAME2":"18-2"},{"ID":"332","NAME1":"Elk","NAME2":"18X"},{"ID":"333","NAME1":"Elk","NAME2":"36A"},{"ID":"334","NAME1":"Elk","NAME2":"39-4"},{"ID":"335","NAME1":"Elk","NAME2":"39X"},{"ID":"336","NAME1":"Elk","NAME2":"54"},{"ID":"337","NAME1":"Elk","NAME2":"55-1*"},{"ID":"338","NAME1":"Elk","NAME2":"55-2*"},{"ID":"339","NAME1":"Elk","NAME2":"56"},{"ID":"340","NAME1":"Elk","NAME2":"14-1"},{"ID":"341","NAME1":"Elk","NAME2":"49X*"},{"ID":"342","NAME1":"Elk","NAME2":"24-1"},{"ID":"343","NAME1":"Elk","NAME2":"24-2"},{"ID":"344","NAME1":"Elk","NAME2":"52AX"},{"ID":"345","NAME1":"Elk","NAME2":"3-1*"},{"ID":"346","NAME1":"Elk","NAME2":"30X"},{"ID":"347","NAME1":"Elk","NAME2":"30A-1"},{"ID":"348","NAME1":"Elk","NAME2":"36B"},{"ID":"349","NAME1":"Elk","NAME2":"43-2*"},{"ID":"350","NAME1":"Elk","NAME2":"50-2"},{"ID":"351","NAME1":"Elk","NAME2":"64*"},{"ID":"352","NAME1":"Elk","NAME2":"32A-3"},{"ID":"353","NAME1":"Turkey","NAME2":"54-1, 2, and 3"},{"ID":"354","NAME1":"Turkey","NAME2":"68A-1, 2, and 3"},{"ID":"355","NAME1":"Turkey","NAME2":"71-1, 2, 3, 4 and 5"},{"ID":"356","NAME1":"Turkey","NAME2":"38-1* and 2*"},{"ID":"357","NAME1":"Turkey","NAME2":"36B-1* and 2*"},{"ID":"358","NAME1":"Turkey","NAME2":"31-1"},{"ID":"359","NAME1":"Turkey","NAME2":"22-1*"},{"ID":"360","NAME1":"Turkey","NAME2":"73-1*"},{"ID":"361","NAME1":"Turkey","NAME2":"50-1*, 2*, 3* and 4*"},{"ID":"362","NAME1":"Bear","NAME2":"32*"},{"ID":"363","NAME1":"Bear","NAME2":"1*"},{"ID":"364","NAME1":"Bear","NAME2":"22*"},];	
+			$.each(chuntsList, function(){
+				$('#chunt').append('<option value="' + this.ID + '">' + this.NAME1 + " - Area " + this.NAME2 + '</option>');
+			});
+			//populate the Waterfowl Hunt Areas dropdown with JSON vars.
+			var waterfowlList = [{"ID":"1","NAME":"Canada Goose Area 1"},{"ID":"2","NAME":"Canada Goose Area 2"},{"ID":"3","NAME":"Duck Area 1"},{"ID":"4","NAME":"Duck Area 2"},{"ID":"5","NAME":"Light Goose Area 1"},{"ID":"6","NAME":"Light Goose Area 2"},{"ID":"7","NAME":"Light Goose Area 3"},{"ID":"8","NAME":"Light Goose Area 4"},{"ID":"9","NAME":"White-fronted Goose Area 1"},{"ID":"10","NAME":"White-fronted Goose Area 2"},{"ID":"11","NAME":"White-fronted Goose Area 3"},];
+			$.each(waterfowlList, function(){
+				$('#waterfowl').append('<option value="' + this.ID + '">' + this.NAME + '</option>');
+			});
+			//populate the Game Distribution dropdown with JSON vars.
+			var gameAnimalList = [{"ID":"730","NAME":"American Badger"},{"ID":"693","NAME":"American Beaver"},{"ID":"362","NAME":"American Coot"},{"ID":"500","NAME":"American Crow"},{"ID":"723","NAME":"American Marten"},{"ID":"306","NAME":"American Wigeon"},{"ID":"318","NAME":"Barrow's Goldeneye"},{"ID":"719","NAME":"Black Bear"},{"ID":"301","NAME":"Blue-Winged Teal"},{"ID":"736","NAME":"Bobcat"},{"ID":"319","NAME":"Bufflehead"},{"ID":"747","NAME":"California Bighorn Sheep"},{"ID":"356","NAME":"California Quail"},{"ID":"295","NAME":"Canada Goose"},{"ID":"307","NAME":"Canvasback"},{"ID":"345","NAME":"Chukar"},{"ID":"302","NAME":"Cinnamon Teal"},{"ID":"352","NAME":"Columbian Sharp-Tailed Grouse"},{"ID":"317","NAME":"Common Goldeneye"},{"ID":"321","NAME":"Common Merganser"},{"ID":"722","NAME":"Common Raccoon"},{"ID":"397","NAME":"Common Snipe"},{"ID":"-700","NAME":"Deer"},{"ID":"348","NAME":"Dusky Grouse"},{"ID":"305","NAME":"Eurasian Wigeon"},{"ID":"304","NAME":"Gadwall"},{"ID":"344","NAME":"Gray Partridge"},{"ID":"310","NAME":"Greater Scaup"},{"ID":"297","NAME":"Green-Winged Teal"},{"ID":"313","NAME":"Harlequin Duck"},{"ID":"320","NAME":"Hooded Merganser"},{"ID":"311","NAME":"Lesser Scaup"},{"ID":"299","NAME":"Mallard"},{"ID":"727","NAME":"Mink"},{"ID":"740","NAME":"Moose"},{"ID":"656","NAME":"Mountain Cottontail"},{"ID":"745","NAME":"Mountain Goat"},{"ID":"734","NAME":"Mountain Lion"},{"ID":"746","NAME":"Mountain Sheep"},{"ID":"428","NAME":"Mourning Dove"},{"ID":"738","NAME":"Mule Deer"},{"ID":"708","NAME":"Muskrat"},{"ID":"354","NAME":"Northern Bobwhite"},{"ID":"300","NAME":"Northern Pintail"},{"ID":"733","NAME":"Northern River Otter"},{"ID":"303","NAME":"Northern Shoveler"},{"ID":"743","NAME":"Pronghorn"},{"ID":"660","NAME":"Pygmy Rabbit"},{"ID":"717","NAME":"Red Fox"},{"ID":"322","NAME":"Red-Breasted Merganser"},{"ID":"308","NAME":"Redhead"},{"ID":"309","NAME":"Ring-Necked Duck"},{"ID":"346","NAME":"Ring-Necked Pheasant"},{"ID":"293","NAME":"Ross's Goose"},{"ID":"323","NAME":"Ruddy Duck"},{"ID":"349","NAME":"Ruffed Grouse"},{"ID":"350","NAME":"Sage Grouse"},{"ID":"363","NAME":"Sandhill Crane"},{"ID":"292","NAME":"Snow Goose"},{"ID":"657","NAME":"Snowshoe Hare"},{"ID":"347","NAME":"Spruce Grouse"},{"ID":"737","NAME":"Wapiti Or Elk"},{"ID":"739","NAME":"White-Tailed Deer"},{"ID":"353","NAME":"Wild Turkey"},{"ID":"296","NAME":"Wood Duck"},];
+			$.each(gameAnimalList, function(){
+				$('#gameDistribution').append('<option value="' + this.ID + '">' + this.NAME + '</option>');
+			});
+			// legend nav1 menu is selected
+			$("#legendNav1").click(function(e){
+				$("#legendCollapse").collapse('toggle');
+				// Bootstrap work-around
+				$("body").css("margin-right","0px");
+				$(".navbar").css("margin-right","0px");
+			});
+			// legend nav2 menu is selected
+			$("#legendNav2").click(function(e){
+				$("#legendCollapse").collapse('toggle');
+				// Bootstrap work-around
+				$("body").css("margin-right","0px");
+				$(".navbar").css("margin-right","0px");
+			});
+			// hunt nav1 menu is selected
+			$("#huntNav1").click(function(e){
+				$("#huntModal").modal("show"); 
+				// Bootstrap work-around
+				$("body").css("margin-right","0px");
+				$(".navbar").css("margin-right","0px");
+			});
+			// hunt nav2 menu is selected
+			$("#huntNav2").click(function(e){
+				$("#huntModal").modal("show"); 
+				// Bootstrap work-around
+				$("body").css("margin-right","0px");
+				$(".navbar").css("margin-right","0px");
+			});
+			// kml nav1 menu is selected
+			$("#kmlNav1").click(function(e){
+				$("#kmlModal").modal("show"); 
+				// Bootstrap work-around
+				$("body").css("margin-right","0px");
+				$(".navbar").css("margin-right","0px");
+			});
+			// kml nav2 menu is selected
+			$("#kmlNav2").click(function(e){
+				$("#kmlModal").modal("show"); 
+				// Bootstrap work-around
+				$("body").css("margin-right","0px");
+				$(".navbar").css("margin-right","0px");
+			});
+			// upload nav1 menu is selected
+			$("#uploadNav1").click(function(e){
+				$("#uploadModal").modal("show"); 
+				// Bootstrap work-around
+				$("body").css("margin-right","0px");
+				$(".navbar").css("margin-right","0px");
+			});
+			// upload nav2 menu is selected
+			$("#uploadNav2").click(function(e){
+				$("#uploadModal").modal("show"); 
+				// Bootstrap work-around
+				$("body").css("margin-right","0px");
+				$(".navbar").css("margin-right","0px");
+			});
+			// basemap nav 1 menu is selected
+			$("#basemapNav1").click(function(e){
+				$("#basemapModal").modal("show"); 
+				// Bootstrap work-around
+				$("body").css("margin-right","0px");
+				$(".navbar").css("margin-right","0px");
+			});
+			// basemap nav2 menu is selected
+			$("#basemapNav2").click(function(e){
+				$("#basemapModal").modal("show"); 
+				// Bootstrap work-around
+				$("body").css("margin-right","0px");
+				$(".navbar").css("margin-right","0px");
+			});
+			// Geosearch nav1 menu is selected
+			$("#geosearchNav1").click(function(e){
+				$("#geosearchModal").modal("show"); 
+				// Bootstrap work-around
+				$("body").css("margin-right","0px");
+				$(".navbar").css("margin-right","0px");
+			});
+			// Geosearch nav2 menu is selected
+			$("#geosearchNav2").click(function(e){
+				$("#geosearchModal").modal("show"); 
+				// Bootstrap work-around
+				$("body").css("margin-right","0px");
+				$(".navbar").css("margin-right","0px");
+			});
+			// measurement nav1 menu is selected
+			$("#measurementNav1").click(function(e){
+				$("#measurementModal").modal("show"); 
+				// Bootstrap work-around
+				$("body").css("margin-right","0px");
+				$(".navbar").css("margin-right","0px");
+			});
+			// measurement nav2 menu is selected
+			$("#measurementNav2").click(function(e){
+				$("#measurementModal").modal("show"); 
+				// Bootstrap work-around
+				$("body").css("margin-right","0px");
+				$(".navbar").css("margin-right","0px");
+			});
+			// draw nav1 menu is selected
+			$("#drawNav1").click(function(e){
+				$("#drawModal").modal("show"); 
+				// Bootstrap work-around
+				$("body").css("margin-right","0px");
+				$(".navbar").css("margin-right","0px");
+			});
+			// draw nav2 menu is selected
+			$("#drawNav2").click(function(e){
+				$("#drawModal").modal("show"); 
+				// Bootstrap work-around
+				$("body").css("margin-right","0px");
+				$(".navbar").css("margin-right","0px");
+			});	
+			// pdf nav1 menu is selected
+			$("#pdfNav1").click(function(e){
+				$("#pdfModal").modal("show"); 
+				// Bootstrap work-around
+				$("body").css("margin-right","0px");
+				$(".navbar").css("margin-right","0px");
+			});
+			// pdf nav2 menu is selected
+			$("#pdfNav2").click(function(e){
+				$("#pdfModal").modal("show"); 
+				// Bootstrap work-around
+				$("body").css("margin-right","0px");
+				$(".navbar").css("margin-right","0px");
+			});
+			// help nav1 menu is selected
+			$("#helpNav1").click(function(e){
+				$("#helpModal").modal("show"); 
+				// Bootstrap work-around
+				$("body").css("margin-right","0px");
+				$(".navbar").css("margin-right","0px");
+			});
+			// help nav2 menu is selected
+			$("#helpNav2").click(function(e){
+				$("#helpModal").modal("show"); 
+				// Bootstrap work-around
+				$("body").css("margin-right","0px");
+				$(".navbar").css("margin-right","0px");
+			});
+			// share nav1 menu is selected
+			$("#shareNav1").click(function(e){
+				$("#shareModal").modal("show"); 
+				// Bootstrap work-around
+				$("body").css("margin-right","0px");
+				$(".navbar").css("margin-right","0px");
+			});
+			// share nav2 menu is selected
+			$("#shareNav2").click(function(e){
+				$("#shareModal").modal("show"); 
+				// Bootstrap work-around
+				$("body").css("margin-right","0px");
+				$(".navbar").css("margin-right","0px");
+			});
 			
-					status.innerHTML = error;				
-      });
-	};
-	
-	// Show modal dialog, hide nav
-	$(document).ready(function(){
-		//populate the Game Distribution dropdown with JSON vars.
-		$.each(gameAnimalList, function(){
-			$('#gameDistribution').append('<option value="' + this.ID + '">' + this.NAME + '</option>');
+			/* off-canvas sidebar toggle */
+			$('[data-toggle=offcanvas]').click(function() {
+					$(this).toggleClass('visible-xs text-center');
+					$(this).find('i').toggleClass('glyphicon-chevron-right glyphicon-chevron-left');
+					$('.row-offcanvas').toggleClass('active');
+					$('#lg-menu').toggleClass('#sidebar hidden-xs').toggleClass('#sidebar visible-xs');
+					$('#xs-menu').toggleClass('#sidebar visible-xs').toggleClass('#sidebar hidden-xs');
+			});			
 		});
-		// legend nav1 menu is selected
-		$("#legendNav1").click(function(e){
-			$("#legendCollapse").collapse('toggle');
-			// Bootstrap work-around
-			$("body").css("margin-right","0px");
-			$(".navbar").css("margin-right","0px");
-		});
-		// legend nav2 menu is selected
-		$("#legendNav2").click(function(e){
-			$("#legendCollapse").collapse('toggle');
-			// Bootstrap work-around
-			$("body").css("margin-right","0px");
-			$(".navbar").css("margin-right","0px");
-		});
-		// hunt nav1 menu is selected
-		$("#huntNav1").click(function(e){
-			$("#huntModal").modal("show"); 
-			// Bootstrap work-around
-			$("body").css("margin-right","0px");
-			$(".navbar").css("margin-right","0px");
-		});
-		// hunt nav2 menu is selected
-		$("#huntNav2").click(function(e){
-			$("#huntModal").modal("show"); 
-			// Bootstrap work-around
-			$("body").css("margin-right","0px");
-			$(".navbar").css("margin-right","0px");
-		});
-		// basemap nav 1 menu is selected
-		$("#basemapNav1").click(function(e){
-			$("#basemapModal").modal("show"); 
-			// Bootstrap work-around
-			$("body").css("margin-right","0px");
-			$(".navbar").css("margin-right","0px");
-		});
-		// basemap nav2 menu is selected
-		$("#basemapNav2").click(function(e){
-			$("#basemapModal").modal("show"); 
-			// Bootstrap work-around
-			$("body").css("margin-right","0px");
-			$(".navbar").css("margin-right","0px");
-		});
-		// Geosearch nav1 menu is selected
-		$("#geosearchNav1").click(function(e){
-			$("#geosearchModal").modal("show"); 
-			// Bootstrap work-around
-			$("body").css("margin-right","0px");
-			$(".navbar").css("margin-right","0px");
-		});
-		// Geosearch nav2 menu is selected
-		$("#geosearchNav2").click(function(e){
-			$("#geosearchModal").modal("show"); 
-			// Bootstrap work-around
-			$("body").css("margin-right","0px");
-			$(".navbar").css("margin-right","0px");
-		});
-		// measurement nav1 menu is selected
-		$("#measurementNav1").click(function(e){
-			$("#measurementModal").modal("show"); 
-			// Bootstrap work-around
-			$("body").css("margin-right","0px");
-			$(".navbar").css("margin-right","0px");
-		});
-		// measurement nav2 menu is selected
-		$("#measurementNav2").click(function(e){
-			$("#measurementModal").modal("show"); 
-			// Bootstrap work-around
-			$("body").css("margin-right","0px");
-			$(".navbar").css("margin-right","0px");
-		});
-		// draw nav1 menu is selected
-		$("#drawNav1").click(function(e){
-			$("#drawModal").modal("show"); 
-			// Bootstrap work-around
-			$("body").css("margin-right","0px");
-			$(".navbar").css("margin-right","0px");
-		});
-		// draw nav2 menu is selected
-		$("#drawNav2").click(function(e){
-			$("#drawModal").modal("show"); 
-			// Bootstrap work-around
-			$("body").css("margin-right","0px");
-			$(".navbar").css("margin-right","0px");
-		});	
-		// pdf nav1 menu is selected
-		$("#pdfNav1").click(function(e){
-			$("#pdfModal").modal("show"); 
-			// Bootstrap work-around
-			$("body").css("margin-right","0px");
-			$(".navbar").css("margin-right","0px");
-		});
-		// pdf nav2 menu is selected
-		$("#pdfNav2").click(function(e){
-			$("#pdfModal").modal("show"); 
-			// Bootstrap work-around
-			$("body").css("margin-right","0px");
-			$(".navbar").css("margin-right","0px");
-		});
-		// help nav1 menu is selected
-		$("#helpNav1").click(function(e){
-			$("#helpModal").modal("show"); 
-			// Bootstrap work-around
-			$("body").css("margin-right","0px");
-			$(".navbar").css("margin-right","0px");
-		});
-		// help nav2 menu is selected
-		$("#helpNav2").click(function(e){
-			$("#helpModal").modal("show"); 
-			// Bootstrap work-around
-			$("body").css("margin-right","0px");
-			$(".navbar").css("margin-right","0px");
-		});
-		// share nav1 menu is selected
-		$("#shareNav1").click(function(e){
-			$("#shareModal").modal("show"); 
-			// Bootstrap work-around
-			$("body").css("margin-right","0px");
-			$(".navbar").css("margin-right","0px");
-		});
-		// share nav2 menu is selected
-		$("#shareNav2").click(function(e){
-			$("#shareModal").modal("show"); 
-			// Bootstrap work-around
-			$("body").css("margin-right","0px");
-			$(".navbar").css("margin-right","0px");
-		});
-		
-		/* off-canvas sidebar toggle */
-		$('[data-toggle=offcanvas]').click(function() {
-				$(this).toggleClass('visible-xs text-center');
-				$(this).find('i').toggleClass('glyphicon-chevron-right glyphicon-chevron-left');
-				$('.row-offcanvas').toggleClass('active');
-				$('#lg-menu').toggleClass('#sidebar hidden-xs').toggleClass('#sidebar visible-xs');
-				$('#xs-menu').toggleClass('#sidebar visible-xs').toggleClass('#sidebar hidden-xs');
-				/*$('#btnShow').toggle();*/
-		});			
-	});
 })
