@@ -805,7 +805,7 @@
 			//initialize query
 			newQuery5 = new Query();
 			newQuery5.returnGeometry = true;
-			newQuery5.outFields = ["ID", "NAME"]
+			newQuery5.outFields = ["ID", "SCINAME", "NAME"]
 			newHighlight5 = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
 				new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
 				new Color([255,0,225]), 3),
@@ -1705,7 +1705,10 @@
 				$("body").css("margin-right","0px");
 				$(".navbar").css("margin-right","0px");
 			});
-			
+			// disclaimer is clicked
+			$("#disclaimer").click(function(e){
+				$("#disclaimerModal").modal("show");
+			});
 			/* off-canvas sidebar toggle */
 			$('[data-toggle=offcanvas]').click(function() {
 					$(this).toggleClass('visible-xs text-center');

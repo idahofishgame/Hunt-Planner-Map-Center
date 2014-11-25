@@ -18,11 +18,11 @@
 		 <link rel="stylesheet" href="//code.jquery.com/ui/1.10.1/themes/smoothness/jquery-ui.css">
 
     <!-- Custom styles for this template -->
-    <link rel="stylesheet" type="text/css" href="src/css/layout.css" >
     <link rel="stylesheet" href="//js.arcgis.com/3.9/js/dojo/dijit/themes/claro/claro.css">
     <link rel="stylesheet" type="text/css" href="//js.arcgis.com/3.9/js/esri/css/esri.css">
 		<link rel="stylesheet" type="text/css" href="src/css/bootstrap-select.css">		
     <link rel="stylesheet" type="text/css" href="src/css/bootstrapmap.css">
+		<link rel="stylesheet" type="text/css" href="src/css/layout.css" >
     <link rel="stylesheet" type="text/css" href="src/agsjs/css/agsjs.css">
 		
     <link rel="apple-touch-icon" href="/bootstrap/img/apple-touch-icon.png">
@@ -61,6 +61,7 @@
             <li><a id="Idaho Fish and Game Homepage" href="http://fishandgame.idaho.gov/" target="_blank">Home</a></li>
 						<li><a id="Hunting" href="http://fishandgame.idaho.gov/public/hunt/" target="_blank">Hunting</a></li>
             <li><a id="Huntplanner" href="https://fishandgame.idaho.gov/ifwis/huntplanner"target="_blank">Hunt Planner</a></li>
+						<li><a id="disclaimer">Disclaimer</a></li>
           </ul>
         </div>
       </div>
@@ -416,8 +417,27 @@
 				</div>
 			</div>
 		</div>
+		<!-- Disclaimer Modal -->
+		<div class="modal fade" id="disclaimerModal" tabindex="-1" style="display: none;" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Map Center Disclaimer</h4>
+					</div>
+					<div class="modal-body">
+						<p>The information displayed in this application is derived from Idaho Fish and Game (IDFG) digital GIS datasets, as well as data developed by other sources. The data presented in this application is not “live” data, but consists of data that is updated on a regular basis by IDFG and the other agencies that have provided data.  Users of the information displayed in this application are strongly cautioned to verify all information before making any hunting decisions or pursuing game animals by referring to the boundaries published in the current IDFG regulation booklets.</p>
+						<p>This application is to be used for informational purposes only and has not been prepared for, or is considered to be suitable for legal, engineering, or surveying purposes. IDFG cannot accept any responsibility for any errors, omissions, or positional accuracy, and therefore, there are no warranties which accompany this product.  In no event shall IDFG be liable for any special, indirect, or consequential damages or any damages whatsoever resulting from loss of use, data, or profits arising out of or in connection with the use or misuse of the information herein provided.</p>
+						<p>This application is maintained during normal business hours 8 a.m. to 5 p.m, Monday through Friday.  If any interruption in service occurs during non-business hours, please <a href="https://fishandgame.idaho.gov/ifwis/portal/contact#huntplanner" title="Send us a note" target="_blank">contact us</a> and the problem will be addressed at the beginning of the next business day.</p>
+						<p>To learn more about the application and to review known issues and application updates, go to the <a href="http://fishandgame.idaho.gov/ifwis/huntplanner/mapcenter/HelpDoc/IDFG%20Hunt%20Planner%20Map%20Center%20Help%20Documentation.html" target="_blank">help documentation</a>.</p>
+						<p>In accordance with our <a href="http://fishandgame.idaho.gov/public/about/terms/" target="_blank">terms of use</a> for this site, you agree to this disclaimer..</p>
+						<br/><br/>
+						<button class="btnClose" data-dismiss="modal">OK</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
-		
     <!-- Bootstrap-map-js -->
 		<div class="row row-offcanvas row-offcanvas-left">
     <!-- sidebar -->
