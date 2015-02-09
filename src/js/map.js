@@ -60,12 +60,12 @@
 ) {
 		
 		//Proxy settings
-		esriConfig.defaults.io.proxyUrl = "http://fishandgame.idaho.gov/ifwis/gis_proxy/proxy.ashx?";
+		esriConfig.defaults.io.proxyUrl = "https://fishandgame.idaho.gov/ifwis/gis_proxy/proxy.ashx?";
 		esriConfig.defaults.io.alwaysUseProxy = false;
 		
 		urlUtils.addProxyRule({
-			urlPrefix: "http://fishandgame.idaho.gov",
-			proxyUrl: "http://fishandgame.idaho.gov/ifwis/gis_proxy/proxy.ashx"
+			urlPrefix: "https://fishandgame.idaho.gov",
+			proxyUrl: "https://fishandgame.idaho.gov/ifwis/gis_proxy/proxy.ashx"
     });
 		
 		// call the parser to create the dijit layout dijits
@@ -149,14 +149,17 @@
 		
 		//add the basemap gallery, in this case we'll display maps from ArcGIS.com including bing maps
 		basemapGallery = new BasemapGallery({
-			showArcGISBasemaps: true,
+			showArcGISBasemaps: false,
 			map: map,
 		}, "basemapDiv");
 		basemapGallery.startup();
 		
+
+		
 		basemapGallery.on("error", function(msg) {
 			console.log("basemap gallery error:  ", msg);
 		});
+		
 		
 		$("#basemapDiv").click (function(){
 			//If a google basemap was previously selected, remove it to see the esri basemap (google maps are 'on top of' esri maps)
@@ -168,14 +171,63 @@
 			$("#basemapModal").modal('hide');
 		});
 		
-		//Add the USA Topo basemap to the basemap gallery. It is not part of the gallery by default.  You can add other esri or custom basemaps.
-		var layer = new esri.dijit.BasemapLayer({url:"http://services.arcgisonline.com/ArcGIS/rest/services/USA_Topo_Maps/MapServer"});
-		var basemap = new esri.dijit.Basemap({
-			layers:[layer],
-			title:"USGS Topo",
-			thumbnailUrl:"src/images/usa_topo.jpg"
+		//Add the World Topo basemap to the basemap gallery.
+		var worldTopo = new BasemapLayer({url:"http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer"});
+		var worldTopoBasemap = new Basemap({
+			layers:[worldTopo],
+			title:"Esri World Topographic",
+			thumbnailUrl:"http://www.arcgis.com/sharing/rest/content/items/6e03e8c26aad4b9c92a87c1063ddb0e3/info/thumbnail/topo_map_2.jpg"
 		});
-		basemapGallery.add(basemap);
+		basemapGallery.add(worldTopoBasemap);
+
+		//Add the USA Topo basemap to the basemap gallery.
+		var usgsTopo = new BasemapLayer({url:"http://services.arcgisonline.com/ArcGIS/rest/services/USA_Topo_Maps/MapServer"});
+		var usgsBasemap = new Basemap({
+			layers:[usgsTopo],
+			title:"Esri USGS Topographic",
+			thumbnailUrl:"http://www.arcgis.com/sharing/rest/content/items/931d892ac7a843d7ba29d085e0433465/info/thumbnail/usa_topo.jpg"
+		});
+		basemapGallery.add(usgsBasemap);
+		
+		//Add the Imagery with Labels basemap to the basemap gallery.
+ 		var Imagery = new BasemapLayer({url:"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"});
+		//var Reference = new BasemapLayer({url: "http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer"});
+		var imageryLabelBasemap = new Basemap({
+			layers:[Imagery],
+			title:"Esri Satellite Imagery",
+			thumbnailUrl:"http://www.arcgis.com/sharing/rest/content/items/413fd05bbd7342f5991d5ec96f4f8b18/info/thumbnail/tempimagery_with_labels_ne_usa.png"
+		});
+		basemapGallery.add(imageryLabelBasemap);
+		
+		//Add the Terrain with Labels basemap to the basemap gallery.
+		var Terrain = new BasemapLayer({url:"http://services.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer"});
+		var Reference = new BasemapLayer({url: "http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Reference_Overlay/MapServer"});
+		var terrainLabelBasemap = new Basemap({
+			layers:[Terrain, Reference],
+			title:"Esri Labeled Terrain",
+			thumbnailUrl:"http://www.arcgis.com/sharing/rest/content/items/aab054ab883c4a4094c72e949566ad40/info/thumbnail/tempTerrain_with_labels_ne_usa.png"
+		});
+		basemapGallery.add(terrainLabelBasemap);
+		
+		//Add the National Geographic basemap to the basemap gallery.
+		var natGeo = new BasemapLayer({url:"http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer"});
+		var natGeoBasemap = new Basemap({
+			layers:[natGeo],
+			title:"Esri Natl Geographic",
+			thumbnailUrl:"http://www.arcgis.com/sharing/rest/content/items/b9b1b422198944fbbd5250b3241691b6/info/thumbnail/natgeo3.jpg"
+		});
+		basemapGallery.add(natGeoBasemap);
+		
+		//Add the OpenStreetMap basemap to the basemap gallery.
+/* 		var OSM = new Basemap({
+			layers: [new BasemapLayer({
+				type: "OpenStreetMap"
+			})],
+		id: "OpenStreetMap",
+		title:"Open Street Map",
+			thumbnailUrl:"http://www.arcgis.com/sharing/rest/content/items/5d2bfa736f8448b3a1708e1f6be23eed/info/thumbnail/temposm.jpg"
+		});
+		basemapGallery.add (OSM); */
 
 		//Add Google Map basemap layers to the basemap gallery.  NOTE: GOOGLE BASEMAPS WILL NOT PRINT. Make sure your users know they must select an if they are going to create a Printable Map. 
 		googleLayer = new agsjs.layers.GoogleMapsLayer({
@@ -270,7 +322,7 @@
 		huntLayers = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Data/Hunting/MapServer",
 			{id:"Hunt_Area"});
 		adminLayers = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Data/AdministrativeBoundaries/MapServer",
-			{id:"Adminstrative Boundary"});
+			{id:"Adminstrative_Boundary"});
 		surfaceMgmtLayer = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/Basemaps/SurfaceMgmt_WildlifeTracts/MapServer/0",
 			{
 				id:"Surface_Management",
