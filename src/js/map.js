@@ -172,49 +172,49 @@
 		});
 		
 		//Add the World Topo basemap to the basemap gallery.
-		var worldTopo = new BasemapLayer({url:"http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer"});
+		var worldTopo = new BasemapLayer({url:"https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer"});
 		var worldTopoBasemap = new Basemap({
 			layers:[worldTopo],
 			title:"Esri World Topographic",
-			thumbnailUrl:"http://www.arcgis.com/sharing/rest/content/items/6e03e8c26aad4b9c92a87c1063ddb0e3/info/thumbnail/topo_map_2.jpg"
+			thumbnailUrl:"https://www.arcgis.com/sharing/rest/content/items/6e03e8c26aad4b9c92a87c1063ddb0e3/info/thumbnail/topo_map_2.jpg"
 		});
 		basemapGallery.add(worldTopoBasemap);
 
 		//Add the USA Topo basemap to the basemap gallery.
-		var usgsTopo = new BasemapLayer({url:"http://services.arcgisonline.com/ArcGIS/rest/services/USA_Topo_Maps/MapServer"});
+		var usgsTopo = new BasemapLayer({url:"https://services.arcgisonline.com/ArcGIS/rest/services/USA_Topo_Maps/MapServer"});
 		var usgsBasemap = new Basemap({
 			layers:[usgsTopo],
 			title:"Esri USGS Topographic",
-			thumbnailUrl:"http://www.arcgis.com/sharing/rest/content/items/931d892ac7a843d7ba29d085e0433465/info/thumbnail/usa_topo.jpg"
+			thumbnailUrl:"https://www.arcgis.com/sharing/rest/content/items/931d892ac7a843d7ba29d085e0433465/info/thumbnail/usa_topo.jpg"
 		});
 		basemapGallery.add(usgsBasemap);
 		
 		//Add the Imagery with Labels basemap to the basemap gallery.
- 		var Imagery = new BasemapLayer({url:"http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"});
-		//var Reference = new BasemapLayer({url: "http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer"});
+ 		var Imagery = new BasemapLayer({url:"https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"});
+		//var Reference = new BasemapLayer({url: "https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer"});
 		var imageryLabelBasemap = new Basemap({
 			layers:[Imagery],
 			title:"Esri Satellite Imagery",
-			thumbnailUrl:"http://www.arcgis.com/sharing/rest/content/items/413fd05bbd7342f5991d5ec96f4f8b18/info/thumbnail/tempimagery_with_labels_ne_usa.png"
+			thumbnailUrl:"https://www.arcgis.com/sharing/rest/content/items/10df2279f9684e4a9f6a7f08febac2a9/info/thumbnail/Imagery.jpg"
 		});
 		basemapGallery.add(imageryLabelBasemap);
 		
 		//Add the Terrain with Labels basemap to the basemap gallery.
-		var Terrain = new BasemapLayer({url:"http://services.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer"});
-		var Reference = new BasemapLayer({url: "http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Reference_Overlay/MapServer"});
+		var Terrain = new BasemapLayer({url:"https://services.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer"});
+		var Reference = new BasemapLayer({url: "https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Reference_Overlay/MapServer"});
 		var terrainLabelBasemap = new Basemap({
 			layers:[Terrain, Reference],
 			title:"Esri Labeled Terrain",
-			thumbnailUrl:"http://www.arcgis.com/sharing/rest/content/items/aab054ab883c4a4094c72e949566ad40/info/thumbnail/tempTerrain_with_labels_ne_usa.png"
+			thumbnailUrl:"https://www.arcgis.com/sharing/rest/content/items/aab054ab883c4a4094c72e949566ad40/info/thumbnail/terrain_labels.jpg"
 		});
 		basemapGallery.add(terrainLabelBasemap);
 		
 		//Add the National Geographic basemap to the basemap gallery.
-		var natGeo = new BasemapLayer({url:"http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer"});
+		var natGeo = new BasemapLayer({url:"https://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer"});
 		var natGeoBasemap = new Basemap({
 			layers:[natGeo],
 			title:"Esri Natl Geographic",
-			thumbnailUrl:"http://www.arcgis.com/sharing/rest/content/items/b9b1b422198944fbbd5250b3241691b6/info/thumbnail/natgeo3.jpg"
+			thumbnailUrl:"https://www.arcgis.com/sharing/rest/content/items/b9b1b422198944fbbd5250b3241691b6/info/thumbnail/natgeo3.jpg"
 		});
 		basemapGallery.add(natGeoBasemap);
 		
@@ -225,7 +225,7 @@
 			})],
 		id: "OpenStreetMap",
 		title:"Open Street Map",
-			thumbnailUrl:"http://www.arcgis.com/sharing/rest/content/items/5d2bfa736f8448b3a1708e1f6be23eed/info/thumbnail/temposm.jpg"
+			thumbnailUrl:"https://www.arcgis.com/sharing/rest/content/items/5d2bfa736f8448b3a1708e1f6be23eed/info/thumbnail/temposm.jpg"
 		});
 		basemapGallery.add (OSM); */
 
@@ -328,7 +328,7 @@
 				id:"Surface_Management",
 				opacity: 0.5
 			});
-		trailLayers = new ArcGISDynamicMapServiceLayer("http://gis2.idaho.gov/arcgis/rest/services/DPR/IDTrailsSimple/MapServer",
+		trailLayers = new ArcGISDynamicMapServiceLayer("https://gis2.idaho.gov/arcgis/rest/services/DPR/IDTrailsSimple/MapServer",
 			{id:"Trails_and_Roads"});
 		campgroundLayer = new FeatureLayer("https://gis2.idaho.gov/arcgis/rest/services/ADM/Campgrounds/MapServer/0",
 			{
@@ -606,7 +606,7 @@
 				$("#queryLabel1Div").show();
 				
 				//Create a KML of the user-selected GMUs, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
-				var gmuKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/3/query?where=ID in (" + gmuID + ")&outfields=NAME&f=kmz"
+				var gmuKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/3/query?where=ID in (" + gmuID + ")&outfields=NAME&f=kmz"
 				$("#gmuKML").attr("href", gmuKMLlink);
 				$("#gmuKML").show();
 			}
@@ -636,7 +636,7 @@
 				$("#queryLabel2Div").show();
 				
 				//Create a KML of the user-selected Elk Zones, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
-				var elkzoneKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/4/query?where=ID in (" + elkID + ")&outfields=NAME&f=kmz"
+				var elkzoneKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/4/query?where=ID in (" + elkID + ")&outfields=NAME&f=kmz"
 				$("#elkzoneKML").attr("href", elkzoneKMLlink);
 				$("#elkzoneKML").show();
 			}
@@ -666,7 +666,7 @@
 				$("#queryLabel3Div").show();
 				
 				//Create a KML of the user-selected controlled hunts, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
-				var chuntKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/5/query?where=JSON_ID in (" + chuntID + ")&outfields=BigGame,HuntArea&f=kmz"
+				var chuntKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/5/query?where=AreaID in (" + chuntID + ")&outfields=BigGame,HuntArea&f=kmz"
 				$("#chuntKML").attr("href", chuntKMLlink);
 				$("#chuntKML").show();
 			}
@@ -696,7 +696,7 @@
 				$("#queryLabel4Div").show();
 				
 				//Create a KML of the user-selected waterfowl hunt areas, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
-				var waterfowlKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/6/query?where=ID in (" + waterfowlID + ")&outfields=NAME&f=kmz"
+				var waterfowlKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/6/query?where=ID in (" + waterfowlID + ")&outfields=Area_Name&f=kmz"
 				$("#waterfowlKML").attr("href", waterfowlKMLlink);
 				$("#waterfowlKML").show();
 			}
@@ -726,7 +726,7 @@
 				$("#queryLabel5Div").show();
 				
 				//Create a KML of the user-selected game animal distributions, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
-				var gameDistributionKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/7/query?where=ID in (" + gameDistributionID + ")&outfields=NAME&f=kmz"
+				var gameDistributionKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/7/query?where=ID in (" + gameDistributionID + ")&outfields=NAME&f=kmz"
 				$("#gameDistributionKML").attr("href", gameDistributionKMLlink);
 				$("#gameDistributionKML").show();
 			}
@@ -762,7 +762,7 @@
 		
 		function doQuery(areaID, layerID, label) {
 			//initialize query tasks
-			newQueryTask = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/" + layerID);
+			newQueryTask = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/" + layerID);
 
 			//initialize query
 			newQuery = new Query();
@@ -780,7 +780,7 @@
 		
 		function doQuery1(gmuID, label) {
 			//initialize query tasks
-			newQueryTask1 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/3");
+			newQueryTask1 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/3");
 
 			//initialize query
 			newQuery1 = new Query();
@@ -798,7 +798,7 @@
 		
 		function doQuery2(elkID, label) {
 			//initialize query tasks
-			newQueryTask2 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/4");
+			newQueryTask2 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/4");
 
 			//initialize query
 			newQuery2 = new Query();
@@ -816,25 +816,30 @@
 		
 		function doQuery3(chuntID, label) {
 			//initialize query tasks
-			newQueryTask3 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/5");
+			newQueryTask3 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/5");
 
 			//initialize query
 			newQuery3 = new Query();
 			newQuery3.returnGeometry = true;
-			newQuery3.outFields = ["JSON_ID", "BigGame", "HuntArea"]
+			newQuery3.outFields = ["FLAG", "AreaID", "BigGame", "HuntArea"]
 			newHighlight3 = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
 				new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
 				new Color([18,237,18]), 3),
 				new Color([18,237,18,0.1])
 			);
+			newHighlight3Hatched = new SimpleFillSymbol(SimpleFillSymbol.STYLE_BACKWARD_DIAGONAL,
+				new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+				new Color([18,237,18]), 3),
+				new Color([18,237,18])
+			);
 			
-			newQuery3.where = "JSON_ID IN (" + chuntID + ")";
+			newQuery3.where = "AreaID IN (" + chuntID + ")";
 			newQueryTask3.execute (newQuery3, showResults3);
 		}
 		
 		function doQuery4(waterfowlID, label) {
 			//initialize query tasks
-			newQueryTask4 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/6");
+			newQueryTask4 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/6");
 
 			//initialize query
 			newQuery4 = new Query();
@@ -852,7 +857,7 @@
 
 		function doQuery5(gameDistributionID, label) {
 			//initialize query tasks
-			newQueryTask5 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/HuntPlanner_V2/MapServer/7");
+			newQueryTask5 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/7");
 
 			//initialize query
 			newQuery5 = new Query();
@@ -1009,7 +1014,11 @@
 				var newGraphic3 = newFeatures3[i];
 				var polyExtent = newGraphic3.geometry.getExtent();
 				var polyCenter = polyExtent.getCenter();
-				newGraphic3.setSymbol(newHighlight3);
+				if (newGraphic3.attributes.FLAG == 1){
+					newGraphic3.setSymbol(newHighlight3Hatched);
+				} else {
+					newGraphic3.setSymbol(newHighlight3);
+				}
 				var queryMapLabel3 = newGraphic3.attributes.BigGame + " - " + newGraphic3.attributes.HuntArea;
 
 				//Add graphic to the map graphics layer.
@@ -1029,7 +1038,7 @@
 				//Add label at the selected area center.
 				var pt = new Point(polyCenter,map.spatialReference);
 				var queryMapLabel3Graphic = new Graphic (pt, textSymbol);
-				queryLabelLayer.add(queryMapLabel3Graphic);
+				//queryLabelLayer.add(queryMapLabel3Graphic);
 				
 				//Zoom to full extent.
 				zoomToState();
@@ -1112,7 +1121,7 @@
 		//Allow users to add GPX data to the map.  Other formats may be added later, such as KML.
 		var layer, name;
 		var layers=[];
-		var portalUrl = 'http://www.arcgis.com';
+		var portalUrl = 'https://www.arcgis.com';
 		
 		 on(dom.byId("uploadForm"), "change", function (evt) {
 			var fileName = evt.target.value.toLowerCase();
@@ -1589,9 +1598,10 @@
 				$('#elkzone').append('<option value="' + this.ID + '">' + this.NAME + '</option>');
 			});
 			//populate the controlled hunts dropdown with JSON vars.
-			var chuntsList = [{"ID":"1","NAME1":"Antelope","NAME2":"21A*"},{"ID":"2","NAME1":"Antelope","NAME2":"29"},{"ID":"3","NAME1":"Antelope","NAME2":"30*"},{"ID":"4","NAME1":"Antelope","NAME2":"30A"},{"ID":"5","NAME1":"Antelope","NAME2":"32*"},{"ID":"6","NAME1":"Antelope","NAME2":"36A*"},{"ID":"7","NAME1":"Antelope","NAME2":"36B*"},{"ID":"8","NAME1":"Antelope","NAME2":"37*"},{"ID":"9","NAME1":"Antelope","NAME2":"39"},{"ID":"10","NAME1":"Antelope","NAME2":"40-1"},{"ID":"11","NAME1":"Antelope","NAME2":"40-2*"},{"ID":"12","NAME1":"Antelope","NAME2":"41"},{"ID":"13","NAME1":"Antelope","NAME2":"42*"},{"ID":"14","NAME1":"Antelope","NAME2":"44-1*"},{"ID":"15","NAME1":"Antelope","NAME2":"44-2*"},{"ID":"16","NAME1":"Antelope","NAME2":"45-1"},{"ID":"17","NAME1":"Antelope","NAME2":"45-2*"},{"ID":"18","NAME1":"Antelope","NAME2":"45-3X"},{"ID":"19","NAME1":"Antelope","NAME2":"46-1"},{"ID":"20","NAME1":"Antelope","NAME2":"46-2*"},{"ID":"21","NAME1":"Antelope","NAME2":"46-3X*"},{"ID":"22","NAME1":"Antelope","NAME2":"47"},{"ID":"23","NAME1":"Antelope","NAME2":"49"},{"ID":"24","NAME1":"Antelope","NAME2":"50"},{"ID":"25","NAME1":"Antelope","NAME2":"51*"},{"ID":"26","NAME1":"Antelope","NAME2":"52*"},{"ID":"27","NAME1":"Antelope","NAME2":"52A*"},{"ID":"28","NAME1":"Antelope","NAME2":"54-1"},{"ID":"29","NAME1":"Antelope","NAME2":"54-2"},{"ID":"30","NAME1":"Antelope","NAME2":"54-3"},{"ID":"31","NAME1":"Antelope","NAME2":"58"},{"ID":"32","NAME1":"Antelope","NAME2":"59*"},{"ID":"33","NAME1":"Antelope","NAME2":"60A*"},{"ID":"34","NAME1":"Antelope","NAME2":"61"},{"ID":"35","NAME1":"Antelope","NAME2":"63-1"},{"ID":"36","NAME1":"Antelope","NAME2":"63-2"},{"ID":"37","NAME1":"Antelope","NAME2":"68"},{"ID":"38","NAME1":"Antelope","NAME2":"76"},{"ID":"39","NAME1":"Bear","NAME2":"1*"},{"ID":"40","NAME1":"Bear","NAME2":"22*"},{"ID":"41","NAME1":"Bear","NAME2":"32*"},{"ID":"42","NAME1":"California Sheep","NAME2":"40"},{"ID":"43","NAME1":"California Sheep","NAME2":"41-1"},{"ID":"44","NAME1":"California Sheep","NAME2":"41-2"},{"ID":"45","NAME1":"California Sheep","NAME2":"42-1 and 42-2"},{"ID":"46","NAME1":"California Sheep","NAME2":"46-1* and 46-2*"},{"ID":"47","NAME1":"California Sheep","NAME2":"55"},{"ID":"48","NAME1":"Deer","NAME2":"1*"},{"ID":"49","NAME1":"Deer","NAME2":"10A"},{"ID":"50","NAME1":"Deer","NAME2":"10AX"},{"ID":"51","NAME1":"Deer","NAME2":"11"},{"ID":"52","NAME1":"Deer","NAME2":"11A"},{"ID":"53","NAME1":"Deer","NAME2":"11AX"},{"ID":"54","NAME1":"Deer","NAME2":"11X"},{"ID":"55","NAME1":"Deer","NAME2":"13"},{"ID":"56","NAME1":"Deer","NAME2":"14"},{"ID":"57","NAME1":"Deer","NAME2":"15X"},{"ID":"58","NAME1":"Deer","NAME2":"16X"},{"ID":"59","NAME1":"Deer","NAME2":"18"},{"ID":"60","NAME1":"Deer","NAME2":"19A"},{"ID":"61","NAME1":"Deer","NAME2":"1X"},{"ID":"62","NAME1":"Deer","NAME2":"20A"},{"ID":"63","NAME1":"Deer","NAME2":"21"},{"ID":"64","NAME1":"Deer","NAME2":"21A"},{"ID":"65","NAME1":"Deer","NAME2":"21X*"},{"ID":"66","NAME1":"Deer","NAME2":"22"},{"ID":"67","NAME1":"Deer","NAME2":"23"},{"ID":"68","NAME1":"Deer","NAME2":"25"},{"ID":"69","NAME1":"Deer","NAME2":"26"},{"ID":"70","NAME1":"Deer","NAME2":"27"},{"ID":"71","NAME1":"Deer","NAME2":"28-1"},{"ID":"72","NAME1":"Deer","NAME2":"28-2"},{"ID":"73","NAME1":"Deer","NAME2":"30"},{"ID":"74","NAME1":"Deer","NAME2":"30A"},{"ID":"75","NAME1":"Deer","NAME2":"31"},{"ID":"76","NAME1":"Deer","NAME2":"32"},{"ID":"77","NAME1":"Deer","NAME2":"32A"},{"ID":"78","NAME1":"Deer","NAME2":"32X"},{"ID":"79","NAME1":"Deer","NAME2":"33*"},{"ID":"80","NAME1":"Deer","NAME2":"36A"},{"ID":"81","NAME1":"Deer","NAME2":"36AX*"},{"ID":"82","NAME1":"Deer","NAME2":"36B"},{"ID":"83","NAME1":"Deer","NAME2":"37*"},{"ID":"84","NAME1":"Deer","NAME2":"38"},{"ID":"85","NAME1":"Deer","NAME2":"38X"},{"ID":"86","NAME1":"Deer","NAME2":"39-1"},{"ID":"87","NAME1":"Deer","NAME2":"39-2"},{"ID":"88","NAME1":"Deer","NAME2":"39X"},{"ID":"89","NAME1":"Deer","NAME2":"3X"},{"ID":"90","NAME1":"Deer","NAME2":"40"},{"ID":"91","NAME1":"Deer","NAME2":"40X*"},{"ID":"92","NAME1":"Deer","NAME2":"41-1"},{"ID":"93","NAME1":"Deer","NAME2":"41-2*"},{"ID":"94","NAME1":"Deer","NAME2":"42"},{"ID":"95","NAME1":"Deer","NAME2":"43"},{"ID":"96","NAME1":"Deer","NAME2":"44"},{"ID":"97","NAME1":"Deer","NAME2":"45-1"},{"ID":"98","NAME1":"Deer","NAME2":"45-2"},{"ID":"99","NAME1":"Deer","NAME2":"45-3*"},{"ID":"100","NAME1":"Deer","NAME2":"47-1"},{"ID":"101","NAME1":"Deer","NAME2":"47-2*"},{"ID":"102","NAME1":"Deer","NAME2":"48"},{"ID":"103","NAME1":"Deer","NAME2":"49"},{"ID":"104","NAME1":"Deer","NAME2":"50"},{"ID":"105","NAME1":"Deer","NAME2":"50X*"},{"ID":"106","NAME1":"Deer","NAME2":"51*"},{"ID":"107","NAME1":"Deer","NAME2":"52"},{"ID":"108","NAME1":"Deer","NAME2":"52A"},{"ID":"109","NAME1":"Deer","NAME2":"53"},{"ID":"110","NAME1":"Deer","NAME2":"54"},{"ID":"111","NAME1":"Deer","NAME2":"55-1"},{"ID":"112","NAME1":"Deer","NAME2":"55-2*"},{"ID":"113","NAME1":"Deer","NAME2":"55-3*"},{"ID":"114","NAME1":"Deer","NAME2":"56"},{"ID":"115","NAME1":"Deer","NAME2":"57"},{"ID":"116","NAME1":"Deer","NAME2":"58*"},{"ID":"117","NAME1":"Deer","NAME2":"60-1*"},{"ID":"118","NAME1":"Deer","NAME2":"60-2*"},{"ID":"119","NAME1":"Deer","NAME2":"61"},{"ID":"120","NAME1":"Deer","NAME2":"62"},{"ID":"121","NAME1":"Deer","NAME2":"63A"},{"ID":"122","NAME1":"Deer","NAME2":"63AX"},{"ID":"123","NAME1":"Deer","NAME2":"64*"},{"ID":"124","NAME1":"Deer","NAME2":"66"},{"ID":"125","NAME1":"Deer","NAME2":"67"},{"ID":"126","NAME1":"Deer","NAME2":"68A"},{"ID":"127","NAME1":"Deer","NAME2":"68AX"},{"ID":"128","NAME1":"Deer","NAME2":"69"},{"ID":"129","NAME1":"Deer","NAME2":"70"},{"ID":"130","NAME1":"Deer","NAME2":"72*"},{"ID":"131","NAME1":"Deer","NAME2":"73"},{"ID":"132","NAME1":"Deer","NAME2":"73X"},{"ID":"133","NAME1":"Deer","NAME2":"74"},{"ID":"134","NAME1":"Deer","NAME2":"78"},{"ID":"135","NAME1":"Deer","NAME2":"8-1X"},{"ID":"136","NAME1":"Deer","NAME2":"8-2X*"},{"ID":"137","NAME1":"Deer","NAME2":"8A"},{"ID":"138","NAME1":"Deer","NAME2":"8AX"},{"ID":"139","NAME1":"Elk","NAME2":"1"},{"ID":"140","NAME1":"Elk","NAME2":"10A"},{"ID":"141","NAME1":"Elk","NAME2":"11-1"},{"ID":"142","NAME1":"Elk","NAME2":"11-2"},{"ID":"143","NAME1":"Elk","NAME2":"11A"},{"ID":"144","NAME1":"Elk","NAME2":"13"},{"ID":"145","NAME1":"Elk","NAME2":"14-1"},{"ID":"146","NAME1":"Elk","NAME2":"14-2"},{"ID":"147","NAME1":"Elk","NAME2":"16"},{"ID":"148","NAME1":"Elk","NAME2":"18-1"},{"ID":"149","NAME1":"Elk","NAME2":"18-2"},{"ID":"150","NAME1":"Elk","NAME2":"18X"},{"ID":"151","NAME1":"Elk","NAME2":"19A"},{"ID":"152","NAME1":"Elk","NAME2":"2"},{"ID":"153","NAME1":"Elk","NAME2":"22-1"},{"ID":"154","NAME1":"Elk","NAME2":"22-2"},{"ID":"155","NAME1":"Elk","NAME2":"22-3"},{"ID":"156","NAME1":"Elk","NAME2":"23-1"},{"ID":"157","NAME1":"Elk","NAME2":"23-2"},{"ID":"158","NAME1":"Elk","NAME2":"23-3"},{"ID":"159","NAME1":"Elk","NAME2":"23-4"},{"ID":"160","NAME1":"Elk","NAME2":"24-1"},{"ID":"161","NAME1":"Elk","NAME2":"24-1"},{"ID":"162","NAME1":"Elk","NAME2":"24-2"},{"ID":"163","NAME1":"Elk","NAME2":"24-2"},{"ID":"164","NAME1":"Elk","NAME2":"24-3"},{"ID":"165","NAME1":"Elk","NAME2":"29"},{"ID":"166","NAME1":"Elk","NAME2":"3-1*"},{"ID":"167","NAME1":"Elk","NAME2":"3-2"},{"ID":"168","NAME1":"Elk","NAME2":"30"},{"ID":"169","NAME1":"Elk","NAME2":"30-1*"},{"ID":"170","NAME1":"Elk","NAME2":"30A"},{"ID":"171","NAME1":"Elk","NAME2":"30A-1"},{"ID":"172","NAME1":"Elk","NAME2":"30X"},{"ID":"173","NAME1":"Elk","NAME2":"31-1"},{"ID":"174","NAME1":"Elk","NAME2":"31-2"},{"ID":"175","NAME1":"Elk","NAME2":"32-1"},{"ID":"176","NAME1":"Elk","NAME2":"32-2"},{"ID":"177","NAME1":"Elk","NAME2":"32A-1"},{"ID":"178","NAME1":"Elk","NAME2":"32A-2"},{"ID":"179","NAME1":"Elk","NAME2":"32A-3"},{"ID":"180","NAME1":"Elk","NAME2":"33-1*"},{"ID":"181","NAME1":"Elk","NAME2":"33-2*"},{"ID":"182","NAME1":"Elk","NAME2":"36A"},{"ID":"183","NAME1":"Elk","NAME2":"36A-1"},{"ID":"184","NAME1":"Elk","NAME2":"36A-2*"},{"ID":"185","NAME1":"Elk","NAME2":"36B"},{"ID":"186","NAME1":"Elk","NAME2":"37"},{"ID":"187","NAME1":"Elk","NAME2":"37A"},{"ID":"188","NAME1":"Elk","NAME2":"39-1"},{"ID":"189","NAME1":"Elk","NAME2":"39-2*"},{"ID":"190","NAME1":"Elk","NAME2":"39-3"},{"ID":"191","NAME1":"Elk","NAME2":"39-4"},{"ID":"192","NAME1":"Elk","NAME2":"39X"},{"ID":"193","NAME1":"Elk","NAME2":"40*"},{"ID":"194","NAME1":"Elk","NAME2":"41"},{"ID":"195","NAME1":"Elk","NAME2":"43-1"},{"ID":"196","NAME1":"Elk","NAME2":"43-2*"},{"ID":"197","NAME1":"Elk","NAME2":"44-1"},{"ID":"198","NAME1":"Elk","NAME2":"44-2*"},{"ID":"199","NAME1":"Elk","NAME2":"45*"},{"ID":"200","NAME1":"Elk","NAME2":"45X"},{"ID":"201","NAME1":"Elk","NAME2":"46*"},{"ID":"202","NAME1":"Elk","NAME2":"48-1"},{"ID":"203","NAME1":"Elk","NAME2":"48-2"},{"ID":"204","NAME1":"Elk","NAME2":"48-3"},{"ID":"205","NAME1":"Elk","NAME2":"48-4*"},{"ID":"206","NAME1":"Elk","NAME2":"49"},{"ID":"207","NAME1":"Elk","NAME2":"49X*"},{"ID":"208","NAME1":"Elk","NAME2":"5-1"},{"ID":"209","NAME1":"Elk","NAME2":"5-2"},{"ID":"210","NAME1":"Elk","NAME2":"50-1"},{"ID":"211","NAME1":"Elk","NAME2":"50-2"},{"ID":"212","NAME1":"Elk","NAME2":"50-3"},{"ID":"213","NAME1":"Elk","NAME2":"51"},{"ID":"214","NAME1":"Elk","NAME2":"52A*"},{"ID":"215","NAME1":"Elk","NAME2":"52AX"},{"ID":"216","NAME1":"Elk","NAME2":"54"},{"ID":"217","NAME1":"Elk","NAME2":"55-1*"},{"ID":"218","NAME1":"Elk","NAME2":"55-2*"},{"ID":"219","NAME1":"Elk","NAME2":"56"},{"ID":"220","NAME1":"Elk","NAME2":"58-1*"},{"ID":"221","NAME1":"Elk","NAME2":"58-2"},{"ID":"222","NAME1":"Elk","NAME2":"59*"},{"ID":"223","NAME1":"Elk","NAME2":"60-1*"},{"ID":"224","NAME1":"Elk","NAME2":"60-2*"},{"ID":"225","NAME1":"Elk","NAME2":"61"},{"ID":"226","NAME1":"Elk","NAME2":"62*"},{"ID":"227","NAME1":"Elk","NAME2":"63X"},{"ID":"228","NAME1":"Elk","NAME2":"64*"},{"ID":"229","NAME1":"Elk","NAME2":"66*"},{"ID":"230","NAME1":"Elk","NAME2":"66A-1*"},{"ID":"231","NAME1":"Elk","NAME2":"66A-2"},{"ID":"232","NAME1":"Elk","NAME2":"67"},{"ID":"233","NAME1":"Elk","NAME2":"70*"},{"ID":"234","NAME1":"Elk","NAME2":"75*"},{"ID":"235","NAME1":"Elk","NAME2":"76-1"},{"ID":"236","NAME1":"Elk","NAME2":"76-2*"},{"ID":"237","NAME1":"Elk","NAME2":"8-1*"},{"ID":"238","NAME1":"Elk","NAME2":"8-2*"},{"ID":"239","NAME1":"Elk","NAME2":"8X*"},{"ID":"240","NAME1":"Goat","NAME2":"1"},{"ID":"241","NAME1":"Goat","NAME2":"10-1"},{"ID":"242","NAME1":"Goat","NAME2":"10-2"},{"ID":"243","NAME1":"Goat","NAME2":"10-3*"},{"ID":"244","NAME1":"Goat","NAME2":"18*"},{"ID":"245","NAME1":"Goat","NAME2":"22"},{"ID":"246","NAME1":"Goat","NAME2":"27-2*"},{"ID":"247","NAME1":"Goat","NAME2":"27-4*"},{"ID":"248","NAME1":"Goat","NAME2":"27-5"},{"ID":"249","NAME1":"Goat","NAME2":"36-1*"},{"ID":"250","NAME1":"Goat","NAME2":"36A-1*"},{"ID":"251","NAME1":"Goat","NAME2":"36A-2"},{"ID":"252","NAME1":"Goat","NAME2":"36A-3*"},{"ID":"253","NAME1":"Goat","NAME2":"36A-4*"},{"ID":"254","NAME1":"Goat","NAME2":"36B*"},{"ID":"255","NAME1":"Goat","NAME2":"37A*"},{"ID":"256","NAME1":"Goat","NAME2":"39"},{"ID":"257","NAME1":"Goat","NAME2":"43*"},{"ID":"258","NAME1":"Goat","NAME2":"50*"},{"ID":"259","NAME1":"Goat","NAME2":"67"},{"ID":"260","NAME1":"Goat","NAME2":"7*"},{"ID":"261","NAME1":"Moose","NAME2":"1-1"},{"ID":"262","NAME1":"Moose","NAME2":"1-2"},{"ID":"263","NAME1":"Moose","NAME2":"1-3"},{"ID":"264","NAME1":"Moose","NAME2":"1-4"},{"ID":"265","NAME1":"Moose","NAME2":"10-1"},{"ID":"266","NAME1":"Moose","NAME2":"10-2"},{"ID":"267","NAME1":"Moose","NAME2":"10-3"},{"ID":"268","NAME1":"Moose","NAME2":"10-4"},{"ID":"269","NAME1":"Moose","NAME2":"10-5"},{"ID":"270","NAME1":"Moose","NAME2":"10-6"},{"ID":"271","NAME1":"Moose","NAME2":"10A-1"},{"ID":"272","NAME1":"Moose","NAME2":"10A-2"},{"ID":"273","NAME1":"Moose","NAME2":"10A-3"},{"ID":"274","NAME1":"Moose","NAME2":"10A-4"},{"ID":"275","NAME1":"Moose","NAME2":"10A-5"},{"ID":"276","NAME1":"Moose","NAME2":"12-1"},{"ID":"277","NAME1":"Moose","NAME2":"12-2"},{"ID":"278","NAME1":"Moose","NAME2":"12-3"},{"ID":"279","NAME1":"Moose","NAME2":"12-4"},{"ID":"280","NAME1":"Moose","NAME2":"12-5"},{"ID":"281","NAME1":"Moose","NAME2":"14"},{"ID":"282","NAME1":"Moose","NAME2":"16"},{"ID":"283","NAME1":"Moose","NAME2":"2"},{"ID":"284","NAME1":"Moose","NAME2":"27"},{"ID":"285","NAME1":"Moose","NAME2":"29*"},{"ID":"286","NAME1":"Moose","NAME2":"3"},{"ID":"287","NAME1":"Moose","NAME2":"36A"},{"ID":"288","NAME1":"Moose","NAME2":"4"},{"ID":"289","NAME1":"Moose","NAME2":"44*"},{"ID":"290","NAME1":"Moose","NAME2":"4A"},{"ID":"291","NAME1":"Moose","NAME2":"5"},{"ID":"292","NAME1":"Moose","NAME2":"50"},{"ID":"293","NAME1":"Moose","NAME2":"51"},{"ID":"294","NAME1":"Moose","NAME2":"54"},{"ID":"295","NAME1":"Moose","NAME2":"55*"},{"ID":"296","NAME1":"Moose","NAME2":"59*"},{"ID":"297","NAME1":"Moose","NAME2":"6"},{"ID":"298","NAME1":"Moose","NAME2":"60"},{"ID":"299","NAME1":"Moose","NAME2":"60A"},{"ID":"300","NAME1":"Moose","NAME2":"61-1"},{"ID":"301","NAME1":"Moose","NAME2":"61-2"},{"ID":"302","NAME1":"Moose","NAME2":"61-3"},{"ID":"303","NAME1":"Moose","NAME2":"62"},{"ID":"304","NAME1":"Moose","NAME2":"62A"},{"ID":"305","NAME1":"Moose","NAME2":"63"},{"ID":"306","NAME1":"Moose","NAME2":"63A"},{"ID":"307","NAME1":"Moose","NAME2":"64"},{"ID":"308","NAME1":"Moose","NAME2":"65"},{"ID":"309","NAME1":"Moose","NAME2":"66-1"},{"ID":"310","NAME1":"Moose","NAME2":"66-2"},{"ID":"311","NAME1":"Moose","NAME2":"66A"},{"ID":"312","NAME1":"Moose","NAME2":"67-1"},{"ID":"313","NAME1":"Moose","NAME2":"67-2"},{"ID":"314","NAME1":"Moose","NAME2":"68A"},{"ID":"315","NAME1":"Moose","NAME2":"69-1"},{"ID":"316","NAME1":"Moose","NAME2":"69-2"},{"ID":"317","NAME1":"Moose","NAME2":"69-3*"},{"ID":"318","NAME1":"Moose","NAME2":"7"},{"ID":"319","NAME1":"Moose","NAME2":"70"},{"ID":"320","NAME1":"Moose","NAME2":"71"},{"ID":"321","NAME1":"Moose","NAME2":"72"},{"ID":"322","NAME1":"Moose","NAME2":"73*"},{"ID":"323","NAME1":"Moose","NAME2":"74"},{"ID":"324","NAME1":"Moose","NAME2":"75"},{"ID":"325","NAME1":"Moose","NAME2":"76-1"},{"ID":"326","NAME1":"Moose","NAME2":"76-2"},{"ID":"327","NAME1":"Moose","NAME2":"76-3"},{"ID":"328","NAME1":"Moose","NAME2":"76-4"},{"ID":"329","NAME1":"Moose","NAME2":"77"},{"ID":"330","NAME1":"Moose","NAME2":"78"},{"ID":"331","NAME1":"Moose","NAME2":"8"},{"ID":"332","NAME1":"Moose","NAME2":"8A"},{"ID":"333","NAME1":"Moose","NAME2":"9"},{"ID":"334","NAME1":"Rocky Mtn Sheep","NAME2":"11"},{"ID":"335","NAME1":"Rocky Mtn Sheep","NAME2":"17L"},{"ID":"336","NAME1":"Rocky Mtn Sheep","NAME2":"19*"},{"ID":"337","NAME1":"Rocky Mtn Sheep","NAME2":"19A*"},{"ID":"338","NAME1":"Rocky Mtn Sheep","NAME2":"20*"},{"ID":"339","NAME1":"Rocky Mtn Sheep","NAME2":"20A"},{"ID":"340","NAME1":"Rocky Mtn Sheep","NAME2":"21"},{"ID":"341","NAME1":"Rocky Mtn Sheep","NAME2":"26*"},{"ID":"342","NAME1":"Rocky Mtn Sheep","NAME2":"26L"},{"ID":"343","NAME1":"Rocky Mtn Sheep","NAME2":"27-1"},{"ID":"344","NAME1":"Rocky Mtn Sheep","NAME2":"27-2"},{"ID":"345","NAME1":"Rocky Mtn Sheep","NAME2":"27-3*"},{"ID":"346","NAME1":"Rocky Mtn Sheep","NAME2":"27-4"},{"ID":"347","NAME1":"Rocky Mtn Sheep","NAME2":"27L*"},{"ID":"348","NAME1":"Rocky Mtn Sheep","NAME2":"28-1"},{"ID":"349","NAME1":"Rocky Mtn Sheep","NAME2":"28-2"},{"ID":"350","NAME1":"Rocky Mtn Sheep","NAME2":"30*"},{"ID":"351","NAME1":"Rocky Mtn Sheep","NAME2":"36*"},{"ID":"352","NAME1":"Rocky Mtn Sheep","NAME2":"36A*"},{"ID":"353","NAME1":"Rocky Mtn Sheep","NAME2":"36B*"},{"ID":"354","NAME1":"Rocky Mtn Sheep","NAME2":"37*"},{"ID":"355","NAME1":"Rocky Mtn Sheep","NAME2":"37A"},{"ID":"356","NAME1":"Turkey","NAME2":"22-1*"},{"ID":"357","NAME1":"Turkey","NAME2":"31-1"},{"ID":"358","NAME1":"Turkey","NAME2":"36B-1* and 2*"},{"ID":"359","NAME1":"Turkey","NAME2":"38-1* and 2*"},{"ID":"360","NAME1":"Turkey","NAME2":"50-1*, 2*, 3* and 4*"},{"ID":"361","NAME1":"Turkey","NAME2":"54-1, 2, and 3"},{"ID":"362","NAME1":"Turkey","NAME2":"68A-1, 2, and 3"},{"ID":"363","NAME1":"Turkey","NAME2":"71-1, 2, 3, 4 and 5"},{"ID":"364","NAME1":"Turkey","NAME2":"73-1*"},];	
+			var chuntsList = [{"ID":"1160","NAME":"Antelope","NAME2":"21A*"},{"ID":"142","NAME":"Antelope","NAME2":"29"},{"ID":"143","NAME":"Antelope","NAME2":"30*"},{"ID":"210","NAME":"Antelope","NAME2":"30A"},{"ID":"145","NAME":"Antelope","NAME2":"32*"},{"ID":"1272","NAME":"Antelope","NAME2":"36A*"},{"ID":"146","NAME":"Antelope","NAME2":"36B*"},{"ID":"147","NAME":"Antelope","NAME2":"37*"},{"ID":"223","NAME":"Antelope","NAME2":"39"},{"ID":"224","NAME":"Antelope","NAME2":"40-1"},{"ID":"31","NAME":"Antelope","NAME2":"40-2*"},{"ID":"150","NAME":"Antelope","NAME2":"41"},{"ID":"151","NAME":"Antelope","NAME2":"42*"},{"ID":"152","NAME":"Antelope","NAME2":"44-1*"},{"ID":"693","NAME":"Antelope","NAME2":"44-2*"},{"ID":"153","NAME":"Antelope","NAME2":"45-1"},{"ID":"989","NAME":"Antelope","NAME2":"45-2*"},{"ID":"960","NAME":"Antelope","NAME2":"45-3X"},{"ID":"230","NAME":"Antelope","NAME2":"46-1"},{"ID":"42","NAME":"Antelope","NAME2":"46-2*"},{"ID":"991","NAME":"Antelope","NAME2":"46-3X*"},{"ID":"231","NAME":"Antelope","NAME2":"47"},{"ID":"233","NAME":"Antelope","NAME2":"49"},{"ID":"234","NAME":"Antelope","NAME2":"50"},{"ID":"904","NAME":"Antelope","NAME2":"51*"},{"ID":"656","NAME":"Antelope","NAME2":"52*"},{"ID":"301","NAME":"Antelope","NAME2":"52A*"},{"ID":"239","NAME":"Antelope","NAME2":"54-1"},{"ID":"239","NAME":"Antelope","NAME2":"54-2"},{"ID":"1271","NAME":"Antelope","NAME2":"54-3"},{"ID":"243","NAME":"Antelope","NAME2":"58"},{"ID":"883","NAME":"Antelope","NAME2":"59*"},{"ID":"164","NAME":"Antelope","NAME2":"60A*"},{"ID":"165","NAME":"Antelope","NAME2":"61"},{"ID":"905","NAME":"Antelope","NAME2":"63-1"},{"ID":"906","NAME":"Antelope","NAME2":"63-2"},{"ID":"258","NAME":"Antelope","NAME2":"68"},{"ID":"1129","NAME":"Antelope","NAME2":"76"},{"ID":"169","NAME":"Bear","NAME2":"1"},{"ID":"170","NAME":"Bear","NAME2":"22*"},{"ID":"145","NAME":"Bear","NAME2":"32*"},{"ID":"271","NAME":"Deer","NAME2":"1*"},{"ID":"1184","NAME":"Deer","NAME2":"1-1X"},{"ID":"1202","NAME":"Deer","NAME2":"3-1X"},{"ID":"180","NAME":"Deer","NAME2":"8-1X"},{"ID":"1186","NAME":"Deer","NAME2":"8-2X*"},{"ID":"181","NAME":"Deer","NAME2":"8A"},{"ID":"3","NAME":"Deer","NAME2":"8AX"},{"ID":"184","NAME":"Deer","NAME2":"10A"},{"ID":"4","NAME":"Deer","NAME2":"10AX"},{"ID":"185","NAME":"Deer","NAME2":"11"},{"ID":"1113","NAME":"Deer","NAME2":"11X"},{"ID":"186","NAME":"Deer","NAME2":"11A"},{"ID":"186","NAME":"Deer","NAME2":"11AX"},{"ID":"188","NAME":"Deer","NAME2":"13"},{"ID":"189","NAME":"Deer","NAME2":"14"},{"ID":"1111","NAME":"Deer","NAME2":"15X"},{"ID":"1112","NAME":"Deer","NAME2":"16X"},{"ID":"194","NAME":"Deer","NAME2":"18"},{"ID":"196","NAME":"Deer","NAME2":"19A"},{"ID":"198","NAME":"Deer","NAME2":"20A"},{"ID":"199","NAME":"Deer","NAME2":"21"},{"ID":"1307","NAME":"Deer","NAME2":"21-1"},{"ID":"200","NAME":"Deer","NAME2":"21A"},{"ID":"891","NAME":"Deer","NAME2":"21X*"},{"ID":"201","NAME":"Deer","NAME2":"22"},{"ID":"202","NAME":"Deer","NAME2":"23"},{"ID":"204","NAME":"Deer","NAME2":"25"},{"ID":"205","NAME":"Deer","NAME2":"26"},{"ID":"206","NAME":"Deer","NAME2":"27"},{"ID":"207","NAME":"Deer","NAME2":"28-1"},{"ID":"943","NAME":"Deer","NAME2":"28-2"},{"ID":"91","NAME":"Deer","NAME2":"29*"},{"ID":"209","NAME":"Deer","NAME2":"30"},{"ID":"210","NAME":"Deer","NAME2":"30A"},{"ID":"211","NAME":"Deer","NAME2":"31"},{"ID":"212","NAME":"Deer","NAME2":"32"},{"ID":"145","NAME":"Deer","NAME2":"32-1*"},{"ID":"1058","NAME":"Deer","NAME2":"32-1X"},{"ID":"1309","NAME":"Deer","NAME2":"32-2X"},{"ID":"213","NAME":"Deer","NAME2":"32A"},{"ID":"26","NAME":"Deer","NAME2":"33*"},{"ID":"271","NAME":"Deer","NAME2":"36"},{"ID":"218","NAME":"Deer","NAME2":"36A"},{"ID":"219","NAME":"Deer","NAME2":"36B"},{"ID":"1069","NAME":"Deer","NAME2":"36AX*"},{"ID":"220","NAME":"Deer","NAME2":"37"},{"ID":"1148","NAME":"Deer","NAME2":"38"},{"ID":"1148","NAME":"Deer","NAME2":"38X"},{"ID":"107","NAME":"Deer","NAME2":"39X"},{"ID":"223","NAME":"Deer","NAME2":"39-1"},{"ID":"642","NAME":"Deer","NAME2":"39-2"},{"ID":"224","NAME":"Deer","NAME2":"40"},{"ID":"1149","NAME":"Deer","NAME2":"40X*"},{"ID":"225","NAME":"Deer","NAME2":"41-1"},{"ID":"1114","NAME":"Deer","NAME2":"41-2*"},{"ID":"226","NAME":"Deer","NAME2":"42"},{"ID":"227","NAME":"Deer","NAME2":"43"},{"ID":"228","NAME":"Deer","NAME2":"44"},{"ID":"229","NAME":"Deer","NAME2":"45-1"},{"ID":"892","NAME":"Deer","NAME2":"45-2"},{"ID":"1150","NAME":"Deer","NAME2":"45-3"},{"ID":"893","NAME":"Deer","NAME2":"45-4"},{"ID":"290","NAME":"Deer","NAME2":"45-5*"},{"ID":"231","NAME":"Deer","NAME2":"47-1"},{"ID":"42","NAME":"Deer","NAME2":"47-2*"},{"ID":"232","NAME":"Deer","NAME2":"48"},{"ID":"233","NAME":"Deer","NAME2":"49"},{"ID":"46","NAME":"Deer","NAME2":"50"},{"ID":"982","NAME":"Deer","NAME2":"50X*"},{"ID":"48","NAME":"Deer","NAME2":"51*"},{"ID":"236","NAME":"Deer","NAME2":"52"},{"ID":"237","NAME":"Deer","NAME2":"52A"},{"ID":"820","NAME":"Deer","NAME2":"53"},{"ID":"239","NAME":"Deer","NAME2":"54"},{"ID":"240","NAME":"Deer","NAME2":"55-1"},{"ID":"1153","NAME":"Deer","NAME2":"55-2*"},{"ID":"241","NAME":"Deer","NAME2":"56"},{"ID":"242","NAME":"Deer","NAME2":"57"},{"ID":"55","NAME":"Deer","NAME2":"58*"},{"ID":"56","NAME":"Deer","NAME2":"60-1*"},{"ID":"57","NAME":"Deer","NAME2":"60-2*"},{"ID":"248","NAME":"Deer","NAME2":"61"},{"ID":"249","NAME":"Deer","NAME2":"62"},{"ID":"252","NAME":"Deer","NAME2":"63A"},{"ID":"252","NAME":"Deer","NAME2":"63AX"},{"ID":"787","NAME":"Deer","NAME2":"64-1*"},{"ID":"255","NAME":"Deer","NAME2":"66"},{"ID":"296","NAME":"Deer","NAME2":"66-1"},{"ID":"256","NAME":"Deer","NAME2":"66A"},{"ID":"257","NAME":"Deer","NAME2":"67"},{"ID":"259","NAME":"Deer","NAME2":"68A"},{"ID":"259","NAME":"Deer","NAME2":"68AX"},{"ID":"260","NAME":"Deer","NAME2":"69"},{"ID":"261","NAME":"Deer","NAME2":"70"},{"ID":"1188","NAME":"Deer","NAME2":"72*"},{"ID":"264","NAME":"Deer","NAME2":"73"},{"ID":"1262","NAME":"Deer","NAME2":"73X"},{"ID":"266","NAME":"Deer","NAME2":"74"},{"ID":"270","NAME":"Deer","NAME2":"78"},{"ID":"172","NAME":"Elk","NAME2":"1"},{"ID":"1184","NAME":"Elk","NAME2":"1-1"},{"ID":"173","NAME":"Elk","NAME2":"2"},{"ID":"174","NAME":"Elk","NAME2":"3"},{"ID":"1263","NAME":"Elk","NAME2":"3-1*"},{"ID":"177","NAME":"Elk","NAME2":"5"},{"ID":"1154","NAME":"Elk","NAME2":"5-1"},{"ID":"69","NAME":"Elk","NAME2":"8-1*"},{"ID":"736","NAME":"Elk","NAME2":"8-2*"},{"ID":"826","NAME":"Elk","NAME2":"8X*"},{"ID":"71","NAME":"Elk","NAME2":"10A"},{"ID":"185","NAME":"Elk","NAME2":"11-1"},{"ID":"896","NAME":"Elk","NAME2":"11-2"},{"ID":"186","NAME":"Elk","NAME2":"11A"},{"ID":"188","NAME":"Elk","NAME2":"13"},{"ID":"1192","NAME":"Elk","NAME2":"14-1"},{"ID":"897","NAME":"Elk","NAME2":"14-2"},{"ID":"1053","NAME":"Elk","NAME2":"16"},{"ID":"194","NAME":"Elk","NAME2":"18-1"},{"ID":"1193","NAME":"Elk","NAME2":"18-2"},{"ID":"1194","NAME":"Elk","NAME2":"18X"},{"ID":"196","NAME":"Elk","NAME2":"19A"},{"ID":"1314","NAME":"Elk","NAME2":"21-1*"},{"ID":"1314","NAME":"Elk","NAME2":"21-1X*"},{"ID":"78","NAME":"Elk","NAME2":"22-1"},{"ID":"79","NAME":"Elk","NAME2":"22-2"},{"ID":"201","NAME":"Elk","NAME2":"22-3"},{"ID":"202","NAME":"Elk","NAME2":"23-1"},{"ID":"82","NAME":"Elk","NAME2":"23-2"},{"ID":"83","NAME":"Elk","NAME2":"23-3"},{"ID":"1315","NAME":"Elk","NAME2":"23-4"},{"ID":"85","NAME":"Elk","NAME2":"24-1"},{"ID":"86","NAME":"Elk","NAME2":"24-2"},{"ID":"203","NAME":"Elk","NAME2":"24-3"},{"ID":"208","NAME":"Elk","NAME2":"29"},{"ID":"209","NAME":"Elk","NAME2":"30"},{"ID":"283","NAME":"Elk","NAME2":"30-1*"},{"ID":"210","NAME":"Elk","NAME2":"30A"},{"ID":"1266","NAME":"Elk","NAME2":"30A-1"},{"ID":"211","NAME":"Elk","NAME2":"31-1"},{"ID":"648","NAME":"Elk","NAME2":"31-2"},{"ID":"1316","NAME":"Elk","NAME2":"31-3"},{"ID":"96","NAME":"Elk","NAME2":"32-1"},{"ID":"97","NAME":"Elk","NAME2":"32-2"},{"ID":"1317","NAME":"Elk","NAME2":"32X"},{"ID":"213","NAME":"Elk","NAME2":"32A-1"},{"ID":"1120","NAME":"Elk","NAME2":"32A-2"},{"ID":"1121","NAME":"Elk","NAME2":"32A-3"},{"ID":"285","NAME":"Elk","NAME2":"33-1*"},{"ID":"26","NAME":"Elk","NAME2":"33-2*"},{"ID":"218","NAME":"Elk","NAME2":"36A"},{"ID":"1268","NAME":"Elk","NAME2":"36B"},{"ID":"102","NAME":"Elk","NAME2":"36A-1"},{"ID":"651","NAME":"Elk","NAME2":"36A-2*"},{"ID":"220","NAME":"Elk","NAME2":"37"},{"ID":"221","NAME":"Elk","NAME2":"37A"},{"ID":"108","NAME":"Elk","NAME2":"39-1"},{"ID":"1060","NAME":"Elk","NAME2":"39-2*"},{"ID":"1059","NAME":"Elk","NAME2":"39-3"},{"ID":"223","NAME":"Elk","NAME2":"39-4"},{"ID":"1318","NAME":"Elk","NAME2":"39-5"},{"ID":"224","NAME":"Elk","NAME2":"40"},{"ID":"1122","NAME":"Elk","NAME2":"39X"},{"ID":"111","NAME":"Elk","NAME2":"40-1*"},{"ID":"1123","NAME":"Elk","NAME2":"41"},{"ID":"1319","NAME":"Elk","NAME2":"41-1X"},{"ID":"1123","NAME":"Elk","NAME2":"41-2X"},{"ID":"226","NAME":"Elk","NAME2":"42"},{"ID":"227","NAME":"Elk","NAME2":"43-1"},{"ID":"1269","NAME":"Elk","NAME2":"43-2*"},{"ID":"228","NAME":"Elk","NAME2":"44-1"},{"ID":"693","NAME":"Elk","NAME2":"44-2*"},{"ID":"152","NAME":"Elk","NAME2":"44X*"},{"ID":"290","NAME":"Elk","NAME2":"45*"},{"ID":"960","NAME":"Elk","NAME2":"45X"},{"ID":"1064","NAME":"Elk","NAME2":"46*"},{"ID":"232","NAME":"Elk","NAME2":"48-1"},{"ID":"117","NAME":"Elk","NAME2":"48-2"},{"ID":"118","NAME":"Elk","NAME2":"48-3"},{"ID":"898","NAME":"Elk","NAME2":"48-4*"},{"ID":"233","NAME":"Elk","NAME2":"49"},{"ID":"1320","NAME":"Elk","NAME2":"49X*"},{"ID":"652","NAME":"Elk","NAME2":"50-1"},{"ID":"1270","NAME":"Elk","NAME2":"50-2"},{"ID":"900","NAME":"Elk","NAME2":"50-3"},{"ID":"235","NAME":"Elk","NAME2":"51"},{"ID":"291","NAME":"Elk","NAME2":"52A*"},{"ID":"1155","NAME":"Elk","NAME2":"52AX"},{"ID":"239","NAME":"Elk","NAME2":"54"},{"ID":"1101","NAME":"Elk","NAME2":"55-1*"},{"ID":"1153","NAME":"Elk","NAME2":"55-2*"},{"ID":"241","NAME":"Elk","NAME2":"56"},{"ID":"55","NAME":"Elk","NAME2":"58-1*"},{"ID":"243","NAME":"Elk","NAME2":"58-2"},{"ID":"883","NAME":"Elk","NAME2":"59*"},{"ID":"57","NAME":"Elk","NAME2":"60-1*"},{"ID":"131","NAME":"Elk","NAME2":"60-2*"},{"ID":"248","NAME":"Elk","NAME2":"61"},{"ID":"1159","NAME":"Elk","NAME2":"62*"},{"ID":"906","NAME":"Elk","NAME2":"63X"},{"ID":"1236","NAME":"Elk","NAME2":"64*"},{"ID":"296","NAME":"Elk","NAME2":"66*"},{"ID":"299","NAME":"Elk","NAME2":"66A-1*"},{"ID":"256","NAME":"Elk","NAME2":"66A-2"},{"ID":"1128","NAME":"Elk","NAME2":"67"},{"ID":"139","NAME":"Elk","NAME2":"70*"},{"ID":"298","NAME":"Elk","NAME2":"75*"},{"ID":"268","NAME":"Elk","NAME2":"76-1"},{"ID":"1065","NAME":"Elk","NAME2":"76-2*"},{"ID":"172","NAME":"Goat","NAME2":"1"},{"ID":"1107","NAME":"Goat","NAME2":"7*"},{"ID":"402","NAME":"Goat","NAME2":"10-1"},{"ID":"403","NAME":"Goat","NAME2":"10-2"},{"ID":"1108","NAME":"Goat","NAME2":"10-3*"},{"ID":"404","NAME":"Goat","NAME2":"18*"},{"ID":"201","NAME":"Goat","NAME2":"22"},{"ID":"738","NAME":"Goat","NAME2":"27-2*"},{"ID":"916","NAME":"Goat","NAME2":"27-4*"},{"ID":"917","NAME":"Goat","NAME2":"27-5"},{"ID":"1109","NAME":"Goat","NAME2":"36-1*"},{"ID":"857","NAME":"Goat","NAME2":"36A-1*"},{"ID":"858","NAME":"Goat","NAME2":"36A-2"},{"ID":"410","NAME":"Goat","NAME2":"36A-3*"},{"ID":"411","NAME":"Goat","NAME2":"36A-4*"},{"ID":"412","NAME":"Goat","NAME2":"36B*"},{"ID":"976","NAME":"Goat","NAME2":"37A*"},{"ID":"859","NAME":"Goat","NAME2":"39"},{"ID":"918","NAME":"Goat","NAME2":"43*"},{"ID":"414","NAME":"Goat","NAME2":"50*"},{"ID":"863","NAME":"Goat","NAME2":"67"},{"ID":"312","NAME":"Moose","NAME2":"1-1"},{"ID":"313","NAME":"Moose","NAME2":"1-2"},{"ID":"314","NAME":"Moose","NAME2":"1-3"},{"ID":"315","NAME":"Moose","NAME2":"1-4"},{"ID":"173","NAME":"Moose","NAME2":"2"},{"ID":"174","NAME":"Moose","NAME2":"3"},{"ID":"175","NAME":"Moose","NAME2":"4"},{"ID":"176","NAME":"Moose","NAME2":"4A"},{"ID":"177","NAME":"Moose","NAME2":"5"},{"ID":"178","NAME":"Moose","NAME2":"6"},{"ID":"179","NAME":"Moose","NAME2":"7"},{"ID":"180","NAME":"Moose","NAME2":"8"},{"ID":"181","NAME":"Moose","NAME2":"8A"},{"ID":"182","NAME":"Moose","NAME2":"9"},{"ID":"317","NAME":"Moose","NAME2":"10-1"},{"ID":"318","NAME":"Moose","NAME2":"10-2"},{"ID":"319","NAME":"Moose","NAME2":"10-3"},{"ID":"320","NAME":"Moose","NAME2":"10-4"},{"ID":"321","NAME":"Moose","NAME2":"10-5"},{"ID":"322","NAME":"Moose","NAME2":"10-6"},{"ID":"323","NAME":"Moose","NAME2":"10A-1"},{"ID":"324","NAME":"Moose","NAME2":"10A-2"},{"ID":"325","NAME":"Moose","NAME2":"10A-3"},{"ID":"326","NAME":"Moose","NAME2":"10A-4"},{"ID":"327","NAME":"Moose","NAME2":"10A-5"},{"ID":"328","NAME":"Moose","NAME2":"12-1"},{"ID":"329","NAME":"Moose","NAME2":"12-2"},{"ID":"1180","NAME":"Moose","NAME2":"12-4"},{"ID":"1179","NAME":"Moose","NAME2":"12-3"},{"ID":"1181","NAME":"Moose","NAME2":"12-5"},{"ID":"189","NAME":"Moose","NAME2":"14"},{"ID":"191","NAME":"Moose","NAME2":"16"},{"ID":"206","NAME":"Moose","NAME2":"27"},{"ID":"1302","NAME":"Moose","NAME2":"29*"},{"ID":"218","NAME":"Moose","NAME2":"36A"},{"ID":"361","NAME":"Moose","NAME2":"44*"},{"ID":"234","NAME":"Moose","NAME2":"50"},{"ID":"235","NAME":"Moose","NAME2":"51"},{"ID":"239","NAME":"Moose","NAME2":"54"},{"ID":"1101","NAME":"Moose","NAME2":"55*"},{"ID":"883","NAME":"Moose","NAME2":"59*"},{"ID":"246","NAME":"Moose","NAME2":"60"},{"ID":"1103","NAME":"Moose","NAME2":"60A"},{"ID":"365","NAME":"Moose","NAME2":"61-1"},{"ID":"366","NAME":"Moose","NAME2":"61-2"},{"ID":"367","NAME":"Moose","NAME2":"61-3"},{"ID":"249","NAME":"Moose","NAME2":"62"},{"ID":"250","NAME":"Moose","NAME2":"62A"},{"ID":"251","NAME":"Moose","NAME2":"63"},{"ID":"252","NAME":"Moose","NAME2":"63A"},{"ID":"253","NAME":"Moose","NAME2":"64"},{"ID":"254","NAME":"Moose","NAME2":"65"},{"ID":"368","NAME":"Moose","NAME2":"66-1"},{"ID":"369","NAME":"Moose","NAME2":"66-2"},{"ID":"256","NAME":"Moose","NAME2":"66A"},{"ID":"370","NAME":"Moose","NAME2":"67-1"},{"ID":"371","NAME":"Moose","NAME2":"67-2"},{"ID":"259","NAME":"Moose","NAME2":"68A"},{"ID":"138","NAME":"Moose","NAME2":"69-1"},{"ID":"373","NAME":"Moose","NAME2":"69-2"},{"ID":"374","NAME":"Moose","NAME2":"69-3*"},{"ID":"262","NAME":"Moose","NAME2":"71"},{"ID":"261","NAME":"Moose","NAME2":"70"},{"ID":"263","NAME":"Moose","NAME2":"72"},{"ID":"1102","NAME":"Moose","NAME2":"73*"},{"ID":"266","NAME":"Moose","NAME2":"74"},{"ID":"267","NAME":"Moose","NAME2":"75"},{"ID":"377","NAME":"Moose","NAME2":"76-1"},{"ID":"378","NAME":"Moose","NAME2":"76-2"},{"ID":"379","NAME":"Moose","NAME2":"76-3"},{"ID":"268","NAME":"Moose","NAME2":"76-4"},{"ID":"269","NAME":"Moose","NAME2":"77"},{"ID":"270","NAME":"Moose","NAME2":"78"},{"ID":"224","NAME":"California Sheep","NAME2":"40"},{"ID":"1105","NAME":"California Sheep","NAME2":"41-1"},{"ID":"1104","NAME":"California Sheep","NAME2":"41-2"},{"ID":"226","NAME":"California Sheep","NAME2":"42-1 and 42-2"},{"ID":"1106","NAME":"California Sheep","NAME2":"46-1* and 46-2*"},{"ID":"240","NAME":"California Sheep","NAME2":"55"},{"ID":"380","NAME":"Rocky Mtn Sheep","NAME2":"11"},{"ID":"914","NAME":"Rocky Mtn Sheep","NAME2":"17L"},{"ID":"381","NAME":"Rocky Mtn Sheep","NAME2":"19*"},{"ID":"1298","NAME":"Rocky Mtn Sheep","NAME2":"19A*"},{"ID":"978","NAME":"Rocky Mtn Sheep","NAME2":"20*"},{"ID":"384","NAME":"Rocky Mtn Sheep","NAME2":"20A"},{"ID":"385","NAME":"Rocky Mtn Sheep","NAME2":"21"},{"ID":"386","NAME":"Rocky Mtn Sheep","NAME2":"26*"},{"ID":"205","NAME":"Rocky Mtn Sheep","NAME2":"26L"},{"ID":"387","NAME":"Rocky Mtn Sheep","NAME2":"27-1"},{"ID":"389","NAME":"Rocky Mtn Sheep","NAME2":"27-2"},{"ID":"390","NAME":"Rocky Mtn Sheep","NAME2":"27-3*"},{"ID":"1299","NAME":"Rocky Mtn Sheep","NAME2":"27-4"},{"ID":"392","NAME":"Rocky Mtn Sheep","NAME2":"27L*"},{"ID":"393","NAME":"Rocky Mtn Sheep","NAME2":"28-1"},{"ID":"1300","NAME":"Rocky Mtn Sheep","NAME2":"28-2"},{"ID":"395","NAME":"Rocky Mtn Sheep","NAME2":"30*"},{"ID":"1301","NAME":"Rocky Mtn Sheep","NAME2":"36*"},{"ID":"921","NAME":"Rocky Mtn Sheep","NAME2":"36A*"},{"ID":"972","NAME":"Rocky Mtn Sheep","NAME2":"36B*"},{"ID":"397","NAME":"Rocky Mtn Sheep","NAME2":"37*"},{"ID":"221","NAME":"Rocky Mtn Sheep","NAME2":"37A"},{"ID":"280","NAME":"Turkey","NAME2":"22-1*"},{"ID":"211","NAME":"Turkey","NAME2":"31-1"},{"ID":"1046","NAME":"Turkey","NAME2":"36B-1* and 2*"},{"ID":"445","NAME":"Turkey","NAME2":"38-1* and 2*"},{"ID":"446","NAME":"Turkey","NAME2":"50-1*, 2*, 3* and 4*"},{"ID":"239","NAME":"Turkey","NAME2":"54-1, 2, and 3"},{"ID":"259","NAME":"Turkey","NAME2":"68A-1, 2, and 3"},{"ID":"262","NAME":"Turkey","NAME2":"71-1, 2, 3, 4 and 5"},{"ID":"1163","NAME":"Turkey","NAME2":"73-1*"},];
+
 			$.each(chuntsList, function(){
-				$('#chunt').append('<option value="' + this.ID + '">' + this.NAME1 + " - Area " + this.NAME2 + '</option>');
+				$('#chunt').append('<option value="' + this.ID + '">' + this.NAME + " - Area " + this.NAME2 + '</option>');
 			});
 			//populate the Waterfowl Hunt Areas dropdown with JSON vars.
 			var waterfowlList = [{"ID":"1","NAME":"Canada Goose Area 1"},{"ID":"2","NAME":"Canada Goose Area 2"},{"ID":"3","NAME":"Duck Area 1"},{"ID":"4","NAME":"Duck Area 2"},{"ID":"5","NAME":"Light Goose Area 1"},{"ID":"6","NAME":"Light Goose Area 2"},{"ID":"7","NAME":"Light Goose Area 3"},{"ID":"8","NAME":"Light Goose Area 4"},{"ID":"9","NAME":"White-fronted Goose Area 1"},{"ID":"10","NAME":"White-fronted Goose Area 2"},{"ID":"11","NAME":"White-fronted Goose Area 3"},];

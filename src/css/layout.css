@@ -195,6 +195,12 @@ input[type=checkbox] {
 	white-space: normal !important;
 }
 
+.huntDisclaimer{
+	font-size: 12px;
+	color: #999;
+	margin-left: 10px;
+}
+
 .disclaimer{
 	font-size: 12px;
 	color: #999;

@@ -456,6 +456,7 @@
 													<input id="queryCheckbox" type="checkbox" style="margin-left:-10px;" ></input>
 												</span>
 												<label for="queryCheckbox" style="font-size:15px; margin-bottom:5px"> Highlighted Hunt Areas </label>
+												<label class='huntDisclaimer'>If hunt area has lines through it, further restrictions apply. <a href='http://fishandgame.idaho.gov/public/hunt/' target='_blank'>Consult Regulations</a></label>
 												<div id="queryLabel1Div"  style="display: none; margin-left:27px;">
 													<img class="agsjsTOCIcon" data-dojo-attach-point="iconNode" src="src/images/queryIMG.png"/>
 													<span id="queryLabel1" class="agsjsTOCServiceLayerLabel" data-dojo-attach-point="labelNode"></span>
@@ -602,7 +603,7 @@
 				}],
 				paths: {
 				//if you want to host on your own server, download and put in folders then use path like: 
-						agsjs: location.pathname.replace(/\/[^/]+$/, '') + '/src/agsjs' 
+						agsjs: location.pathname.replace(/\/[^/]+$/, '') + 'src/agsjs' 
 				}
 		};
 	</script>	
