@@ -290,7 +290,7 @@
 		);
 		
 		//popup window template for the fire closure feature layer.  NO WILDFIRES AT THIS TIME.  Keep for next year.
-		/* var closurePopupTemplate = new PopupTemplate({
+		var closurePopupTemplate = new PopupTemplate({
 			title: "Fire Closure Info",
 			fieldInfos:[{
 				fieldName: "NAME", visible: true,
@@ -302,10 +302,10 @@
 			"<b>Name: </b>${NAME}<br/>" +
 			"<b>Effective Date: </b>${UPDATE_}<br/>" +
 			"<a style='cursor:pointer;' href='${URL}' target='_blank'>InciWeb Description</a>"
-		); */
+		);
 		
 		//popup window template for the fire perimeter feature layer. NO WILDFIRES AT THIS TIME.  Keep for next year.
-/* 		var perimeterPopupTemplate = new PopupTemplate({
+		var perimeterPopupTemplate = new PopupTemplate({
 			title: "{fire_name} Fire",
 			fieldInfos:[{
 				fieldName: "fire_name", visible: true,
@@ -316,7 +316,7 @@
 		perimeterPopupTemplate.setContent(
 			"<b>Acres: </b>${acres}<br/>" +
 			"<b>Active (Y/N): </b>${active}</br>"
-		); */
+		);
 		
 		//add layers (or groups of layers) to the map.
 		huntLayers = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Data/Hunting/MapServer",
@@ -336,18 +336,18 @@
 				outFields:["*"],
 				infoTemplate:campgroundPopupTemplate
 			});
-		/* fireLayer0 = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/External/InciWeb_FireClosures/MapServer/0",
+		fireLayer0 = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/External/InciWeb_FireClosures/MapServer/0",
 			{
 				id:"Fire_Closure",
-				outFields:['NAME', 'URL', 'UPDATE_']
+				outFields:['NAME', 'URL', 'UPDATE_'],
 				infoTemplate:closurePopupTemplate
-			});	 */
-/* 		fireLayer2 = new FeatureLayer("http://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/2",
+			});	
+		fireLayer2 = new FeatureLayer("http://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/2",
 			{
 				id:"Fire_Perimeter",
-				outFields:['acres', 'active', 'fire_name']
+				outFields:['acres', 'active', 'fire_name'],
 				infoTemplate:perimeterPopupTemplate
-			}); */
+			});
 		esriConfig.defaults.io.corsEnabledServers.push("activefiremaps.fs.fed.us");
     fireLayer3 = new WMSLayer("http://activefiremaps.fs.fed.us/cgi-bin/mapserv.exe?map=conus.map&",{
         id:"MODIS_Fire_Detection",
@@ -400,7 +400,7 @@
 					$("#TOCNode_Surface_Management .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by BLM. <a href='http://cloud.insideidaho.org/webApps/metadataViewer/default.aspx?path=G%3a%5cdata%5canonymous%5cblm%5cRLTY_SMA_PUB_24K_POLY.shp.xml' target='_blank'>Learn More</a></div>");
 					$("#TOCNode_Trails_and_Roads .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by IDPR. <a href='http://www.trails.idaho.gov/trails/' target='_blank'>Learn More</a></div>");
 					$("#TOCNode_Campgrounds .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by IDPR. <a href='http://parksandrecreation.idaho.gov/activities/camping' target='_blank'>Learn More</a></div>");
-					//$("#TOCNode_fireLayers_2 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Maintained by GeoMAC. <a href='http://wildfire.usgs.gov/geomac/' target='_blank'>Learn More</a></div>");
+					$("#TOCNode_fireLayers_2 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Maintained by GeoMAC. <a href='http://wildfire.usgs.gov/geomac/' target='_blank'>Learn More</a></div>");
 					$("#TOCNode_fireLayers_3 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Maintained by USFS-RSAC. <a href='http://activefiremaps.fs.fed.us/' target='_blank'>Learn More</a></div>");
 /* 					$('.agsjsTOCRootLayerLabel').click(function(){
 						$(this).siblings('span').children('input').click();
@@ -408,57 +408,57 @@
 				});
 		});
 		
-		map.addLayers([surfaceMgmtLayer, adminLayers, fireLayer3, /*fireLayer2, fireLayer0,*/ huntLayers, trailLayers, campgroundLayer]);
+		map.addLayers([surfaceMgmtLayer, adminLayers, fireLayer3, fireLayer2, fireLayer0, huntLayers, trailLayers, campgroundLayer]);
 		adminLayers.hide(); //So none of the layers are "on" except the GMU layer when the map loads.
 		surfaceMgmtLayer.hide();
 		trailLayers.hide();
 		campgroundLayer.hide();
-		//fireLayer0.hide();
-		//fireLayer2.hide();
+		fireLayer0.hide();
+		fireLayer2.hide();
 		fireLayer3.hide();
 		map.reorderLayer(surfaceMgmtLayer, 0);
 		
 		//uncheck fire Layer Checkboxes
 		$("#fireLayersCheckbox").prop("checked", false);
-		//$("#fireLayer0Checkbox").prop("checked", false);
-		//$("#fireLayer2Checkbox").prop("checked", false);
+		$("#fireLayer0Checkbox").prop("checked", false);
+		$("#fireLayer2Checkbox").prop("checked", false);
 		$("#fireLayer3Checkbox").prop("checked", false);
 		//toggle all fireLayers off when the fireLayersCheckbox is unchecked.
 		$("#fireLayersCheckbox").change(function(){
 		 if($(this).prop('checked')){
-			//fireLayer0.show();
-			//fireLayer2.show();
+			fireLayer0.show();
+			fireLayer2.show();
 			fireLayer3.show();
-			//$("#fireLayer0Checkbox").prop("checked", true);
-			//$("#fireLayer2Checkbox").prop("checked", true);
+			$("#fireLayer0Checkbox").prop("checked", true);
+			$("#fireLayer2Checkbox").prop("checked", true);
 			$("#fireLayer3Checkbox").prop("checked", true);
 		 } else { 
-				//fireLayer0.hide();
-				//fireLayer2.hide();
+				fireLayer0.hide();
+				fireLayer2.hide();
 				fireLayer3.hide();
-				//$("#fireLayer0Checkbox").prop("checked", false);
-				//$("#fireLayer2Checkbox").prop("checked", false);
+				$("#fireLayer0Checkbox").prop("checked", false);
+				$("#fireLayer2Checkbox").prop("checked", false);
 				$("#fireLayer3Checkbox").prop("checked", false);
 		 }
 		});
 		  //toggle fireLayer0 on/off when checkbox is toggled on/off
-/* 			$("#fireLayer0Checkbox").change(function(){	
+			$("#fireLayer0Checkbox").change(function(){	
 			 if ($(this).prop('checked')) {
 				fireLayer0.show();
 				$("#fireLayersCheckbox").prop("checked", true);
 			 } else {
 				fireLayer0.hide();
 			 }
-			}); */
+			});
 			//toggle fireLayer2 on/off when checkbox is toggled on/off
-	/* 		$("#fireLayer2Checkbox").change(function(){	
+			$("#fireLayer2Checkbox").change(function(){	
 				 if ($(this).prop('checked')) {
 					fireLayer2.show();
 					$("#fireLayersCheckbox").prop("checked", true);
 				 } else {
 					fireLayer2.hide();
 				 }
-			}); */
+			});
 			//toggle fireLayer3 on/off when checkbox is toggled on/off
 			$("#fireLayer3Checkbox").change(function(){	
 				 if ($(this).prop('checked')) {
