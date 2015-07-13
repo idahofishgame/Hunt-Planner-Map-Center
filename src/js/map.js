@@ -311,11 +311,13 @@
 				fieldName: "fire_name", visible: true,
 				fieldName: "acres", visible: true,
 				fieldName: "active", visible: true, 
+				fieldName: "inciweb_id", visible: true
 				}]
 			});
 		perimeterPopupTemplate.setContent(
 			"<b>Acres: </b>${acres}<br/>" +
-			"<b>Active (Y/N): </b>${active}</br>"
+			"<b>Active (Y/N): </b>${active}</br/>" +
+			"<b><a target='_blank' href=http://inciweb.nwcg.gov/incident/${inciweb_id}>Click for InciWeb Information</a></b>"
 		);
 		
 		//add layers (or groups of layers) to the map.
@@ -345,7 +347,7 @@
 		fireLayer2 = new FeatureLayer("http://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/2",
 			{
 				id:"Fire_Perimeter",
-				outFields:['acres', 'active', 'fire_name'],
+				outFields:['acres', 'active', 'fire_name', 'inciweb_id'],
 				infoTemplate:perimeterPopupTemplate
 			});
 		esriConfig.defaults.io.corsEnabledServers.push("activefiremaps.fs.fed.us");
