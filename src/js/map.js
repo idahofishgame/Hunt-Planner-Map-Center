@@ -355,7 +355,7 @@
         id:"MODIS_Fire_Detection",
 				opacity:"0.5",
 				version:"1.1.1",
-        visibleLayers:[4],
+        visibleLayers:[4,5,6],
         format:"png"
     });
 	
