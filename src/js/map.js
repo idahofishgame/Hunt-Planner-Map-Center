@@ -141,10 +141,26 @@
 		
 		//show coordinates as the user scrolls around the map. In Desktop, it displays where ever the mouse is hovering.  In mobile, the user must tap the screen to get the coordinates.
 		function showCoordinates(evt) {
-			//the map is in web mercator but display coordinates in geographic (lat, long)
+			//the map is in web mercator but display coordinates in geographic (lat, long) & UTM NAD 27 Zone 11 & 12
+			var utm11SR = new esri.SpatialReference({wkid: 26711});
+			var utm12SR = new esri.SpatialReference({wkid: 26712});
+			var gsvc = new esri.tasks.GeometryService("http://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
 			var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
 			//display mouse coordinates
-			$("#info").html(mp.x.toFixed(3) + ", " + mp.y.toFixed(3));
+			$("#info1").html("WGS84 DD: "+ mp.x.toFixed(3) + ", " + mp.y.toFixed(3));
+			if (mp.x <= -114 && mp.x >= -120) { //if hovering in zone 11
+				gsvc.project([evt.mapPoint], utm11SR, function(result) {
+					$("#info2").show();
+					$("#info2").html("NAD27 UTM 11N: " + result[0].x.toFixed() + ', ' + result[0].y.toFixed());
+				});
+			} else if (mp.x > -114 && mp.x <= -108) { //if hovering in zone 12
+				gsvc.project([evt.mapPoint], utm12SR, function (result) {
+					$("#info2").show();
+					$("#info2").html("NAD27 UTM 12N: " + result[0].x.toFixed() + ', ' + result[0].y.toFixed());
+				});
+			} else {
+				$("#info2").hide();
+			}
 		}
 		
 		//add the basemap gallery, in this case we'll display maps from ArcGIS.com including bing maps

@@ -63,12 +63,24 @@ img.ri:empty {
 	z-index: 50;
 }
 
-#info {
+#info1 {
 	position:absolute;
 	right:5px;
-	bottom:22px;
+	top:5px;
 	color:#2b2b2b;
 	font-weight:bold;
+	font-size:12px;
+	background-color:#ffffff;
+	z-index:52;
+}
+
+#info2 {
+	position:absolute;
+	right:5px;
+	top:22px;
+	color:#2b2b2b;
+	font-weight:bold;
+	font-size:12px;
 	background-color:#ffffff;
 	z-index:52;
 }
