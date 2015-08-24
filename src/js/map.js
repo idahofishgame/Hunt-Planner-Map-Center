@@ -156,7 +156,7 @@
 			} else if (mp.x > -114 && mp.x <= -108) { //if hovering in zone 12
 				gsvc.project([evt.mapPoint], utm12SR, function (result) {
 					$("#info2").show();
-					$("#info2").html("NAD27 UTM 12N: " + result[0].x.toFixed() + ', ' + result[0].y.toFixed());
+					$("#info2").html("NAD27 UTM 12T: 0" + result[0].x.toFixed() + ', ' + result[0].y.toFixed());
 				});
 			} else {
 				$("#info2").hide();
