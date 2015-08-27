@@ -144,14 +144,14 @@
 			//the map is in web mercator but display coordinates in geographic (lat, long) & UTM NAD 27 Zone 11 & 12
 			var utm11SR = new esri.SpatialReference({wkid: 26711});
 			var utm12SR = new esri.SpatialReference({wkid: 26712});
-			var gsvc = new esri.tasks.GeometryService("http://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
+			var gsvc = new esri.tasks.GeometryService("https://fishandgame.idaho.gov/gis/rest/services/Utilities/Geometry/GeometryServer");
 			var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
 			//display mouse coordinates
 			$("#info1").html("WGS84 DD: "+ mp.x.toFixed(3) + ", " + mp.y.toFixed(3));
 			if (mp.x <= -114 && mp.x >= -120) { //if hovering in zone 11
 				gsvc.project([evt.mapPoint], utm11SR, function(result) {
 					$("#info2").show();
-					$("#info2").html("NAD27 UTM 11N: " + result[0].x.toFixed() + ', ' + result[0].y.toFixed());
+					$("#info2").html("NAD27 UTM 11T: " + result[0].x.toFixed() + ', ' + result[0].y.toFixed());
 				});
 			} else if (mp.x > -114 && mp.x <= -108) { //if hovering in zone 12
 				gsvc.project([evt.mapPoint], utm12SR, function (result) {
@@ -359,7 +359,9 @@
 				id:"Fire_Closure",
 				outFields:['NAME', 'URL', 'UPDATE_'],
 				infoTemplate:closurePopupTemplate
-			});	
+			});
+		fireLayer1 = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/External/IDL_PrivateIndustrialTimberlands/MapServer/0",
+			{id:"Private_Timberland_Closure"});
 		fireLayer2 = new FeatureLayer("http://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/2",
 			{
 				id:"Fire_Perimeter",
@@ -418,6 +420,7 @@
 					$("#TOCNode_Surface_Management .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by BLM. <a href='http://cloud.insideidaho.org/webApps/metadataViewer/default.aspx?path=G%3a%5cdata%5canonymous%5cblm%5cRLTY_SMA_PUB_24K_POLY.shp.xml' target='_blank'>Learn More</a></div>");
 					$("#TOCNode_Trails_and_Roads .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by IDPR. <a href='http://www.trails.idaho.gov/trails/' target='_blank'>Learn More</a></div>");
 					$("#TOCNode_Campgrounds .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by IDPR. <a href='http://parksandrecreation.idaho.gov/activities/camping' target='_blank'>Learn More</a></div>");
+                    $("#TOCNode_fireLayers_1 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Provided by IDL.</div>");
 					$("#TOCNode_fireLayers_2 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Maintained by GeoMAC. <a href='http://wildfire.usgs.gov/geomac/' target='_blank'>Learn More</a></div>");
 					$("#TOCNode_fireLayers_3 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Maintained by USFS-RSAC. <a href='http://activefiremaps.fs.fed.us/' target='_blank'>Learn More</a></div>");
 /* 					$('.agsjsTOCRootLayerLabel').click(function(){
@@ -426,12 +429,13 @@
 				});
 		});
 		
-		map.addLayers([surfaceMgmtLayer, adminLayers, fireLayer3, fireLayer2, fireLayer0, huntLayers, trailLayers, campgroundLayer]);
+		map.addLayers([surfaceMgmtLayer, adminLayers, fireLayer3, fireLayer2, fireLayer1, fireLayer0, huntLayers, trailLayers, campgroundLayer]);
 		adminLayers.hide(); //So none of the layers are "on" except the GMU layer when the map loads.
 		surfaceMgmtLayer.hide();
 		trailLayers.hide();
 		campgroundLayer.hide();
 		fireLayer0.hide();
+		fireLayer1.hide();
 		fireLayer2.hide();
 		fireLayer3.hide();
 		map.reorderLayer(surfaceMgmtLayer, 0);
@@ -439,22 +443,27 @@
 		//uncheck fire Layer Checkboxes
 		$("#fireLayersCheckbox").prop("checked", false);
 		$("#fireLayer0Checkbox").prop("checked", false);
+		$("#fireLayer1Checkbox").prop("checked", false);
 		$("#fireLayer2Checkbox").prop("checked", false);
 		$("#fireLayer3Checkbox").prop("checked", false);
 		//toggle all fireLayers off when the fireLayersCheckbox is unchecked.
 		$("#fireLayersCheckbox").change(function(){
 		 if($(this).prop('checked')){
 			fireLayer0.show();
+			 fireLayer1.show();
 			fireLayer2.show();
 			fireLayer3.show();
 			$("#fireLayer0Checkbox").prop("checked", true);
+             $("#fireLayer1Checkbox").prop("checked", true);
 			$("#fireLayer2Checkbox").prop("checked", true);
 			$("#fireLayer3Checkbox").prop("checked", true);
 		 } else { 
 				fireLayer0.hide();
+                fireLayer1.hide()
 				fireLayer2.hide();
 				fireLayer3.hide();
 				$("#fireLayer0Checkbox").prop("checked", false);
+                $("#fireLayer1Checkbox").prop("checked", false);
 				$("#fireLayer2Checkbox").prop("checked", false);
 				$("#fireLayer3Checkbox").prop("checked", false);
 		 }
@@ -468,6 +477,15 @@
 				fireLayer0.hide();
 			 }
 			});
+            //toggle fireLayer1 on/off when checkbox is toggled on/off
+            $("#fireLayer1Checkbox").change(function(){
+                if ($(this).prop('checked')) {
+                    fireLayer1.show();
+                    $("#fireLayersCheckbox").prop("checked", true);
+                } else {
+                    fireLayer1.hide();
+                }
+            });
 			//toggle fireLayer2 on/off when checkbox is toggled on/off
 			$("#fireLayer2Checkbox").change(function(){	
 				 if ($(this).prop('checked')) {
