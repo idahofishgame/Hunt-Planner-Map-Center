@@ -1565,9 +1565,9 @@
 			submitPrint(); 
 		});
 		
-		$("#pdfModal").on('hidden.bs.modal', function(){
+/*		$("#pdfModal").on('hidden.bs.modal', function(){
 			dojo.byId("printStatus").innerHTML = "";
-		});
+		});*/
 		
 		function submitPrint() {
 			var printParams = new PrintParameters();
