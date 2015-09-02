@@ -116,8 +116,8 @@
 		var queryLayer, queryLabelLayer, placeLayer, zoomToLayer, zoomToLabelLayer, drawToolbarLayer, drawTextLayer;
 		map.on("load", function() {
 		//after map loads, connect to listen to mouse move & drag events
-			map.on("mouse-move", showCoordinates);
-			map.on("mouse-drag", showCoordinates);
+			//map.on("mouse-move", showCoordinates);
+			//map.on("mouse-drag", showCoordinates);
 		//add graphics layer for the hunt areas queries
 			queryLayer = new GraphicsLayer();
 			map.addLayer(queryLayer);
@@ -144,7 +144,7 @@
 			//the map is in web mercator but display coordinates in geographic (lat, long) & UTM NAD 27 Zone 11 & 12
 			var utm11SR = new esri.SpatialReference({wkid: 26711});
 			var utm12SR = new esri.SpatialReference({wkid: 26712});
-			var gsvc = new esri.tasks.GeometryService("https://fishandgame.idaho.gov/gis/rest/services/Utilities/Geometry/GeometryServer");
+			var gsvc = new esri.tasks.GeometryService("http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
 			var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
 			//display mouse coordinates
 			$("#info1").html("WGS84 DD: "+ mp.x.toFixed(3) + ", " + mp.y.toFixed(3));
@@ -417,9 +417,9 @@
 					$('.agsjsTOCServiceLayerLabel').click(function(){
 						$(this).siblings('span').children('input').click();
 					});
-					$("#TOCNode_Surface_Management .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by BLM. <a href='http://cloud.insideidaho.org/webApps/metadataViewer/default.aspx?path=G%3a%5cdata%5canonymous%5cblm%5cRLTY_SMA_PUB_24K_POLY.shp.xml' target='_blank'>Learn More</a></div>");
+					$("#TOCNode_Surface_Management .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by BLM. <a href='http://cloud.insideidaho.org/webApps/metadataViewer/default.aspx?path=%5c%5cintranet.rocket.net%5cinsideprod%5cdata%5canonymous%5cblm%5cRLTY_SMA_PUB_24K_POLY.shp.xml' target='_blank'>Learn More</a></div>");
 					$("#TOCNode_Trails_and_Roads .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by IDPR. <a href='http://www.trails.idaho.gov/trails/' target='_blank'>Learn More</a></div>");
-					$("#TOCNode_Campgrounds .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by IDPR. <a href='http://parksandrecreation.idaho.gov/activities/camping' target='_blank'>Learn More</a></div>");
+					$("#TOCNode_Campgrounds .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by IDPR. <a href='http://parksandrecreation.idaho.gov/activities/camping-reservations' target='_blank'>Learn More</a></div>");
                     $("#TOCNode_fireLayers_1 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Provided by IDL.</div>");
 					$("#TOCNode_fireLayers_2 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Maintained by GeoMAC. <a href='http://wildfire.usgs.gov/geomac/' target='_blank'>Learn More</a></div>");
 					$("#TOCNode_fireLayers_3 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Maintained by USFS-RSAC. <a href='http://activefiremaps.fs.fed.us/' target='_blank'>Learn More</a></div>");
@@ -550,7 +550,7 @@
 			$("#queryLabel1Div").show();
 			
 			if (typeof urlZoom != 'undefined'){
-				var point = new Point(urlX, urlY, new SpatialReference({ wkid: 4326}));
+				var point = new Point(urlX, urlY, new esri.SpatialReference({ wkid: 4326}));
 				map.setLevel(urlZoom);
 				map.centerAt(point);
 			}
