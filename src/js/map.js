@@ -58,7 +58,7 @@
 	function (
 	esriConfig, urlUtils, Map, LocateButton, Scalebar, request, scaleUtils, FeatureLayer, SimpleRenderer, PictureMarkerSymbol, SimpleMarkerSymbol, SimpleFillSymbol, SimpleLineSymbol, TextSymbol, Font, Color, Point, Multipoint, arcgisUtils, webMercatorUtils, GraphicsLayer, BasemapLayer, Basemap, BasemapGallery, GoogleMapsLayer, InfoTemplate, Popup, PopupTemplate, ArcGISDynamicMapServiceLayer, WMSLayer, QueryTask, Query, TOC, Geocoder, GeometryService, Measurement, Draw, Graphic, PrintParameters, PrintTemplate, PrintTask, dom, domClass, domConstruct, JSON, on, parser, query, sniff, connect, arrayUtils, lang, registry, BootstrapMap
 ) {
-		
+		/*
 		//Proxy settings
 		esriConfig.defaults.io.proxyUrl = "https://fishandgame.idaho.gov/ifwis/gis_proxy/proxy.ashx?";
 		esriConfig.defaults.io.alwaysUseProxy = false;
@@ -67,7 +67,8 @@
 			urlPrefix: "https://fishandgame.idaho.gov",
 			proxyUrl: "https://fishandgame.idaho.gov/ifwis/gis_proxy/proxy.ashx"
     });
-		
+    */
+    
 		// call the parser to create the dijit layout dijits
 		parser.parse(); // note djConfig.parseOnLoad = false;
 		
@@ -116,8 +117,8 @@
 		var queryLayer, queryLabelLayer, placeLayer, zoomToLayer, zoomToLabelLayer, drawToolbarLayer, drawTextLayer;
 		map.on("load", function() {
 		//after map loads, connect to listen to mouse move & drag events
-			//map.on("mouse-move", showCoordinates);
-			//map.on("mouse-drag", showCoordinates);
+			map.on("mouse-move", showCoordinates);
+			map.on("mouse-drag", showCoordinates);
 		//add graphics layer for the hunt areas queries
 			queryLayer = new GraphicsLayer();
 			map.addLayer(queryLayer);
@@ -360,8 +361,8 @@
 				outFields:['NAME', 'URL', 'UPDATE_'],
 				infoTemplate:closurePopupTemplate
 			});
-		fireLayer1 = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/External/IDL_PrivateIndustrialTimberlands/MapServer/0",
-			{id:"Private_Timberland_Closure"});
+		fireLayer1 = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/External/IDL_PrivateIndustrialTimberlands/MapServer/1",
+			{id:"Private_Timberland_Restrictions"});
 		fireLayer2 = new FeatureLayer("http://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/2",
 			{
 				id:"Fire_Perimeter",
@@ -420,7 +421,7 @@
 					$("#TOCNode_Surface_Management .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by BLM. <a href='http://cloud.insideidaho.org/webApps/metadataViewer/default.aspx?path=%5c%5cintranet.rocket.net%5cinsideprod%5cdata%5canonymous%5cblm%5cRLTY_SMA_PUB_24K_POLY.shp.xml' target='_blank'>Learn More</a></div>");
 					$("#TOCNode_Trails_and_Roads .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by IDPR. <a href='http://www.trails.idaho.gov/trails/' target='_blank'>Learn More</a></div>");
 					$("#TOCNode_Campgrounds .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by IDPR. <a href='http://parksandrecreation.idaho.gov/activities/camping-reservations' target='_blank'>Learn More</a></div>");
-                    $("#TOCNode_fireLayers_1 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Provided by IDL.</div>");
+          $("#TOCNode_fireLayers_1 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Provided by IDL.</div>");
 					$("#TOCNode_fireLayers_2 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Maintained by GeoMAC. <a href='http://wildfire.usgs.gov/geomac/' target='_blank'>Learn More</a></div>");
 					$("#TOCNode_fireLayers_3 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Maintained by USFS-RSAC. <a href='http://activefiremaps.fs.fed.us/' target='_blank'>Learn More</a></div>");
 /* 					$('.agsjsTOCRootLayerLabel').click(function(){
@@ -454,16 +455,16 @@
 			fireLayer2.show();
 			fireLayer3.show();
 			$("#fireLayer0Checkbox").prop("checked", true);
-             $("#fireLayer1Checkbox").prop("checked", true);
+      $("#fireLayer1Checkbox").prop("checked", true);
 			$("#fireLayer2Checkbox").prop("checked", true);
 			$("#fireLayer3Checkbox").prop("checked", true);
 		 } else { 
 				fireLayer0.hide();
-                fireLayer1.hide()
+        fireLayer1.hide()
 				fireLayer2.hide();
 				fireLayer3.hide();
 				$("#fireLayer0Checkbox").prop("checked", false);
-                $("#fireLayer1Checkbox").prop("checked", false);
+        $("#fireLayer1Checkbox").prop("checked", false);
 				$("#fireLayer2Checkbox").prop("checked", false);
 				$("#fireLayer3Checkbox").prop("checked", false);
 		 }
@@ -477,15 +478,15 @@
 				fireLayer0.hide();
 			 }
 			});
-            //toggle fireLayer1 on/off when checkbox is toggled on/off
-            $("#fireLayer1Checkbox").change(function(){
-                if ($(this).prop('checked')) {
-                    fireLayer1.show();
-                    $("#fireLayersCheckbox").prop("checked", true);
-                } else {
-                    fireLayer1.hide();
-                }
-            });
+			//toggle fireLayer1 on/off when checkbox is toggled on/off
+			$("#fireLayer1Checkbox").change(function(){
+					if ($(this).prop('checked')) {
+							fireLayer1.show();
+							$("#fireLayersCheckbox").prop("checked", true);
+					} else {
+							fireLayer1.hide();
+					}
+			});
 			//toggle fireLayer2 on/off when checkbox is toggled on/off
 			$("#fireLayer2Checkbox").change(function(){	
 				 if ($(this).prop('checked')) {
@@ -1636,7 +1637,7 @@
 				$('#elkzone').append('<option value="' + this.ID + '">' + this.NAME + '</option>');
 			});
 			//populate the Waterfowl Hunt Areas dropdown with JSON vars.
-			var waterfowlList = [{"ID":"1","NAME":"Canada Goose Area 1"},{"ID":"2","NAME":"Canada Goose Area 2"},{"ID":"3","NAME":"Duck Area 1"},{"ID":"4","NAME":"Duck Area 2"},{"ID":"5","NAME":"Light Goose Area 1"},{"ID":"6","NAME":"Light Goose Area 2"},{"ID":"7","NAME":"Light Goose Area 3"},{"ID":"8","NAME":"Light Goose Area 4"},{"ID":"9","NAME":"White-fronted Goose Area 1"},{"ID":"10","NAME":"White-fronted Goose Area 2"},{"ID":"11","NAME":"White-fronted Goose Area 3"},];
+			var waterfowlList = [{"ID":"1","NAME":"Canada Goose Area 1"},{"ID":"2","NAME":"Canada Goose Area 2"},{"ID":"3","NAME":"Canada Goose Area 3"},{"ID":"4","NAME":"Duck Area 1"},{"ID":"5","NAME":"Duck Area 2"},{"ID":"6","NAME":"Light Goose Area 1"},{"ID":"7","NAME":"Light Goose Area 2"},{"ID":"8","NAME":"Light Goose Area 3"},{"ID":"9","NAME":"Light Goose Area 4"},{"ID":"10","NAME":"White-fronted Goose Area 1"},{"ID":"11","NAME":"White-fronted Goose Area 2"},{"ID":"12","NAME":"White-fronted Goose Area 3"},];
 			$.each(waterfowlList, function(){
 				$('#waterfowl').append('<option value="' + this.ID + '">' + this.NAME + '</option>');
 			});
