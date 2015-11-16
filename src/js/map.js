@@ -58,991 +58,1022 @@
 	function (
 	esriConfig, urlUtils, Map, LocateButton, Scalebar, request, scaleUtils, FeatureLayer, SimpleRenderer, PictureMarkerSymbol, SimpleMarkerSymbol, SimpleFillSymbol, SimpleLineSymbol, TextSymbol, Font, Color, Point, Multipoint, arcgisUtils, webMercatorUtils, GraphicsLayer, BasemapLayer, Basemap, BasemapGallery, GoogleMapsLayer, InfoTemplate, Popup, PopupTemplate, ArcGISDynamicMapServiceLayer, WMSLayer, QueryTask, Query, TOC, Geocoder, GeometryService, Measurement, Draw, Graphic, PrintParameters, PrintTemplate, PrintTask, dom, domClass, domConstruct, JSON, on, parser, query, sniff, connect, arrayUtils, lang, registry, BootstrapMap
 ) {
-		/*
-		//Proxy settings
-		esriConfig.defaults.io.proxyUrl = "https://fishandgame.idaho.gov/ifwis/gis_proxy/proxy.ashx?";
-		esriConfig.defaults.io.alwaysUseProxy = false;
-		
-		urlUtils.addProxyRule({
-			urlPrefix: "https://fishandgame.idaho.gov",
-			proxyUrl: "https://fishandgame.idaho.gov/ifwis/gis_proxy/proxy.ashx"
-    });
-    */
-    
-		// call the parser to create the dijit layout dijits
-		parser.parse(); // note djConfig.parseOnLoad = false;
-		
-		//hide the loading icon after the window has loaded.
-		$(window).load(function(){
-			$("#loading").hide();
-			clearFileInputField(uploadForm);
-		});
-		
-		//create a popup div
-		var popup = Popup({
-				titleInBody: false
-		},domConstruct.create("div"));
-		
-		//Get a reference to the ArcGIS Map class
-		map = BootstrapMap.create("mapDiv",{
-			basemap:"topo",
-			center:[-114.52,45.50],
-			zoom:6,
-			infoWindow: popup
-		});
-		
-		//create a domClass to customize the look of the popup window
-		domClass.add(map.infoWindow.domNode, "myTheme");
-		
 
-		//LocateButton will zoom to where you are.  If tracking is enabled and the button becomes a toggle that creates an event to watch for location changes.
-		var locateSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 20,
-			new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
-			new Color([215,73,255, 0.8]), 8),
-			new Color ([199,0,255, 0.8]));
-		
-		geoLocate = new LocateButton({
-			map: map,
-			symbol: locateSymbol
-			//useTracking: true
-    }, "LocateButton");
-    geoLocate.startup();
-		
-		//add scalebar
-		scalebar = new Scalebar({
-			map: map,
-			scalebarUnit: "dual"
-		});
-		
-		var queryLayer, queryLabelLayer, placeLayer, zoomToLayer, zoomToLabelLayer, drawToolbarLayer, drawTextLayer;
-		map.on("load", function() {
-		//after map loads, connect to listen to mouse move & drag events
-			map.on("mouse-move", showCoordinates);
-			map.on("mouse-drag", showCoordinates);
-		//add graphics layer for the hunt areas queries
-			queryLayer = new GraphicsLayer();
-			map.addLayer(queryLayer);
-			queryLabelLayer = new GraphicsLayer();
-			map.addLayer(queryLabelLayer);
-		//add graphics layers for graphic outputs from the various tools (Place Search, Coordinate Search w/label, Draw shapes, Draw text)	
-			placeLayer = new GraphicsLayer();
-			map.addLayer(placeLayer);
-			zoomToLayer = new GraphicsLayer();
-			map.addLayer(zoomToLayer);
-			zoomToLabelLayer = new GraphicsLayer();
-			map.addLayer(zoomToLabelLayer);
-			//graphics layers for toolbar shapes and text.  Must be separated into different layers or they will not print properly on the map.
-			drawToolbarLayer = new GraphicsLayer();
-			map.addLayer(drawToolbarLayer);
-			drawTextLayer = new GraphicsLayer();	
-			map.addLayer(drawTextLayer);
-			map.reorderLayer(drawTextLayer,1);
-		});
-	
-		
-		//show coordinates as the user scrolls around the map. In Desktop, it displays where ever the mouse is hovering.  In mobile, the user must tap the screen to get the coordinates.
-		function showCoordinates(evt) {
-			//the map is in web mercator but display coordinates in geographic (lat, long) & UTM NAD 27 Zone 11 & 12
-			var utm11SR = new esri.SpatialReference({wkid: 26711});
-			var utm12SR = new esri.SpatialReference({wkid: 26712});
-			var gsvc = new esri.tasks.GeometryService("http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
-			var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
-			//display mouse coordinates
-			$("#info1").html("WGS84 DD: "+ mp.x.toFixed(3) + ", " + mp.y.toFixed(3));
-			if (mp.x <= -114 && mp.x >= -120) { //if hovering in zone 11
-				gsvc.project([evt.mapPoint], utm11SR, function(result) {
-					$("#info2").show();
-					$("#info2").html("NAD27 UTM 11T: " + result[0].x.toFixed() + ', ' + result[0].y.toFixed());
-				});
-			} else if (mp.x > -114 && mp.x <= -108) { //if hovering in zone 12
-				gsvc.project([evt.mapPoint], utm12SR, function (result) {
-					$("#info2").show();
-					$("#info2").html("NAD27 UTM 12T: 0" + result[0].x.toFixed() + ', ' + result[0].y.toFixed());
-				});
-			} else {
-				$("#info2").hide();
-			}
-		}
-		
-		//add the basemap gallery, in this case we'll display maps from ArcGIS.com including bing maps
-		basemapGallery = new BasemapGallery({
-			showArcGISBasemaps: false,
-			map: map,
-		}, "basemapDiv");
-		basemapGallery.startup();
-		
+        //Proxy settings
+        esriConfig.defaults.io.proxyUrl = "https://fishandgame.idaho.gov/ifwis/gis_proxy/proxy.ashx";
+        esriConfig.defaults.io.alwaysUseProxy = false;
+        /*
+         urlUtils.addProxyRule({
+         urlPrefix: "http://wildfire.cr.usgs.gov/",
+         proxyUrl: "https://fishandgame.idaho.gov/ifwis/gis_proxy/proxy.ashx"
+         });*/
 
-		
-		basemapGallery.on("error", function(msg) {
-			console.log("basemap gallery error:  ", msg);
-		});
-		
-		
-		$("#basemapDiv").click (function(){
-			//If a google basemap was previously selected, remove it to see the esri basemap (google maps are 'on top of' esri maps)
-			map.removeLayer(googleLayer);
-			$("#basemapModal").modal('hide');
-		});
-		
-		$(".esriBasemapGalleryNode").click (function(){
-			$("#basemapModal").modal('hide');
-		});
-		
-		//Add the World Topo basemap to the basemap gallery.
-		var worldTopo = new BasemapLayer({url:"https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer"});
-		var worldTopoBasemap = new Basemap({
-			layers:[worldTopo],
-			title:"Esri World Topographic",
-			thumbnailUrl:"https://www.arcgis.com/sharing/rest/content/items/6e03e8c26aad4b9c92a87c1063ddb0e3/info/thumbnail/topo_map_2.jpg"
-		});
-		basemapGallery.add(worldTopoBasemap);
+        // call the parser to create the dijit layout dijits
+        parser.parse(); // note djConfig.parseOnLoad = false;
 
-		//Add the USA Topo basemap to the basemap gallery.
-		var usgsTopo = new BasemapLayer({url:"https://services.arcgisonline.com/ArcGIS/rest/services/USA_Topo_Maps/MapServer"});
-		var usgsBasemap = new Basemap({
-			layers:[usgsTopo],
-			title:"Esri USGS Topographic",
-			thumbnailUrl:"https://www.arcgis.com/sharing/rest/content/items/931d892ac7a843d7ba29d085e0433465/info/thumbnail/usa_topo.jpg"
-		});
-		basemapGallery.add(usgsBasemap);
-		
-		//Add the Imagery with Labels basemap to the basemap gallery.
- 		var Imagery = new BasemapLayer({url:"https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"});
-		//var Reference = new BasemapLayer({url: "https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer"});
-		var imageryLabelBasemap = new Basemap({
-			layers:[Imagery],
-			title:"Esri Satellite Imagery",
-			thumbnailUrl:"http://www.esri.com/~/media/Images/Content/Software/arcgis/arcgisonline/graphics/basemaps/world_imagery.png"
-		});
-		basemapGallery.add(imageryLabelBasemap);
-		
-		//Add the Terrain with Labels basemap to the basemap gallery.
-		var Terrain = new BasemapLayer({url:"https://services.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer"});
-		var Reference = new BasemapLayer({url: "https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Reference_Overlay/MapServer"});
-		var terrainLabelBasemap = new Basemap({
-			layers:[Terrain, Reference],
-			title:"Esri Labeled Terrain",
-			thumbnailUrl:"https://www.arcgis.com/sharing/rest/content/items/aab054ab883c4a4094c72e949566ad40/info/thumbnail/terrain_labels.jpg"
-		});
-		basemapGallery.add(terrainLabelBasemap);
-		
-		//Add the National Geographic basemap to the basemap gallery.
-		var natGeo = new BasemapLayer({url:"https://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer"});
-		var natGeoBasemap = new Basemap({
-			layers:[natGeo],
-			title:"Esri Natl Geographic",
-			thumbnailUrl:"https://www.arcgis.com/sharing/rest/content/items/b9b1b422198944fbbd5250b3241691b6/info/thumbnail/natgeo3.jpg"
-		});
-		basemapGallery.add(natGeoBasemap);
-		
-		//Add the OpenStreetMap basemap to the basemap gallery.
-/* 		var OSM = new Basemap({
-			layers: [new BasemapLayer({
-				type: "OpenStreetMap"
-			})],
-		id: "OpenStreetMap",
-		title:"Open Street Map",
-			thumbnailUrl:"https://www.arcgis.com/sharing/rest/content/items/5d2bfa736f8448b3a1708e1f6be23eed/info/thumbnail/temposm.jpg"
-		});
-		basemapGallery.add (OSM); */
+        //hide the loading icon after the window has loaded.
+        $(window).load(function () {
+            $("#loading").hide();
+            clearFileInputField(uploadForm);
+        });
 
-		//Add Google Map basemap layers to the basemap gallery.  NOTE: GOOGLE BASEMAPS WILL NOT PRINT. Make sure your users know they must select an if they are going to create a Printable Map. 
-		googleLayer = new agsjs.layers.GoogleMapsLayer({
-			id: 'google',
-			apiOptions: {
-				v: '3.6' // use a specific version is recommended for production system. 
-			},
-			mapOptions: {
-				streetViewControl: false // use false if do not want street view. Default is true.
-			}
-		});
-				
-		$("#googleRoads").click (function(){
-				map.addLayer(googleLayer);
-				map.reorderLayer(googleLayer, 1);
-				googleLayer.setMapTypeId(agsjs.layers.GoogleMapsLayer.MAP_TYPE_ROADMAP);
-		});
-		
-		$("#googleSatellite").click (function(){
-				map.addLayer(googleLayer);
-				map.reorderLayer(googleLayer, 1);
-				googleLayer.setMapTypeId(agsjs.layers.GoogleMapsLayer.MAP_TYPE_SATELLITE);
-		});
-		
-		$("#googleHybrid").click (function(){
-				map.addLayer(googleLayer);
-				map.reorderLayer(googleLayer, 1);
-				googleLayer.setMapTypeId(agsjs.layers.GoogleMapsLayer.MAP_TYPE_HYBRID);
-		});
-		
-		$("#googleTerrain").click (function(){
-				map.addLayer(googleLayer);
-				map.reorderLayer(googleLayer, 1);
-				googleLayer.setMapTypeId(agsjs.layers.GoogleMapsLayer.MAP_TYPE_TERRAIN);
-		});
+        //create a popup div
+        var popup = Popup({
+            titleInBody: false
+        }, domConstruct.create("div"));
 
-		//popup window template for the Campground feature layer
-		var campgroundPopupTemplate = new PopupTemplate({
-			title: "Campground Info",
-			fieldInfos:[{
-				fieldName: "NAME", visible: true,
-				fieldName: "Phone", visible: true,
-				fieldName: "Rate", visible: true,
-				fieldName: "Season", visible: true,
-				fieldName: "Sites", visible: true,
-				fieldName: "Max_Length", visible: true,
-				fieldName: "Type", visible: true,
-				fieldName: "URL", visible: true
-				}]
-		});	
-		campgroundPopupTemplate.setContent(
-			"<b>Name: </b>${NAME}<br/>" +
-			"<b>Phone: </b>${Phone}</br>" +
-			"<b>Fee/Rate: </b>${Rate}</br>" +
-			"<b>Season: </b>${Season}</br>" +
-			"<b># of Sites: </b>${Sites}</br>" +
-			"<b>Max # of Days at Site*: </b>${Max_Length}</br>" +
-			"<b>* </b> 0 = No Limit</br>" +
-			"<b>Site Administrator: </b>${Type}</br>"
-		);
-		
-		//popup window template for the fire closure feature layer.  NO WILDFIRES AT THIS TIME.  Keep for next year.
-		var closurePopupTemplate = new PopupTemplate({
-			title: "Fire Closure Info",
-			fieldInfos:[{
-				fieldName: "NAME", visible: true,
-				fieldName: "URL", visible: true,
-				fieldName: "UPDATE_", visible: true
-				}]
-			});
-		closurePopupTemplate.setContent(
-			"<b>Name: </b>${NAME}<br/>" +
-			"<b>Effective Date: </b>${UPDATE_}<br/>" +
-			"<a style='cursor:pointer;' href='${URL}' target='_blank'>InciWeb Description</a>"
-		);
-		
-		//popup window template for the fire perimeter feature layer. NO WILDFIRES AT THIS TIME.  Keep for next year.
-		var perimeterPopupTemplate = new PopupTemplate({
-			title: "{fire_name} Fire",
-			fieldInfos:[{
-				fieldName: "fire_name", visible: true,
-				fieldName: "acres", visible: true,
-				fieldName: "active", visible: true, 
-				fieldName: "inciweb_id", visible: true
-				}]
-			});
-		perimeterPopupTemplate.setContent(
-			"<b>Acres: </b>${acres}<br/>" +
-			"<b>Active (Y/N): </b>${active}</br/>" +
-			"<b><a target='_blank' href=http://inciweb.nwcg.gov/incident/${inciweb_id}>Click for InciWeb Information</a></b>"
-		);
-		
-		//add layers (or groups of layers) to the map.
-		huntLayers = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Data/Hunting/MapServer",
-			{id:"Hunt_Area"});
-		adminLayers = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Data/AdministrativeBoundaries/MapServer",
-			{id:"Adminstrative_Boundary"});
-		surfaceMgmtLayer = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/Basemaps/SurfaceMgmt_WildlifeTracts/MapServer/0",
-			{
-				id:"Surface_Management",
-				opacity: 0.5
-			});
-		trailLayers = new ArcGISDynamicMapServiceLayer("https://gis2.idaho.gov/arcgis/rest/services/DPR/IDTrailsSimple/MapServer",
-			{id:"Trails_and_Roads"});
-		campgroundLayer = new FeatureLayer("https://gis2.idaho.gov/arcgis/rest/services/ADM/Campgrounds/MapServer/0",
-			{
-				id:"Campgrounds",
-				outFields:["*"],
-				infoTemplate:campgroundPopupTemplate
-			});
-		fireLayer0 = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/External/InciWeb_FireClosures/MapServer/0",
-			{
-				id:"Fire_Closure",
-				outFields:['NAME', 'URL', 'UPDATE_'],
-				infoTemplate:closurePopupTemplate
-			});
-		fireLayer1 = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/External/IDL_PrivateIndustrialTimberlands/MapServer/1",
-			{id:"Private_Timberland_Restrictions"});
-		fireLayer2 = new FeatureLayer("http://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/2",
-			{
-				id:"Fire_Perimeter",
-				outFields:['acres', 'active', 'fire_name', 'inciweb_id'],
-				infoTemplate:perimeterPopupTemplate
-			});
-		esriConfig.defaults.io.corsEnabledServers.push("activefiremaps.fs.fed.us");
-    fireLayer3 = new WMSLayer("http://activefiremaps.fs.fed.us/cgi-bin/mapserv.exe?map=conus.map&",{
-        id:"MODIS_Fire_Detection",
-				opacity:"0.5",
-				version:"1.1.1",
-        visibleLayers:[4,5,6],
-        format:"png"
-    });
-	
-		//add the Table of Contents.  Layers can be toggled on/off. Symbology is displayed.  Each "layer group" has a transparency slider.
-		map.on('load', function(evt){
-			// overwrite the default visibility of service. TOC will honor the overwritten value.
-			trailLayers.setVisibleLayers([2,3,4,5,6,7,8,9,10,11]);
-				toc = new TOC({
-					map: map,
-					layerInfos: [{
-						layer: huntLayers,
-						title: "Hunt Related Layers",
-						collapsed: false, // whether this root layer should be collapsed initially, default false.
-						slider: true // whether to display a transparency slider.
-					}, {
-						layer: adminLayers,
-						title: "Administrative Boundaries",
-						collapsed:true,
-						slider: true
-					}, {
-						layer: surfaceMgmtLayer,
-						title: "Land Management Layer",
-						collapsed: true,
-						slider:true
-					}, {
-						layer: trailLayers,
-						title: "Roads & Trails (zoom in to activate)",
-						collapsed: true,
-						slider: true
-					}, {
-						layer: campgroundLayer,
-						title: "Campgrounds",
-						collapsed: true,
-						slider: true	
-					}]
-					}, 'tocDiv');
-				toc.startup();
-				
-				toc.on('load', function(){
-					//toggle layers/on by click root/layer labels (as well as checking checkbox)
-					$('.agsjsTOCServiceLayerLabel').click(function(){
-						$(this).siblings('span').children('input').click();
-					});
-					$("#TOCNode_Surface_Management .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by BLM. <a href='http://cloud.insideidaho.org/webApps/metadataViewer/default.aspx?path=%5c%5cintranet.rocket.net%5cinsideprod%5cdata%5canonymous%5cblm%5cRLTY_SMA_PUB_24K_POLY.shp.xml' target='_blank'>Learn More</a></div>");
-					$("#TOCNode_Trails_and_Roads .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by IDPR. <a href='http://www.trails.idaho.gov/trails/' target='_blank'>Learn More</a></div>");
-					$("#TOCNode_Campgrounds .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by IDPR. <a href='http://parksandrecreation.idaho.gov/activities/camping-reservations' target='_blank'>Learn More</a></div>");
-                    //$("#TOCNode_fireLayers_1 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Provided by IDL.</div>");
-					$("#TOCNode_fireLayers_2 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Maintained by GeoMAC. <a href='http://wildfire.usgs.gov/geomac/' target='_blank'>Learn More</a></div>");
-					$("#TOCNode_fireLayers_3 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Maintained by USFS-RSAC. <a href='http://activefiremaps.fs.fed.us/' target='_blank'>Learn More</a></div>");
-/* 					$('.agsjsTOCRootLayerLabel').click(function(){
-						$(this).siblings('span').children('input').click();
-					}); */
-				});
-		});
-		
-		map.addLayers([surfaceMgmtLayer, adminLayers, fireLayer3, fireLayer2, fireLayer0, huntLayers, trailLayers, campgroundLayer]);
-		adminLayers.hide(); //So none of the layers are "on" except the GMU layer when the map loads.
-		surfaceMgmtLayer.hide();
-		trailLayers.hide();
-		campgroundLayer.hide();
-		fireLayer0.hide();
-		//fireLayer1.hide();
-		fireLayer2.hide();
-		fireLayer3.hide();
-		map.reorderLayer(surfaceMgmtLayer, 0);
-		
-		//uncheck fire Layer Checkboxes
-		$("#fireLayersCheckbox").prop("checked", false);
-		$("#fireLayer0Checkbox").prop("checked", false);
-		//$("#fireLayer1Checkbox").prop("checked", false);
-		$("#fireLayer2Checkbox").prop("checked", false);
-		$("#fireLayer3Checkbox").prop("checked", false);
-		//toggle all fireLayers off when the fireLayersCheckbox is unchecked.
-		$("#fireLayersCheckbox").change(function(){
-		 if($(this).prop('checked')){
-			fireLayer0.show();
-			 //fireLayer1.show();
-			fireLayer2.show();
-			fireLayer3.show();
-			$("#fireLayer0Checkbox").prop("checked", true);
-    /*  $("#fireLayer1Checkbox").prop("checked", true);
-			$("#fireLayer2Checkbox").prop("checked", true);
-			$("#fireLayer3Checkbox").prop("checked", true);
-		 } else { 
-				fireLayer0.hide();
-        fireLayer1.hide()
-				fireLayer2.hide();
-				fireLayer3.hide();*/
-				$("#fireLayer0Checkbox").prop("checked", false);
-                //$("#fireLayer1Checkbox").prop("checked", false);
-				$("#fireLayer2Checkbox").prop("checked", false);
-				$("#fireLayer3Checkbox").prop("checked", false);
-		 }
-		});
-		  //toggle fireLayer0 on/off when checkbox is toggled on/off
-			$("#fireLayer0Checkbox").change(function(){	
-			 if ($(this).prop('checked')) {
-				fireLayer0.show();
-				$("#fireLayersCheckbox").prop("checked", true);
-			 } else {
-				fireLayer0.hide();
-			 }
-			});
-			//toggle fireLayer1 on/off when checkbox is toggled on/off
-			/*$("#fireLayer1Checkbox").change(function(){
-					if ($(this).prop('checked')) {
-							fireLayer1.show();
-							$("#fireLayersCheckbox").prop("checked", true);
-					} else {
-							fireLayer1.hide();
-					}
-			});*/
-			//toggle fireLayer2 on/off when checkbox is toggled on/off
-			$("#fireLayer2Checkbox").change(function(){	
-				 if ($(this).prop('checked')) {
-					fireLayer2.show();
-					$("#fireLayersCheckbox").prop("checked", true);
-				 } else {
-					fireLayer2.hide();
-				 }
-			});
-			//toggle fireLayer3 on/off when checkbox is toggled on/off
-			$("#fireLayer3Checkbox").change(function(){	
-				 if ($(this).prop('checked')) {
-					fireLayer3.show();
-					$("#fireLayersCheckbox").prop("checked", true);
-					
-				 } else {
-					fireLayer3.hide();
-					$("#fireLayersCheckbox").prop("checked", false);
-				 }
-			});	
-		
-		//Enable mobile scrolling by calling $('.selectpicker').selectpicker('mobile'). The method for detecting the browser is left up to the user. This enables the device's native menu for select menus.
-		if( /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ) {
-			$('.selectpicker').selectpicker('mobile');
-		}
-		
-		//function to get variable values from the URL to query for hunt planner hunt area and/or zoom to a specific center coordinate and zoom level if using a "shared" map view link.
-		function getVariableByName(name) {
-			var query = window.location.search.substring(1);
-			var vars = query.split("&");
-			for (var i=0; i < vars.length;i++){
-				var variableName = vars[i].split('=');
-				if (variableName[0] == name)
-				{
-					return variableName[1]
-				}
-			}
-		}
-		
-		//get the variables of areaID (hunt area, IOG area, or Access Yes! area), layerID (which layer to apply the ID query to), and label (what will appear in the legend).
-		var areaID, layerID, label, urlZoom, urlX, urlY, homeURL, zoomLevel, centerpoint, cX, cY, newURL, extentI, extentC;	
-		window.onload = function(){
-			$('.selectpicker').selectpicker('val', '');
-			areaID = getVariableByName('val');
-			layerID = getVariableByName('lyr');
-			label = getVariableByName('lbl');
-			urlZoom = getVariableByName('zoom');
-			urlX = getVariableByName('X');
-			urlY = getVariableByName('Y');
-			if (typeof label != 'undefined'){
-				var str = label;
-				var res = label.replace("%26", "&");
-				var cleanLabel = res.split('+').join(' ');
-				label = cleanLabel;
-			} else {
-				label = "Selected Hunt Area";
-			}
-			if (typeof areaID != 'undefined'){
-				doQuery(areaID, layerID, label);
-			}
-			$("#queryLabel1").text(label);
-			$("#queryLabel1Div").show();
-			
-			if (typeof urlZoom != 'undefined'){
-				var point = new Point(urlX, urlY, new esri.SpatialReference({ wkid: 4326}));
-				map.setLevel(urlZoom);
-				map.centerAt(point);
-			}
-			//Create a url for "sharing" the current map view by getting the zoom and map center coordinate variables for the current extent.
-			homeURL = window.location.href;
-			zoomLevel = map.getZoom();
-			centerpoint = webMercatorUtils.webMercatorToGeographic(map.extent.getCenter());
-			cX = parseFloat(centerpoint.x.toFixed(3));
-			cY = parseFloat(centerpoint.y.toFixed(3));
-			newURL ="?zoom=" + zoomLevel + "&X=" + cX + "&Y=" + cY;
-			//If the url contains an lyr parameter.
-			if (window.location.href.indexOf("lyr") > 0){
-				$("#viewURL").append(homeURL);
-				//window.history.pushState(null,null,window.location.href.slice(0,(window.location.href).indexOf('?')));
-			//If url has no lyr parameter.	
-			} else {	
-				$("#viewURL").empty();
-				homeURL = window.location.href;
-				$("#viewURL").append(homeURL + newURL);
-			}
-				
-		};
-		
-		//On extent change, change the share url zoom and coordinate parameters and refresh the "share" url.
-		map.on("extent-change", function(){
-			if (window.location.href.indexOf("lyr") > 0){
-				$("#viewURL").empty();
-				$("#viewURL").append(homeURL);
-			} else {
-				$("#viewURL").empty();
-				homeURL = window.location.href;
-				zoomLevel = map.getZoom();
-				centerpoint = webMercatorUtils.webMercatorToGeographic(map.extent.getCenter());
-				cX = parseFloat(centerpoint.x.toFixed(3));
-				cY = parseFloat(centerpoint.y.toFixed(3));
-				newURL ="?zoom=" + zoomLevel + "&X=" + cX + "&Y=" + cY;
-				$("#viewURL").append(homeURL + newURL);
-			}
-		});
-		
-		//toggle query layer on/off when checkbox is toggled on/off
-		$("#queryCheckbox").change(function(){	
-		 if ($(this).prop('checked')) {
-		  queryLayer.show();
-			queryLabelLayer.show();
-		 } else {
-		  queryLayer.hide();
-			queryLabelLayer.hide();
-		 }
-		});
+        //Get a reference to the ArcGIS Map class
+        map = BootstrapMap.create("mapDiv", {
+            basemap: "topo",
+            center: [-114.52, 45.50],
+            zoom: 6,
+            infoWindow: popup
+        });
 
-		var gmuID, elkID, chuntID, waterfowlID, gameDistributionID, newHighlight1, newHighlight2, newHighlight3, newHighlight4, newHighlight5;
-		
-		$("#btnQuery").click(function(){
-		
-			$("#loading").show();
-			
-			queryLayer.clear();
-			queryLabelLayer.clear();
-			$("#queryLabel1Div").hide();
-			$("#queryLabel2Div").hide();
-			$("#queryLabel3Div").hide();
-			$("#queryLabel4Div").hide();
-			$("#queryLabel5Div").hide();
-			$("#kmlNav1").hide();
-			$("#kmlNav2").hide();
-			
-			//get variable values from the dropdown lists in the hunt modal window and run doQuery.
-			if ($("#gmu").val()){
-				var gmuTypeValue = "";
-				$("#gmu option:selected").each(function() {
-					gmuTypeValue += "'" + $(this).val() + "',";
-				})
-			//Remove trailing comma
-				gmuID = gmuTypeValue.substring(0,gmuTypeValue.length - 1);
-				//var layerID = "3";
-				var label0 = $("#gmu option:selected").map(function(){
-					return $(this).text();
-				}).get();
-				var label = label0.join(", ");
-				
-				if (typeof label != 'undefined'){
-					label = label;
-				} else {
-					label = "Selected Hunt Area";
-				}
-				if (typeof gmuID != 'undefined'){
-					doQuery1(gmuID, label);
-				}
-				$("#queryLabel1").text(label);
-				$("#queryLabel1Div").show();
-				
-				//Create a KML of the user-selected GMUs, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
-				var gmuKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/3/query?where=ID in (" + gmuID + ")&outfields=NAME&f=kmz"
-				$("#gmuKML").attr("href", gmuKMLlink);
-				$("#gmuKML").show();
-			}
-			
-			if ($("#elkzone").val()){
-				var elkzoneTypeValue = "";
-				$("#elkzone option:selected").each(function() {
-					elkzoneTypeValue += "'" + $(this).val() + "',";
-				})
-			//Remove trailing comma
-				elkID = elkzoneTypeValue.substring(0,elkzoneTypeValue.length - 1);
-				//var layerID = "4";
-				var label0 = $("#elkzone option:selected").map(function(){
-					return $(this).text();
-				}).get();
-				var label = "Elk Zones: " + label0.join(", ");
-				
-				if (typeof label != 'undefined'){
-					label = label;
-				} else {
-					label = "Selected Hunt Area";
-				}
-				if (typeof elkID != 'undefined'){
-					doQuery2(elkID, label);
-				}
-				$("#queryLabel2").text(label);
-				$("#queryLabel2Div").show();
-				
-				//Create a KML of the user-selected Elk Zones, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
-				var elkzoneKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/4/query?where=ID in (" + elkID + ")&outfields=NAME&f=kmz"
-				$("#elkzoneKML").attr("href", elkzoneKMLlink);
-				$("#elkzoneKML").show();
-			}
-			
-			if ($("#chunt").val()){
-				var chuntTypeValue = "";
-				$("#chunt option:selected").each(function() {
-					chuntTypeValue += "'" + $(this).val() + "',";
-				})
-			//Remove trailing comma
-				chuntID = chuntTypeValue.substring(0,chuntTypeValue.length - 1);
-				//var layerID = "5";
-				var label0 = $("#chunt option:selected").map(function(){
-					return $(this).text();
-				}).get();
-				var label = label0.join(", ");
-				
-				if (typeof label != 'undefined'){
-					label = label;
-				} else {
-					label = "Selected Hunt Area";
-				}
-				if (typeof chuntID != 'undefined'){
-					doQuery3(chuntID, label);
-				}
-				$("#queryLabel3").text(label);
-				$("#queryLabel3Div").show();
-				
-				//Create a KML of the user-selected controlled hunts, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
-				var chuntKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/5/query?where=AreaID in (" + chuntID + ")&outfields=BigGame,HuntArea&f=kmz"
-				$("#chuntKML").attr("href", chuntKMLlink);
-				$("#chuntKML").show();
-			}
-			
-			if ($("#waterfowl").val()){
-				var waterfowlTypeValue = "";
-				$("#waterfowl option:selected").each(function() {
-					waterfowlTypeValue += "'" + $(this).val() + "',";
-				})
-			//Remove trailing comma
-				waterfowlID = waterfowlTypeValue.substring(0,waterfowlTypeValue.length - 1);
-				//var layerID = "6";
-				var label0 = $("#waterfowl option:selected").map(function(){
-					return $(this).text();
-				}).get();
-				var label = label0.join(", ");
-				
-				if (typeof label != 'undefined'){
-					label = label;
-				} else {
-					label = "Selected Hunt Area";
-				}
-				if (typeof waterfowlID != 'undefined'){
-					doQuery4(waterfowlID, label);
-				}
-				$("#queryLabel4").text(label);
-				$("#queryLabel4Div").show();
-				
-				//Create a KML of the user-selected waterfowl hunt areas, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
-				var waterfowlKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/6/query?where=ID in (" + waterfowlID + ")&outfields=Area_Name&f=kmz"
-				$("#waterfowlKML").attr("href", waterfowlKMLlink);
-				$("#waterfowlKML").show();
-			}
-			
-			if ($("#gameDistribution").val()){
-				var gameDistributionTypeValue = "";
-				$("#gameDistribution option:selected").each(function() {
-					gameDistributionTypeValue += "'" + $(this).val() + "',";
-				})
-			//Remove trailing comma
-				gameDistributionID = gameDistributionTypeValue.substring(0,gameDistributionTypeValue.length - 1);
-				//var layerID = "7";
-				var label0 = $("#gameDistribution option:selected").map(function(){
-					return $(this).text();
-				}).get();
-				var label = label0.join(", ") + " General Distribution";
-				
-				if (typeof label != 'undefined'){
-					label = label;
-				} else {
-					label = "Selected Game Distribution";
-				}
-				if (typeof gameDistributionID != 'undefined'){
-					doQuery5(gameDistributionID, label);
-				}
-				$("#queryLabel5").text(label);
-				$("#queryLabel5Div").show();
-				
-				//Create a KML of the user-selected game animal distributions, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
-				var gameDistributionKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/7/query?where=ID in (" + gameDistributionID + ")&outfields=NAME&f=kmz"
-				$("#gameDistributionKML").attr("href", gameDistributionKMLlink);
-				$("#gameDistributionKML").show();
-			}
-			
-		if ($("#gmu").val() != null || $("#elkzone").val() != null || $("#chunt").val() != null || $("#waterfowl").val() != null || $("#gameDistribution").val() != null){
-			$("#kmlNav1").show();
-			$("#kmlNav2").show();
-			$("#kmlNav1").effect("highlight", {color: 'yellow'}, 3000);
-			$("#kmlNav2").effect("highlight", {color: 'yellow'}, 3000);
-		}
-		
-			$("#huntModal").modal('hide');
-		});
-			
-		$("#btnClearHighlighted").click(function(){
-			queryLayer.clear();
-			queryLabelLayer.clear();
-			$("#queryLabelDiv").hide();
-			$('.selectpicker').selectpicker('val', '');
-			$("#queryLabel1Div").hide();
-			$("#queryLabel2Div").hide();
-			$("#queryLabel3Div").hide();
-			$("#queryLabel4Div").hide();
-			$("#queryLabel5Div").hide();
-			$("#kmlNav1").hide();
-			$("#kmlNav2").hide();
-			$("#gmuKML").hide();
-			$("#elkzoneKML").hide();
-			$("#chuntKML").hide();
-			$("#waterfowlKML").hide();
-			$("#gameDistributionKML").hide();
-		})
-		
-		function doQuery(areaID, layerID, label) {
-			//initialize query tasks
-			newQueryTask = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/" + layerID);
+        //create a domClass to customize the look of the popup window
+        domClass.add(map.infoWindow.domNode, "myTheme");
 
-			//initialize query
-			newQuery = new Query();
-			newQuery.returnGeometry = true;
-			newQuery.outFields = ["ID"]
-			newHighlight = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
-				new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
-				new Color([154,32,219]), 3),
-				new Color([154,32,219,0.1])
-			);
-			
-			newQuery.where = "ID IN (" + areaID + ")";
-			newQueryTask.execute (newQuery, showResults);
-		}
-		
-		function doQuery1(gmuID, label) {
-			//initialize query tasks
-			newQueryTask1 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/3");
 
-			//initialize query
-			newQuery1 = new Query();
-			newQuery1.returnGeometry = true;
-			newQuery1.outFields = ["ID", "NAME"]
-			newHighlight1 = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
-				new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
-				new Color([154,32,219]), 3),
-				new Color([154,32,219,0.1])
-			);
-			
-			newQuery1.where = "ID IN (" + gmuID + ")";
-			newQueryTask1.execute (newQuery1, showResults1);
-		}
-		
-		function doQuery2(elkID, label) {
-			//initialize query tasks
-			newQueryTask2 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/4");
+        //LocateButton will zoom to where you are.  If tracking is enabled and the button becomes a toggle that creates an event to watch for location changes.
+        var locateSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 20,
+            new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+                new Color([215, 73, 255, 0.8]), 8),
+            new Color([199, 0, 255, 0.8]));
 
-			//initialize query
-			newQuery2 = new Query();
-			newQuery2.returnGeometry = true;
-			newQuery2.outFields = ["ID", "NAME"]
-			newHighlight2 = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
-				new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
-				new Color([0,255,255]), 3),
-				new Color([0,255,255,0.1])
-			);
-			
-			newQuery2.where = "ID IN (" + elkID + ")";
-			newQueryTask2.execute (newQuery2, showResults2);
-		}
-		
-		function doQuery3(chuntID, label) {
-			//initialize query tasks
-			newQueryTask3 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/5");
+        geoLocate = new LocateButton({
+            map: map,
+            symbol: locateSymbol
+            //useTracking: true
+        }, "LocateButton");
+        geoLocate.startup();
 
-			//initialize query
-			newQuery3 = new Query();
-			newQuery3.returnGeometry = true;
-			newQuery3.outFields = ["FLAG", "AreaID", "BigGame", "HuntArea"]
-			newHighlight3 = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
-				new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
-				new Color([18,237,18]), 3),
-				new Color([18,237,18,0.1])
-			);
-			newHighlight3Hatched = new SimpleFillSymbol(SimpleFillSymbol.STYLE_BACKWARD_DIAGONAL,
-				new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
-				new Color([18,237,18]), 3),
-				new Color([18,237,18])
-			);
-			
-			newQuery3.where = "AreaID IN (" + chuntID + ")";
-			newQueryTask3.execute (newQuery3, showResults3);
-		}
-		
-		function doQuery4(waterfowlID, label) {
-			//initialize query tasks
-			newQueryTask4 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/6");
+        //add scalebar
+        scalebar = new Scalebar({
+            map: map,
+            scalebarUnit: "dual"
+        });
 
-			//initialize query
-			newQuery4 = new Query();
-			newQuery4.returnGeometry = true;
-			newQuery4.outFields = ["ID", "Area_Name"]
-			newHighlight4 = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
-				new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
-				new Color([255,157,0]), 3),
-				new Color([255,157,0,0.1])
-			);
-			
-			newQuery4.where = "ID IN (" + waterfowlID + ")";
-			newQueryTask4.execute (newQuery4, showResults4);
-		}
+        var queryLayer, queryLabelLayer, placeLayer, zoomToLayer, zoomToLabelLayer, drawToolbarLayer, drawTextLayer;
+        map.on("load", function () {
+            //after map loads, connect to listen to mouse move & drag events
+            map.on("mouse-move", showCoordinates);
+            map.on("mouse-drag", showCoordinates);
+            //add graphics layer for the hunt areas queries
+            queryLayer = new GraphicsLayer();
+            map.addLayer(queryLayer);
+            queryLabelLayer = new GraphicsLayer();
+            map.addLayer(queryLabelLayer);
+            //add graphics layers for graphic outputs from the various tools (Place Search, Coordinate Search w/label, Draw shapes, Draw text)
+            placeLayer = new GraphicsLayer();
+            map.addLayer(placeLayer);
+            zoomToLayer = new GraphicsLayer();
+            map.addLayer(zoomToLayer);
+            zoomToLabelLayer = new GraphicsLayer();
+            map.addLayer(zoomToLabelLayer);
+            //graphics layers for toolbar shapes and text.  Must be separated into different layers or they will not print properly on the map.
+            drawToolbarLayer = new GraphicsLayer();
+            map.addLayer(drawToolbarLayer);
+            drawTextLayer = new GraphicsLayer();
+            map.addLayer(drawTextLayer);
+            map.reorderLayer(drawTextLayer, 1);
+        });
 
-		function doQuery5(gameDistributionID, label) {
-			//initialize query tasks
-			newQueryTask5 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/7");
 
-			//initialize query
-			newQuery5 = new Query();
-			newQuery5.returnGeometry = true;
-			newQuery5.outFields = ["ID", "SCINAME", "NAME"]
-			newHighlight5 = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
-				new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
-				new Color([255,0,225]), 3),
-				new Color([255,0,225,0.1])
-			);
-			
-			newQuery5.where = "ID IN (" + gameDistributionID + ")";
-			newQueryTask5.execute (newQuery5, showResults5);
-		}
-			
-		function showResults(featureSet) {
-			//Performance enhancer - assign featureSet array to a single variable.
-			var newFeatures = featureSet.features;
-			//Loop through each feature returned
-			for (var i=0, il=newFeatures.length; i<il; i++) {
-				//Get the current feature from the featureSet.
-				//Feature is a graphic
-				var geometry = featureSet.geometry;
-				var newGraphic = newFeatures[i];
-				var polyExtent = newGraphic.geometry.getExtent();
-				var polyCenter = polyExtent.getCenter();
-				newGraphic.setSymbol(newHighlight);
-				var queryMapLabel = label;
+        //show coordinates as the user scrolls around the map. In Desktop, it displays where ever the mouse is hovering.  In mobile, the user must tap the screen to get the coordinates.
+        function showCoordinates(evt) {
+            //the map is in web mercator but display coordinates in geographic (lat, long) & UTM NAD 27 Zone 11 & 12
+            var utm11SR = new esri.SpatialReference({wkid: 26711});
+            var utm12SR = new esri.SpatialReference({wkid: 26712});
+            var gsvc = new esri.tasks.GeometryService("https://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
+            var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
+            //display mouse coordinates
+            $("#info1").html("WGS84 DD: " + mp.x.toFixed(3) + ", " + mp.y.toFixed(3));
+            if (mp.x <= -114 && mp.x >= -120) { //if hovering in zone 11
+                gsvc.project([evt.mapPoint], utm11SR, function (result) {
+                    $("#info2").show();
+                    $("#info2").html("NAD27 UTM 11T: " + result[0].x.toFixed() + ', ' + result[0].y.toFixed());
+                });
+            } else if (mp.x > -114 && mp.x <= -108) { //if hovering in zone 12
+                gsvc.project([evt.mapPoint], utm12SR, function (result) {
+                    $("#info2").show();
+                    $("#info2").html("NAD27 UTM 12T: 0" + result[0].x.toFixed() + ', ' + result[0].y.toFixed());
+                });
+            } else {
+                $("#info2").hide();
+            }
+        }
 
-				//Add graphic to the map graphics layer.
-				queryLayer.add(newGraphic);
-				
-				//Add label to the graphics.		
-				var font = new esri.symbol.Font();
-				font.setSize("10pt");
-				font.setFamily("Helvetica");
-				font.setWeight(Font.WEIGHT_BOLD);
-				var textSymbol = new TextSymbol(queryMapLabel);
-				textSymbol.setColor (new esri.Color([154,32,219]));
-				textSymbol.setFont(font);
-				textSymbol.setHorizontalAlignment("center");
-				textSymbol.setVerticalAlignment("middle");
-				textSymbol.setOffset(17, 0);
-				//Add label at the selected area center.
-				var pt = new Point(polyCenter,map.spatialReference);
-				var queryMapLabelGraphic = new Graphic (pt, textSymbol);
-				queryLabelLayer.add(queryMapLabelGraphic);
-				
-				var selectionExtent = esri.graphicsExtent(newFeatures);
-				map.setExtent(selectionExtent.expand(1.25), true);
-				
-				//Zoom to graphics extent.
-				if (urlZoom == '') {
-					var selectionExtent = esri.graphicsExtent(newFeatures);
-					map.setExtent(selectionExtent.expand(1.25), true);
-				}
-			}
-			
-			//Populate the queryLabel Div that will show the query result label in the legend.
-			$("#queryLabelDiv").show();
-			$("#queryCheckbox").prop('checked', true);
-		}
+        //add the basemap gallery, in this case we'll display maps from ArcGIS.com including bing maps
+        basemapGallery = new BasemapGallery({
+            showArcGISBasemaps: false,
+            map: map,
+        }, "basemapDiv");
+        basemapGallery.startup();
 
-		function showResults1(featureSet) {
-			//Performance enhancer - assign featureSet array to a single variable.
-			var newFeatures1 = featureSet.features;
-			//Loop through each feature returned
-			for (var i=0, il=newFeatures1.length; i<il; i++) {
-				//Get the current feature from the featureSet.
-				//Feature is a graphic
-				var geometry = featureSet.geometry;
-				var newGraphic1 = newFeatures1[i];
-				var polyExtent = newGraphic1.geometry.getExtent();
-				var polyCenter = polyExtent.getCenter();
-				newGraphic1.setSymbol(newHighlight1);
-				queryMapLabel1 = "UNIT " + newGraphic1.attributes.NAME;
-				//Add graphic to the map graphics layer.
-				queryLayer.add(newGraphic1);
-				
-				//Add label to the graphics.		
-				var font = new esri.symbol.Font();
-				font.setSize("10pt");
-				font.setFamily("Helvetica");
-				font.setWeight(Font.WEIGHT_BOLD);
-				var textSymbol = new TextSymbol(queryMapLabel1);
-				textSymbol.setColor (new esri.Color([154,32,219]));
-				textSymbol.setFont(font);
-				textSymbol.setHorizontalAlignment("center");
-				textSymbol.setVerticalAlignment("middle");
-				textSymbol.setOffset(17, 0);
-				//Add label at the selected area center.
-				var pt = new Point(polyCenter,map.spatialReference);
-				var queryMapLabel1Graphic = new Graphic (pt, textSymbol);
-				queryLabelLayer.add(queryMapLabel1Graphic);
-				
-				//Zoom to full extent.
-				zoomToState();
-			}
-			
-			//Populate the queryLabel Div that will show the query result label in the legend.
-			$("#queryLabelDiv").show();
-			$("#queryCheckbox").prop('checked', true);
-		}
-		
-		function showResults2(featureSet) {
-			//Performance enhancer - assign featureSet array to a single variable.
-			var newFeatures2 = featureSet.features;
-			//Loop through each feature returned
-			for (var i=0, il=newFeatures2.length; i<il; i++) {
-				//Get the current feature from the featureSet.
-				//Feature is a graphic
-				var geometry = featureSet.geometry;
-				var newGraphic2 = newFeatures2[i];
-				var polyExtent = newGraphic2.geometry.getExtent();
-				var polyCenter = polyExtent.getCenter();
-				newGraphic2.setSymbol(newHighlight2);
-				var queryMapLabel2 = newGraphic2.attributes.NAME + " Elk Zone";
-				//Add graphic to the map graphics layer.
-				queryLayer.add(newGraphic2);
-				
-				//Add label to the graphics.		
-				var font = new esri.symbol.Font();
-				font.setSize("10pt");
-				font.setFamily("Helvetica");
-				font.setWeight(Font.WEIGHT_BOLD);
-				var textSymbol = new TextSymbol(queryMapLabel2);
-				textSymbol.setColor (new esri.Color([30,201,201]));
-				textSymbol.setFont(font);
-				textSymbol.setHorizontalAlignment("center");
-				textSymbol.setVerticalAlignment("middle");
-				textSymbol.setOffset(17, 0);
-				//Add label at the selected area center.
-				var pt = new Point(polyCenter,map.spatialReference);
-				var queryMapLabel2Graphic = new Graphic (pt, textSymbol);
-				queryLabelLayer.add(queryMapLabel2Graphic);
-				
-				//Zoom to full extent.
-				zoomToState();
-			}
-			
-			//Populate the queryLabel Div that will show the query result label in the legend.
-			$("#queryLabelDiv").show();
-			$("#queryCheckbox").prop('checked', true);
-		}
-		
-		function showResults3(featureSet) {
+
+        basemapGallery.on("error", function (msg) {
+            console.log("basemap gallery error:  ", msg);
+        });
+
+
+        $("#basemapDiv").click(function () {
+            //If a google basemap was previously selected, remove it to see the esri basemap (google maps are 'on top of' esri maps)
+            map.removeLayer(googleLayer);
+            $("#basemapModal").modal('hide');
+        });
+
+        $(".esriBasemapGalleryNode").click(function () {
+            $("#basemapModal").modal('hide');
+        });
+
+        //Add the World Topo basemap to the basemap gallery.
+        var worldTopo = new BasemapLayer({url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer"});
+        var worldTopoBasemap = new Basemap({
+            layers: [worldTopo],
+            title: "Esri World Topographic",
+            thumbnailUrl: "https://www.arcgis.com/sharing/rest/content/items/6e03e8c26aad4b9c92a87c1063ddb0e3/info/thumbnail/topo_map_2.jpg"
+        });
+        basemapGallery.add(worldTopoBasemap);
+
+        //Add the USA Topo basemap to the basemap gallery.
+        var usgsTopo = new BasemapLayer({url: "https://services.arcgisonline.com/ArcGIS/rest/services/USA_Topo_Maps/MapServer"});
+        var usgsBasemap = new Basemap({
+            layers: [usgsTopo],
+            title: "Esri USGS Topographic",
+            thumbnailUrl: "https://www.arcgis.com/sharing/rest/content/items/931d892ac7a843d7ba29d085e0433465/info/thumbnail/usa_topo.jpg"
+        });
+        basemapGallery.add(usgsBasemap);
+
+        //Add the Imagery with Labels basemap to the basemap gallery.
+        var Imagery = new BasemapLayer({url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"});
+        //var Reference = new BasemapLayer({url: "https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer"});
+        var imageryLabelBasemap = new Basemap({
+            layers: [Imagery],
+            title: "Esri Satellite Imagery",
+            thumbnailUrl: "https://www.esri.com/~/media/Images/Content/Software/arcgis/arcgisonline/graphics/basemaps/world_imagery.png"
+        });
+        basemapGallery.add(imageryLabelBasemap);
+
+        //Add the Terrain with Labels basemap to the basemap gallery.
+        var Terrain = new BasemapLayer({url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer"});
+        var Reference = new BasemapLayer({url: "https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Reference_Overlay/MapServer"});
+        var terrainLabelBasemap = new Basemap({
+            layers: [Terrain, Reference],
+            title: "Esri Labeled Terrain",
+            thumbnailUrl: "https://www.arcgis.com/sharing/rest/content/items/aab054ab883c4a4094c72e949566ad40/info/thumbnail/terrain_labels.jpg"
+        });
+        basemapGallery.add(terrainLabelBasemap);
+
+        //Add the National Geographic basemap to the basemap gallery.
+        var natGeo = new BasemapLayer({url: "https://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer"});
+        var natGeoBasemap = new Basemap({
+            layers: [natGeo],
+            title: "Esri Natl Geographic",
+            thumbnailUrl: "https://www.arcgis.com/sharing/rest/content/items/b9b1b422198944fbbd5250b3241691b6/info/thumbnail/natgeo3.jpg"
+        });
+        basemapGallery.add(natGeoBasemap);
+
+        //Add the OpenStreetMap basemap to the basemap gallery.
+        /* 		var OSM = new Basemap({
+         layers: [new BasemapLayer({
+         type: "OpenStreetMap"
+         })],
+         id: "OpenStreetMap",
+         title:"Open Street Map",
+         thumbnailUrl:"https://www.arcgis.com/sharing/rest/content/items/5d2bfa736f8448b3a1708e1f6be23eed/info/thumbnail/temposm.jpg"
+         });
+         basemapGallery.add (OSM); */
+
+        //Add Google Map basemap layers to the basemap gallery.  NOTE: GOOGLE BASEMAPS WILL NOT PRINT. Make sure your users know they must select an if they are going to create a Printable Map.
+        googleLayer = new agsjs.layers.GoogleMapsLayer({
+            id: 'google',
+            apiOptions: {
+                v: '3.6' // use a specific version is recommended for production system.
+            },
+            mapOptions: {
+                streetViewControl: false // use false if do not want street view. Default is true.
+            }
+        });
+
+        $("#googleRoads").click(function () {
+            map.addLayer(googleLayer);
+            map.reorderLayer(googleLayer, 1);
+            googleLayer.setMapTypeId(agsjs.layers.GoogleMapsLayer.MAP_TYPE_ROADMAP);
+        });
+
+        $("#googleSatellite").click(function () {
+            map.addLayer(googleLayer);
+            map.reorderLayer(googleLayer, 1);
+            googleLayer.setMapTypeId(agsjs.layers.GoogleMapsLayer.MAP_TYPE_SATELLITE);
+        });
+
+        $("#googleHybrid").click(function () {
+            map.addLayer(googleLayer);
+            map.reorderLayer(googleLayer, 1);
+            googleLayer.setMapTypeId(agsjs.layers.GoogleMapsLayer.MAP_TYPE_HYBRID);
+        });
+
+        $("#googleTerrain").click(function () {
+            map.addLayer(googleLayer);
+            map.reorderLayer(googleLayer, 1);
+            googleLayer.setMapTypeId(agsjs.layers.GoogleMapsLayer.MAP_TYPE_TERRAIN);
+        });
+
+        //popup window template for the Campground feature layer
+        var campgroundPopupTemplate = new PopupTemplate({
+            title: "Campground Info",
+            fieldInfos: [{
+                fieldName: "NAME", visible: true,
+                fieldName: "Phone", visible: true,
+                fieldName: "Rate", visible: true,
+                fieldName: "Season", visible: true,
+                fieldName: "Sites", visible: true,
+                fieldName: "Max_Length", visible: true,
+                fieldName: "Type", visible: true,
+                fieldName: "URL", visible: true
+            }]
+        });
+        campgroundPopupTemplate.setContent(
+            "<b>Name: </b>${NAME}<br/>" +
+            "<b>Phone: </b>${Phone}</br>" +
+            "<b>Fee/Rate: </b>${Rate}</br>" +
+            "<b>Season: </b>${Season}</br>" +
+            "<b># of Sites: </b>${Sites}</br>" +
+            "<b>Max # of Days at Site*: </b>${Max_Length}</br>" +
+            "<b>* </b> 0 = No Limit</br>" +
+            "<b>Site Administrator: </b>${Type}</br>"
+        );
+
+        //popup window template for the fire closure feature layer.  NO WILDFIRES AT THIS TIME.  Keep for next year.
+
+/*        var closurePopupTemplate = new PopupTemplate({
+            title: "Fire Closure Info",
+            fieldInfos: [{
+                fieldName: "NAME", visible: true,
+                fieldName: "URL", visible: true,
+                fieldName: "UPDATE_", visible: true
+            }]
+        });
+        closurePopupTemplate.setContent(
+            "<b>Name: </b>${NAME}<br/>" +
+            "<b>Effective Date: </b>${UPDATE_}<br/>" +
+            "<a style='cursor:pointer;' href='${URL}' target='_blank'>InciWeb Description</a>"
+        );*/
+
+        //popup window template for the fire perimeter feature layer. NO WILDFIRES AT THIS TIME.  Keep for next year.
+/*        var perimeterPopupTemplate = new PopupTemplate({
+            title: "{fire_name} Fire",
+            fieldInfos: [{
+                fieldName: "fire_name", visible: true,
+                fieldName: "acres", visible: true,
+                fieldName: "active", visible: true,
+                fieldName: "inciweb_id", visible: true
+            }]
+        });
+        perimeterPopupTemplate.setContent(
+            "<b>Acres: </b>${acres}<br/>" +
+            "<b>Active (Y/N): </b>${active}</br/>" +
+            "<b><a target='_blank' href=http://inciweb.nwcg.gov/incident/${inciweb_id}>Click for InciWeb Information</a></b>"
+        );*/
+
+        //add layers (or groups of layers) to the map.
+        huntLayers = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Data/Hunting/MapServer",
+            {id: "Hunt_Area"});
+        adminLayers = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Data/AdministrativeBoundaries/MapServer",
+            {id: "Adminstrative_Boundary"});
+        surfaceMgmtLayer = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/Basemaps/SurfaceMgmt_WildlifeTracts/MapServer/0",
+            {
+                id: "Surface_Management",
+                opacity: 0.5
+            });
+        trailLayers = new ArcGISDynamicMapServiceLayer("https://gis2.idaho.gov/arcgis/rest/services/DPR/IDTrailsSimple/MapServer",
+            {id: "Trails_and_Roads"});
+        campgroundLayer = new FeatureLayer("https://gis2.idaho.gov/arcgis/rest/services/ADM/Campgrounds/MapServer/0",
+            {
+                id: "Campgrounds",
+                outFields: ["*"],
+                infoTemplate: campgroundPopupTemplate
+            });
+/*        fireLayer0 = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/External/InciWeb_FireClosures/MapServer/0",
+            {
+                id: "Fire_Closure",
+                outFields: ['NAME', 'URL', 'UPDATE_'],
+                infoTemplate: closurePopupTemplate
+            });
+        fireLayer1 = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/External/IDL_PrivateIndustrialTimberlands/MapServer/1",
+            {id: "Private_Timberland_Restrictions"});
+        fireLayer2 = new FeatureLayer("https://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/2",
+            {
+                id: "Fire_Perimeter",
+                outFields: ['acres', 'active', 'fire_name', 'inciweb_id'],
+                infoTemplate: perimeterPopupTemplate
+            });
+        //esriConfig.defaults.io.corsEnabledServers.push("activefiremaps.fs.fed.us");
+        fireLayer3 = new WMSLayer("http://activefiremaps.fs.fed.us/cgi-bin/mapserv.exe?map=conus.map&", {
+            id: "MODIS_Fire_Detection",
+            opacity: "0.5",
+            version: "1.1.1",
+            visibleLayers: [4, 5, 6],
+            format: "png"
+        });*/
+
+        //add the Table of Contents.  Layers can be toggled on/off. Symbology is displayed.  Each "layer group" has a transparency slider.
+        map.on('load', function (evt) {
+            // overwrite the default visibility of service. TOC will honor the overwritten value.
+            trailLayers.setVisibleLayers([2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+            toc = new TOC({
+                map: map,
+                layerInfos: [{
+                    layer: huntLayers,
+                    title: "Hunt Related Layers",
+                    collapsed: false, // whether this root layer should be collapsed initially, default false.
+                    slider: true // whether to display a transparency slider.
+                }, {
+                    layer: adminLayers,
+                    title: "Administrative Boundaries",
+                    collapsed: true,
+                    slider: true
+                }, {
+                    layer: surfaceMgmtLayer,
+                    title: "Land Management Layer",
+                    collapsed: true,
+                    slider: true
+                }, {
+                    layer: trailLayers,
+                    title: "Roads & Trails (zoom in to activate)",
+                    collapsed: true,
+                    slider: true
+                }, {
+                    layer: campgroundLayer,
+                    title: "Campgrounds",
+                    collapsed: true,
+                    slider: true
+                }]
+            }, 'tocDiv');
+            toc.startup();
+
+            toc.on('load', function () {
+                //toggle layers/on by click root/layer labels (as well as checking checkbox)
+                $('.agsjsTOCServiceLayerLabel').click(function () {
+                    $(this).siblings('span').children('input').click();
+                });
+                $("#TOCNode_Surface_Management .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by BLM. <a href='http://cloud.insideidaho.org/webApps/metadataViewer/default.aspx?path=%5c%5cintranet.rocket.net%5cinsideprod%5cdata%5canonymous%5cblm%5cRLTY_SMA_PUB_24K_POLY.shp.xml' target='_blank'>Learn More</a></div>");
+                $("#TOCNode_Trails_and_Roads .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by IDPR. <a href='http://www.trails.idaho.gov/trails/' target='_blank'>Learn More</a></div>");
+                $("#TOCNode_Campgrounds .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by IDPR. <a href='http://parksandrecreation.idaho.gov/activities/camping-reservations' target='_blank'>Learn More</a></div>");
+/*                $("#TOCNode_fireLayers_1 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Provided by IDL.</div>");
+                $("#TOCNode_fireLayers_0 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Please contact USFS national forests for
+                 road and trail closures.</div>");
+                $("#TOCNode_fireLayers_2 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Maintained by GeoMAC. <a href='http://wildfire.usgs.gov/geomac/' target='_blank'>Learn More</a></div>");
+                $("#TOCNode_fireLayers_3 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Maintained by USFS-RSAC. <a href='http://activefiremaps.fs.fed.us/' target='_blank'>Learn More</a></div>");
+                 $('.agsjsTOCRootLayerLabel').click(function(){
+                 $(this).siblings('span').children('input').click();
+                 }); */
+            });
+        });
+
+        map.addLayers([surfaceMgmtLayer, adminLayers, huntLayers, trailLayers, campgroundLayer]);
+        adminLayers.hide(); //So none of the layers are "on" except the GMU layer when the map loads.
+        surfaceMgmtLayer.hide();
+        trailLayers.hide();
+        campgroundLayer.hide();
+        //fireLayer0.hide();
+        //fireLayer1.hide();
+        //fireLayer2.hide();
+        //fireLayer3.hide();
+        map.reorderLayer(surfaceMgmtLayer, 0);
+
+        //uncheck fire Layer Checkboxes
+        /*$("#fireLayersCheckbox").prop("checked", false);
+        $("#fireLayer0Checkbox").prop("checked", false);
+        $("#fireLayer1Checkbox").prop("checked", false);
+        $("#fireLayer2Checkbox").prop("checked", false);
+        $("#fireLayer3Checkbox").prop("checked", false);
+        //toggle all fireLayers off when the fireLayersCheckbox is unchecked.
+        $("#fireLayersCheckbox").change(function () {
+            if ($(this).prop('checked')) {
+                fireLayer0.show();
+                //fireLayer1.show();
+                fireLayer2.show();
+                //fireLayer3.show();
+                $("#fireLayer0Checkbox").prop("checked", true);
+                  $("#fireLayer1Checkbox").prop("checked", true);
+                 $("#fireLayer2Checkbox").prop("checked", true);
+                 $("#fireLayer3Checkbox").prop("checked", true);
+                 } else {
+                 fireLayer0.hide();
+                 fireLayer1.hide()
+                 fireLayer2.hide();
+                 fireLayer3.hide();
+                $("#fireLayer0Checkbox").prop("checked", false);
+                $("#fireLayer1Checkbox").prop("checked", false);
+                $("#fireLayer2Checkbox").prop("checked", false);
+                $("#fireLayer3Checkbox").prop("checked", false);
+            }
+        });
+        //toggle fireLayer0 on/off when checkbox is toggled on/off
+        $("#fireLayer0Checkbox").change(function () {
+            if ($(this).prop('checked')) {
+                fireLayer0.show();
+                $("#fireLayersCheckbox").prop("checked", true);
+            } else {
+                fireLayer0.hide();
+            }
+        });
+        //toggle fireLayer1 on/off when checkbox is toggled on/off
+        $("#fireLayer1Checkbox").change(function(){
+         if ($(this).prop('checked')) {
+         fireLayer1.show();
+         $("#fireLayersCheckbox").prop("checked", true);
+         } else {
+         fireLayer1.hide();
+         }
+         });
+        //toggle fireLayer2 on/off when checkbox is toggled on/off
+        $("#fireLayer2Checkbox").change(function () {
+            if ($(this).prop('checked')) {
+                fireLayer2.show();
+                $("#fireLayersCheckbox").prop("checked", true);
+            } else {
+                fireLayer2.hide();
+            }
+        });
+        //toggle fireLayer3 on/off when checkbox is toggled on/off
+        $("#fireLayer3Checkbox").change(function(){
+         if ($(this).prop('checked')) {
+         fireLayer3.show();
+         $("#fireLayersCheckbox").prop("checked", true);
+
+         } else {
+         fireLayer3.hide();
+         $("#fireLayersCheckbox").prop("checked", false);
+         }
+         })
+        ;*/
+
+        //Enable mobile scrolling by calling $('.selectpicker').selectpicker('mobile'). The method for detecting the browser is left up to the user. This enables the device's native menu for select menus.
+        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
+            $('.selectpicker').selectpicker('mobile');
+        }
+
+        //function to get variable values from the URL to query for hunt planner hunt area and/or zoom to a specific center coordinate and zoom level if using a "shared" map view link.
+        function getVariableByName(name) {
+            var query = window.location.search.substring(1);
+            var vars = query.split("&");
+            for (var i = 0; i < vars.length; i++) {
+                var variableName = vars[i].split('=');
+                if (variableName[0] == name) {
+                    return variableName[1]
+                }
+            }
+        }
+
+        //get the variables of areaID (hunt area, IOG area, or Access Yes! area), layerID (which layer to apply the ID query to), and label (what will appear in the legend).
+        var areaID, layerID, label, urlZoom, urlX, urlY, homeURL, zoomLevel, centerpoint, cX, cY, newURL, extentI, extentC;
+        window.onload = function () {
+            $('.selectpicker').selectpicker('val', '');
+            areaID = getVariableByName('val');
+            layerID = getVariableByName('lyr');
+            label = getVariableByName('lbl');
+            urlZoom = getVariableByName('zoom');
+            urlX = getVariableByName('X');
+            urlY = getVariableByName('Y');
+            if (typeof label != 'undefined') {
+                var str = label;
+                var res = label.replace("%26", "&");
+                var cleanLabel = res.split('+').join(' ');
+                label = cleanLabel;
+            } else {
+                label = "Selected Hunt Area";
+            }
+            if (typeof areaID != 'undefined') {
+                doQuery(areaID, layerID, label);
+            }
+            $("#queryLabel1").text(label);
+            $("#queryLabel1Div").show();
+
+            if (typeof urlZoom != 'undefined') {
+                var point = new Point(urlX, urlY, new esri.SpatialReference({wkid: 4326}));
+                map.setLevel(urlZoom);
+                map.centerAt(point);
+            }
+            //Create a url for "sharing" the current map view by getting the zoom and map center coordinate variables for the current extent.
+            homeURL = window.location.href;
+            zoomLevel = map.getZoom();
+            if (map.extent != 'undefined') {
+                centerpoint = webMercatorUtils.webMercatorToGeographic(map.extent.getCenter());
+                cX = parseFloat(centerpoint.x.toFixed(3));
+                cY = parseFloat(centerpoint.y.toFixed(3));
+                newURL = "?zoom=" + zoomLevel + "&X=" + cX + "&Y=" + cY;
+            } else {
+                newURL = "";
+            }
+            //If the url contains an lyr parameter.
+            if (window.location.href.indexOf("lyr") > 0) {
+                $("#viewURL").append(homeURL);
+                //window.history.pushState(null,null,window.location.href.slice(0,(window.location.href).indexOf('?')));
+                //If url has no lyr parameter.
+            } else {
+                $("#viewURL").empty();
+                homeURL = window.location.href;
+                $("#viewURL").append(homeURL + newURL);
+            }
+
+        };
+
+        //On extent change, change the share url zoom and coordinate parameters and refresh the "share" url.
+        map.on("extent-change", function () {
+            if (window.location.href.indexOf("lyr") > 0) {
+                $("#viewURL").empty();
+                $("#viewURL").append(homeURL);
+            } else {
+                $("#viewURL").empty();
+                homeURL = window.location.href;
+                zoomLevel = map.getZoom();
+                centerpoint = webMercatorUtils.webMercatorToGeographic(map.extent.getCenter());
+                cX = parseFloat(centerpoint.x.toFixed(3));
+                cY = parseFloat(centerpoint.y.toFixed(3));
+                newURL = "?zoom=" + zoomLevel + "&X=" + cX + "&Y=" + cY;
+                $("#viewURL").append(homeURL + newURL);
+            }
+        });
+
+        //toggle query layer on/off when checkbox is toggled on/off
+        $("#queryCheckbox").change(function () {
+            if ($(this).prop('checked')) {
+                queryLayer.show();
+                queryLabelLayer.show();
+            } else {
+                queryLayer.hide();
+                queryLabelLayer.hide();
+            }
+        });
+
+        var gmuID, elkID, chuntID, waterfowlID, gameDistributionID, newHighlight1, newHighlight2, newHighlight3, newHighlight4, newHighlight5;
+
+        $("#btnQuery").click(function () {
+
+            $("#loading").show();
+
+            queryLayer.clear();
+            queryLabelLayer.clear();
+            $("#queryLabel1Div").hide();
+            $("#queryLabel2Div").hide();
+            $("#queryLabel3Div").hide();
+            $("#queryLabel4Div").hide();
+            $("#queryLabel5Div").hide();
+            $("#kmlNav1").hide();
+            $("#kmlNav2").hide();
+
+            //get variable values from the dropdown lists in the hunt modal window and run doQuery.
+            if ($("#gmu").val()) {
+                var gmuTypeValue = "";
+                $("#gmu option:selected").each(function () {
+                    gmuTypeValue += "'" + $(this).val() + "',";
+                })
+                //Remove trailing comma
+                gmuID = gmuTypeValue.substring(0, gmuTypeValue.length - 1);
+                //var layerID = "3";
+                var label0 = $("#gmu option:selected").map(function () {
+                    return $(this).text();
+                }).get();
+                var label = label0.join(", ");
+
+                if (typeof label != 'undefined') {
+                    label = label;
+                } else {
+                    label = "Selected Hunt Area";
+                }
+                if (typeof gmuID != 'undefined') {
+                    doQuery1(gmuID, label);
+                }
+                $("#queryLabel1").text(label);
+                $("#queryLabel1Div").show();
+
+                //Create a KML of the user-selected GMUs, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
+                var gmuKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/3/query?where=ID in (" + gmuID +
+                    ")&outfields=NAME&f=kmz"
+                $("#gmuKML").attr("href", gmuKMLlink);
+                $("#gmuKML").show();
+            }
+
+            if ($("#elkzone").val()) {
+                var elkzoneTypeValue = "";
+                $("#elkzone option:selected").each(function () {
+                    elkzoneTypeValue += "'" + $(this).val() + "',";
+                })
+                //Remove trailing comma
+                elkID = elkzoneTypeValue.substring(0, elkzoneTypeValue.length - 1);
+                //var layerID = "4";
+                var label0 = $("#elkzone option:selected").map(function () {
+                    return $(this).text();
+                }).get();
+                var label = "Elk Zones: " + label0.join(", ");
+
+                if (typeof label != 'undefined') {
+                    label = label;
+                } else {
+                    label = "Selected Hunt Area";
+                }
+                if (typeof elkID != 'undefined') {
+                    doQuery2(elkID, label);
+                }
+                $("#queryLabel2").text(label);
+                $("#queryLabel2Div").show();
+
+                //Create a KML of the user-selected Elk Zones, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
+                var elkzoneKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/4/query?where=ID in (" +
+                    elkID + ")&outfields=NAME&f=kmz"
+                $("#elkzoneKML").attr("href", elkzoneKMLlink);
+                $("#elkzoneKML").show();
+            }
+
+            if ($("#chunt").val()) {
+                var chuntTypeValue = "";
+                $("#chunt option:selected").each(function () {
+                    chuntTypeValue += "'" + $(this).val() + "',";
+                })
+                //Remove trailing comma
+                chuntID = chuntTypeValue.substring(0, chuntTypeValue.length - 1);
+                //var layerID = "5";
+                var label0 = $("#chunt option:selected").map(function () {
+                    return $(this).text();
+                }).get();
+                var label = label0.join(", ");
+
+                if (typeof label != 'undefined') {
+                    label = label;
+                } else {
+                    label = "Selected Hunt Area";
+                }
+                if (typeof chuntID != 'undefined') {
+                    doQuery3(chuntID, label);
+                }
+                $("#queryLabel3").text(label);
+                $("#queryLabel3Div").show();
+
+                //Create a KML of the user-selected controlled hunts, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
+                var chuntKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/5/query?where=AreaID in (" +
+                    chuntID + ")&outfields=BigGame,HuntArea&f=kmz"
+                $("#chuntKML").attr("href", chuntKMLlink);
+                $("#chuntKML").show();
+            }
+
+            if ($("#waterfowl").val()) {
+                var waterfowlTypeValue = "";
+                $("#waterfowl option:selected").each(function () {
+                    waterfowlTypeValue += "'" + $(this).val() + "',";
+                })
+                //Remove trailing comma
+                waterfowlID = waterfowlTypeValue.substring(0, waterfowlTypeValue.length - 1);
+                //var layerID = "6";
+                var label0 = $("#waterfowl option:selected").map(function () {
+                    return $(this).text();
+                }).get();
+                var label = label0.join(", ");
+
+                if (typeof label != 'undefined') {
+                    label = label;
+                } else {
+                    label = "Selected Hunt Area";
+                }
+                if (typeof waterfowlID != 'undefined') {
+                    doQuery4(waterfowlID, label);
+                }
+                $("#queryLabel4").text(label);
+                $("#queryLabel4Div").show();
+
+                //Create a KML of the user-selected waterfowl hunt areas, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
+                var waterfowlKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/6/query?where=ID in (" +
+                    waterfowlID + ")&outfields=Area_Name&f=kmz"
+                $("#waterfowlKML").attr("href", waterfowlKMLlink);
+                $("#waterfowlKML").show();
+            }
+
+            if ($("#gameDistribution").val()) {
+                var gameDistributionTypeValue = "";
+                $("#gameDistribution option:selected").each(function () {
+                    gameDistributionTypeValue += "'" + $(this).val() + "',";
+                })
+                //Remove trailing comma
+                gameDistributionID = gameDistributionTypeValue.substring(0, gameDistributionTypeValue.length - 1);
+                //var layerID = "7";
+                var label0 = $("#gameDistribution option:selected").map(function () {
+                    return $(this).text();
+                }).get();
+                var label = label0.join(", ") + " General Distribution";
+
+                if (typeof label != 'undefined') {
+                    label = label;
+                } else {
+                    label = "Selected Game Distribution";
+                }
+                if (typeof gameDistributionID != 'undefined') {
+                    doQuery5(gameDistributionID, label);
+                }
+                $("#queryLabel5").text(label);
+                $("#queryLabel5Div").show();
+
+                //Create a KML of the user-selected game animal distributions, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
+                var gameDistributionKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/7/query?where=ID in (" +
+                    gameDistributionID + ")&outfields=NAME&f=kmz"
+                $("#gameDistributionKML").attr("href", gameDistributionKMLlink);
+                $("#gameDistributionKML").show();
+            }
+
+            if ($("#gmu").val() != null || $("#elkzone").val() != null || $("#chunt").val() != null || $("#waterfowl").val() != null ||
+                $("#gameDistribution").val() != null) {
+                $("#kmlNav1").show();
+                $("#kmlNav2").show();
+                $("#kmlNav1").effect("highlight", {color: 'yellow'}, 3000);
+                $("#kmlNav2").effect("highlight", {color: 'yellow'}, 3000);
+            }
+
+            $("#huntModal").modal('hide');
+        });
+
+        $("#btnClearHighlighted").click(function () {
+            queryLayer.clear();
+            queryLabelLayer.clear();
+            $("#queryLabelDiv").hide();
+            $('.selectpicker').selectpicker('val', '');
+            $("#queryLabel1Div").hide();
+            $("#queryLabel2Div").hide();
+            $("#queryLabel3Div").hide();
+            $("#queryLabel4Div").hide();
+            $("#queryLabel5Div").hide();
+            $("#kmlNav1").hide();
+            $("#kmlNav2").hide();
+            $("#gmuKML").hide();
+            $("#elkzoneKML").hide();
+            $("#chuntKML").hide();
+            $("#waterfowlKML").hide();
+            $("#gameDistributionKML").hide();
+        })
+
+        function doQuery(areaID, layerID, label) {
+            //initialize query tasks
+            newQueryTask = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/" + layerID);
+
+            //initialize query
+            newQuery = new Query();
+            newQuery.returnGeometry = true;
+            newQuery.outFields = ["ID", "FLAG"]
+            newHighlight = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+                new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+                    new Color([18,237,18]), 3),
+                new Color([18,237,18,0.1])
+            );
+            newHighlightHatched = new SimpleFillSymbol(SimpleFillSymbol.STYLE_BACKWARD_DIAGONAL,
+                new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+                    new Color([18,237,18]), 3),
+                new Color([18,237,18])
+            );
+
+            newQuery.where = "ID IN (" + areaID + ")";
+            newQueryTask.execute(newQuery, showResults);
+        }
+
+        function doQuery1(gmuID, label) {
+            //initialize query tasks
+            newQueryTask1 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/3");
+
+            //initialize query
+            newQuery1 = new Query();
+            newQuery1.returnGeometry = true;
+            newQuery1.outFields = ["ID", "NAME"]
+            newHighlight1 = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+                new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+                    new Color([154, 32, 219]), 3),
+                new Color([154, 32, 219, 0.1])
+            );
+
+            newQuery1.where = "ID IN (" + gmuID + ")";
+            newQueryTask1.execute(newQuery1, showResults1);
+        }
+
+        function doQuery2(elkID, label) {
+            //initialize query tasks
+            newQueryTask2 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/4");
+
+            //initialize query
+            newQuery2 = new Query();
+            newQuery2.returnGeometry = true;
+            newQuery2.outFields = ["ID", "NAME"]
+            newHighlight2 = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+                new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+                    new Color([0, 255, 255]), 3),
+                new Color([0, 255, 255, 0.1])
+            );
+
+            newQuery2.where = "ID IN (" + elkID + ")";
+            newQueryTask2.execute(newQuery2, showResults2);
+        }
+
+        function doQuery3(chuntID, label) {
+            //initialize query tasks
+            newQueryTask3 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/5");
+
+            //initialize query
+            newQuery3 = new Query();
+            newQuery3.returnGeometry = true;
+            newQuery3.outFields = ["FLAG", "AreaID", "BigGame", "HuntArea"]
+            newHighlight3 = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+                new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+                    new Color([18, 237, 18]), 3),
+                new Color([18, 237, 18, 0.1])
+            );
+            newHighlight3Hatched = new SimpleFillSymbol(SimpleFillSymbol.STYLE_BACKWARD_DIAGONAL,
+                new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+                    new Color([18, 237, 18]), 3),
+                new Color([18, 237, 18])
+            );
+
+            newQuery3.where = "AreaID IN (" + chuntID + ")";
+            newQueryTask3.execute(newQuery3, showResults3);
+        }
+
+        function doQuery4(waterfowlID, label) {
+            //initialize query tasks
+            newQueryTask4 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/6");
+
+            //initialize query
+            newQuery4 = new Query();
+            newQuery4.returnGeometry = true;
+            newQuery4.outFields = ["ID", "Area_Name"]
+            newHighlight4 = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+                new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+                    new Color([255, 157, 0]), 3),
+                new Color([255, 157, 0, 0.1])
+            );
+
+            newQuery4.where = "ID IN (" + waterfowlID + ")";
+            newQueryTask4.execute(newQuery4, showResults4);
+        }
+
+        function doQuery5(gameDistributionID, label) {
+            //initialize query tasks
+            newQueryTask5 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/7");
+
+            //initialize query
+            newQuery5 = new Query();
+            newQuery5.returnGeometry = true;
+            newQuery5.outFields = ["ID", "SCINAME", "NAME"]
+            newHighlight5 = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+                new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+                    new Color([255, 0, 225]), 3),
+                new Color([255, 0, 225, 0.1])
+            );
+
+            newQuery5.where = "ID IN (" + gameDistributionID + ")";
+            newQueryTask5.execute(newQuery5, showResults5);
+        }
+
+        //Funtion to open the hunting restrictions dialog if a hunter has queried a "flagged" hunt.
+        function showAlert() {
+            $("#huntWarningModal").modal('show');
+        }
+
+        function showResults(featureSet) {
+            //Performance enhancer - assign featureSet array to a single variable.
+            var newFeatures = featureSet.features;
+            //Loop through each feature returned
+            for (var i = 0, il = newFeatures.length; i < il; i++) {
+                //Get the current feature from the featureSet.
+                //Feature is a graphic
+                var geometry = featureSet.geometry;
+                var newGraphic = newFeatures[i];
+                var polyExtent = newGraphic.geometry.getExtent();
+                var polyCenter = polyExtent.getCenter();
+                newGraphic.setSymbol(newHighlight);
+                var queryMapLabel = label;
+
+                //Add graphic to the map graphics layer.
+                queryLayer.add(newGraphic);
+
+                //If the selected hunt is "flagged" aka has further restrictions, give it hatched symbology as well.
+                if (newGraphic.attributes.FLAG == 1){
+                    newGraphic.setSymbol(newHighlightHatched);
+                    showAlert();
+                } else {
+                    newGraphic.setSymbol(newHighlight);
+                }
+
+                //Add label to the graphics.
+                var font = new esri.symbol.Font();
+                font.setSize("10pt");
+                font.setFamily("Helvetica");
+                font.setWeight(Font.WEIGHT_BOLD);
+                var textSymbol = new TextSymbol(queryMapLabel);
+                textSymbol.setColor(new esri.Color([0,0,0]));
+                textSymbol.setFont(font);
+                textSymbol.setHorizontalAlignment("center");
+                textSymbol.setVerticalAlignment("middle");
+                textSymbol.setOffset(17, 0);
+                //Add label at the selected area center.
+                var pt = new Point(polyCenter, map.spatialReference);
+                var queryMapLabelGraphic = new Graphic(pt, textSymbol);
+                queryLabelLayer.add(queryMapLabelGraphic);
+
+                var selectionExtent = esri.graphicsExtent(newFeatures);
+                map.setExtent(selectionExtent.expand(1.25), true);
+
+                //Zoom to graphics extent.
+                if (urlZoom == '') {
+                    var selectionExtent = esri.graphicsExtent(newFeatures);
+                    map.setExtent(selectionExtent.expand(1.25), true);
+                }
+            }
+
+            //Populate the queryLabel Div that will show the query result label in the legend.
+            $("#queryLabelDiv").show();
+            $("#queryCheckbox").prop('checked', true);
+        }
+
+        function showResults1(featureSet) {
+            //Performance enhancer - assign featureSet array to a single variable.
+            var newFeatures1 = featureSet.features;
+            //Loop through each feature returned
+            for (var i = 0, il = newFeatures1.length; i < il; i++) {
+                //Get the current feature from the featureSet.
+                //Feature is a graphic
+                var geometry = featureSet.geometry;
+                var newGraphic1 = newFeatures1[i];
+                var polyExtent = newGraphic1.geometry.getExtent();
+                var polyCenter = polyExtent.getCenter();
+                newGraphic1.setSymbol(newHighlight1);
+                queryMapLabel1 = "UNIT " + newGraphic1.attributes.NAME;
+                //Add graphic to the map graphics layer.
+                queryLayer.add(newGraphic1);
+
+                //Add label to the graphics.
+                var font = new esri.symbol.Font();
+                font.setSize("10pt");
+                font.setFamily("Helvetica");
+                font.setWeight(Font.WEIGHT_BOLD);
+                var textSymbol = new TextSymbol(queryMapLabel1);
+                textSymbol.setColor(new esri.Color([154, 32, 219]));
+                textSymbol.setFont(font);
+                textSymbol.setHorizontalAlignment("center");
+                textSymbol.setVerticalAlignment("middle");
+                textSymbol.setOffset(17, 0);
+                //Add label at the selected area center.
+                var pt = new Point(polyCenter, map.spatialReference);
+                var queryMapLabel1Graphic = new Graphic(pt, textSymbol);
+                queryLabelLayer.add(queryMapLabel1Graphic);
+
+                //Zoom to full extent.
+                zoomToState();
+            }
+
+            //Populate the queryLabel Div that will show the query result label in the legend.
+            $("#queryLabelDiv").show();
+            $("#queryCheckbox").prop('checked', true);
+        }
+
+        function showResults2(featureSet) {
+            //Performance enhancer - assign featureSet array to a single variable.
+            var newFeatures2 = featureSet.features;
+            //Loop through each feature returned
+            for (var i = 0, il = newFeatures2.length; i < il; i++) {
+                //Get the current feature from the featureSet.
+                //Feature is a graphic
+                var geometry = featureSet.geometry;
+                var newGraphic2 = newFeatures2[i];
+                var polyExtent = newGraphic2.geometry.getExtent();
+                var polyCenter = polyExtent.getCenter();
+                newGraphic2.setSymbol(newHighlight2);
+                var queryMapLabel2 = newGraphic2.attributes.NAME + " Elk Zone";
+                //Add graphic to the map graphics layer.
+                queryLayer.add(newGraphic2);
+
+                //Add label to the graphics.
+                var font = new esri.symbol.Font();
+                font.setSize("10pt");
+                font.setFamily("Helvetica");
+                font.setWeight(Font.WEIGHT_BOLD);
+                var textSymbol = new TextSymbol(queryMapLabel2);
+                textSymbol.setColor(new esri.Color([30, 201, 201]));
+                textSymbol.setFont(font);
+                textSymbol.setHorizontalAlignment("center");
+                textSymbol.setVerticalAlignment("middle");
+                textSymbol.setOffset(17, 0);
+                //Add label at the selected area center.
+                var pt = new Point(polyCenter, map.spatialReference);
+                var queryMapLabel2Graphic = new Graphic(pt, textSymbol);
+                queryLabelLayer.add(queryMapLabel2Graphic);
+
+                //Zoom to full extent.
+                zoomToState();
+            }
+
+            //Populate the queryLabel Div that will show the query result label in the legend.
+            $("#queryLabelDiv").show();
+            $("#queryCheckbox").prop('checked', true);
+        }
+
+
+
+        function showResults3(featureSet) {
 			//Performance enhancer - assign featureSet array to a single variable.
 			var newFeatures3 = featureSet.features;
 			//Loop through each feature returned
@@ -1055,6 +1086,7 @@
 				var polyCenter = polyExtent.getCenter();
 				if (newGraphic3.attributes.FLAG == 1){
 					newGraphic3.setSymbol(newHighlight3Hatched);
+                    showAlert();
 				} else {
 					newGraphic3.setSymbol(newHighlight3);
 				}
@@ -1069,7 +1101,7 @@
 				font.setFamily("Helvetica");
 				font.setWeight(Font.WEIGHT_BOLD);
 				var textSymbol = new TextSymbol(queryMapLabel3);
-				textSymbol.setColor (new esri.Color([69,198,69]));
+				textSymbol.setColor (new esri.Color([0,0,0]));
 				textSymbol.setFont(font);
 				textSymbol.setHorizontalAlignment("center");
 				textSymbol.setVerticalAlignment("middle");
@@ -1077,7 +1109,7 @@
 				//Add label at the selected area center.
 				var pt = new Point(polyCenter,map.spatialReference);
 				var queryMapLabel3Graphic = new Graphic (pt, textSymbol);
-				//queryLabelLayer.add(queryMapLabel3Graphic);
+				queryLabelLayer.add(queryMapLabel3Graphic);
 				
 				//Zoom to full extent.
 				zoomToState();
@@ -1563,7 +1595,7 @@
 		//Create PDF using PrintTask	
 		$("#btnPDF").click (function(){
 			$("#div_for_pdf").hide();
-			submitPrint(); 
+			submitPrint();
 		});
 		
 /*		$("#pdfModal").on('hidden.bs.modal', function(){
@@ -1593,7 +1625,7 @@
 			
 			var printServiceUrl ='https://fishandgame.idaho.gov/gis/rest/services/Custom_IDFG_ExportWebMapTask/GPServer/Export%20Web%20Map';
 			var printTask = new esri.tasks.PrintTask(printServiceUrl);	
-			
+
 			var deferred = printTask.execute(printParams);
 			deferred.addCallback(function (response){  
 				//alert(JSON.stringify(response));		

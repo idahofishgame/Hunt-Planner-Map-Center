@@ -867,7 +867,7 @@
 								</div>
 							</div>
 						</div>
-						<br/></br/>
+						<br/><br/>
 						<button class="btnClose" data-dismiss="modal">Close Basemap Window</button>
 					</div>
 				</div>
@@ -968,10 +968,10 @@
 						<h4 class="modal-title">Create Printable Map</h4>
 					</div>
 					<div class="modal-body">
-							<div id="pdfNote">
+						<!--	<div id="pdfNote">
 								<h2>Due to high server load we have temporarily disabled printing to keep the Map Center available. We apologize for the inconvenience.</h2>
-							</div>
-<!--						<div id="pdfNote">
+							</div>-->
+						<div id="pdfNote">
 								Enter a map title:
 								<input id="txtTitle" style="width:220px" type="text" class="textBox" placeholder="ex. GMU 54"/>
 								<br/><br/>
@@ -981,7 +981,7 @@
 									<option value="Custom_IDFG_PrintTemplate_Landscape_11x17">11x17 Landscape</option>
 									<option value="Custom_IDFG_PrintTemplate_Portrait_8x11">8x11 Portrait</option>
 									<option value="Custom_IDFG_PrintTemplate_Portrait_11x17">11x17 Portrait</option>
-									&lt;!&ndash;<option value="MAP_ONLY">Map Only (no scale, legend, etc)</option>&ndash;&gt;
+									<!--<option value="MAP_ONLY">Map Only (no scale, legend, etc)</option>-->
 								</select>
 								<br/><br/>
 								Select a print format:
@@ -995,11 +995,11 @@
 								When the map is ready, "CLICK HERE TO DOWNLOAD YOUR MAP" will appear in this window.  Click this hyperlink to open your map.
 								<br/><br/>
 								<input type="submit" id="btnPDF" value="Create Map!">
-								<span id="printStatus"></span></span><img id="loadingPrint" src="//fishandgame.idaho.gov/ifwis/images/loading.gif" style="display:none;" />
+								<span id="printStatus"></span><img id="loadingPrint" src="//fishandgame.idaho.gov/ifwis/images/loading.gif" style="display:none;" />
 								<br/><br/>
 								<div id="div_for_pdf"></div>
 								<button class="btnClose" data-dismiss="modal">Close Print Window</button>
-						</div>-->
+						</div>
 					</div>
 				</div>
 			</div>
@@ -1016,7 +1016,7 @@
 						<strong>Copy the link below to share the current map view. </strong>
 						<br/><br/>
 						<div id="viewURL"></div>
-						</br>
+						<br/>
 						<button class="btnClose" data-dismiss="modal">Close Share Window</button>
 					</div>
 				</div>
@@ -1091,7 +1091,23 @@
 				</div>
 			</div>
 		</div>
-
+       <!-- Hunt Restriction Modal -->
+       <div class="modal fade bs-example-modal-sm" id="huntWarningModal" tabindex="-1" style="display: none;" aria-hidden="true">
+           <div class="modal-dialog modal-sm">
+               <div class="modal-content">
+                   <div class="modal-header">
+                       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                       <h4 class="modal-title">WARNING!</h4>
+                   </div>
+                   <div class="modal-body">
+                       <p>There are further restrictions within a hunt area you selected (the area with lines through it).  Please consult the <a href="https://fishandgame.idaho.gov/public/hunt/rules/" target="_blank">hunting regulations</a>.</p>
+                       <br/>
+                       <button class="btnWarningClose" data-dismiss="modal"
+                               onclick="window.open('https://fishandgame.idaho.gov/public/hunt/rules/', '_blank')">OK</button>
+                   </div>
+               </div>
+           </div>
+       </div>
     <!-- Bootstrap-map-js -->
 		<div class="row row-offcanvas row-offcanvas-left">
     <!-- sidebar -->
@@ -1110,7 +1126,7 @@
 										<div class="agsjsTOCServiceLayer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 15px;">
 											<span class="agsjsTOCContent" data-dojo-attach-point="contentNode">
 												<span data-dojo-attach-point="checkContainerNode">
-													<input id="queryCheckbox" type="checkbox" style="margin-left:-10px;" ></input>
+													<input id="queryCheckbox" type="checkbox" style="margin-left:-10px;" />
 												</span>
 												<label for="queryCheckbox" style="font-size:15px; margin-bottom:5px"> Highlighted Hunt Areas </label>
 												<label class='huntDisclaimer'>If hunt area has lines through it, further restrictions apply. <a href='http://fishandgame.idaho.gov/public/hunt/' target='_blank'>Consult Regulations</a></label>
@@ -1141,7 +1157,7 @@
 										<div class="agsjsTOCServiceLayer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 15px;">
 											<span class="agsjsTOCContent" data-dojo-attach-point="contentNode">
 												<span data-dojo-attach-point="checkContainerNode">
-													<input id="uploadCheckbox" type="checkbox" style="margin-left:-10px;" ></input>
+													<input id="uploadCheckbox" type="checkbox" style="margin-left:-10px;" />
 												</span>
 												<label for="uploadCheckbox" style="font-size:15px; margin-bottom:5px"> Uploaded GPX Files </label>
 												<div id="uploadLabel1Div"  style="display: none; margin-left:27px;">
@@ -1157,12 +1173,12 @@
 									</div>
 								</div>	
 									<div id="tocDiv"></div>
-									<div id="fireLayersDiv">
+<!--									<div id="fireLayersDiv">
 										<div id="TOCNode_fireLayers" class="agsjsTOCNode">
 											<div class="agsjsTOCRootLayer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 0px;" title="Wildfire & Closures Related Layers">
 												<span class="agsjsTOCContent" data-dojo-attach-point="contentNode">
 													<span data-dojo-attach-point="checkContainerNode">
-														<input id="fireLayersCheckbox" type="checkbox"></input>
+														<input id="fireLayersCheckbox" type="checkbox" />
 													</span>
 													<span class="agsjsTOCRootLayerLabel" data-dojo-attach-point="labelNode">Wildfire & Closure Related Layers</span>
 												</span>
@@ -1172,14 +1188,14 @@
 													<div class="agsjsTOCServiceLayer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 18px;">
 														<span class="agsjsTOCContent" data-dojo-attach-point="contentNode">
 															<span data-dojo-attach-point="checkContainerNode">
-																<input id="fireLayer0Checkbox" type="checkbox"></input>
+																<input id="fireLayer0Checkbox" type="checkbox" />
 															</span>
 															<img class="agsjsTOCIcon" data-dojo-attach-point="iconNode" alt="" src="src/images/FireClosures.png"/>
 															<span class="agsjsTOCServiceLayerLabel" data-dojo-attach-point="labelNode">Fire Emergency Area Closures</span>
 														</span>
 													</div>			
 												</div>
-												 <!--<div id="TOCNode_fireLayers_1" class="agsjsTOCNode">
+												 <div id="TOCNode_fireLayers_1" class="agsjsTOCNode">
 													 <div class="agsjsTOCServiceLayer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 18px;">
 														<span class="agsjsTOCContent" data-dojo-attach-point="contentNode">
 															<span data-dojo-attach-point="checkContainerNode">
@@ -1189,32 +1205,35 @@
 															<img alt="" src="src/images/TimberClosures2.png" style="padding-left:25px;"/>
 														</span>
 													 </div>
-												 </div>-->
+												 </div>
 												<div id="TOCNode_fireLayers_2" class="agsjsTOCNode">
 													<div class="agsjsTOCServiceLayer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 18px;">
 														<span class="agsjsTOCContent" data-dojo-attach-point="contentNode">
 															<span data-dojo-attach-point="checkContainerNode">
-																<input id="fireLayer2Checkbox" type="checkbox"></input>
+																<input id="fireLayer2Checkbox" type="checkbox" />
 															</span>
 															<img class="agsjsTOCIcon" data-dojo-attach-point="iconNode" alt="" src="src/images/ActiveFirePerimeters.png"/>
 															<span class="agsjsTOCServiceLayerLabel" data-dojo-attach-point="labelNode">Active Fire Perimeters</span>	
 														</span>
 													</div>
 												</div>
-												<div id="TOCNode_fireLayers_3" class="agsjsTOCNode">
+												<div>
+													<p id="MODISbroke">We are unable to display MODIS Fire Detections on the Map Center at this time. You can still view it in the <a href="http://fishandgame.idaho.gov/ifwis/maps/realtime/fire/" target="_blank">Idaho Fire Map</a> or by downloading the current Google Earth KML <a href ="http://activefiremaps.fs.fed.us/googleearth.php" target="_blank">here</a>.</p>
+												</div>
+ 												<div id="TOCNode_fireLayers_3" class="agsjsTOCNode">
 													<div class="agsjsTOCServiceLayer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 18px;">
 														<span class="agsjsTOCContent" data-dojo-attach-point="contentNode">
 															<span data-dojo-attach-point="checkContainerNode">
-																<input id="fireLayer3Checkbox" type="checkbox"></input>
+																<input id="fireLayer3Checkbox" type="checkbox" />
 															</span>
 															<span class="agsjsTOCServiceLayerLabel" data-dojo-attach-point="labelNode">MODIS Fire Detections</span>
 															<img alt="" src="src/images/ModisLegend.png" style="padding-left:25px;"/>
 														</span>
 													</div>			
-												</div>		
+												</div>
 											</div>
 										</div>
-									</div>
+									</div>-->
 							</div>
 							<li><a id="basemapNav1"><i class="glyphicon glyphicon-globe"></i> Change the Basemap</a></li>
 							<li><a id="huntNav1"><i class="glyphicon glyphicon-flash"></i> Highlight a Hunt Area</a></li>
@@ -1255,8 +1274,9 @@
 					<div id="measureResultsDiv">
 					Measurement Results:<br/><span id="Results"></span>
 					</div>
-			</div>
-		</div>
+			  </div>
+		  </div>
+    </div>
 		<!-- /map -->
 	 </div>
 	</div>
@@ -1277,7 +1297,7 @@
 		};
 	</script>	
 	
-		<script src="//js.arcgis.com/3.9"></script>
+    <script src="//js.arcgis.com/3.9"></script>
     <script src="src/js/map.js"></script>
     <!-- Bootstrap core JavaScript
     ================================================== -->
