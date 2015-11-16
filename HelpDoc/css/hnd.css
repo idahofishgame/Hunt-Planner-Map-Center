@@ -164,17 +164,24 @@ span.rvts27
 }
 span.rvts28
 {
+ font-size: 12pt;
+ font-family: 'Gill Sans MT';
+ font-style: italic;
+ font-weight: bold;
+}
+span.rvts29
+{
  font-size: 8pt;
  font-family: 'Gill Sans MT';
 }
-a.rvts29, span.rvts29
+a.rvts30, span.rvts30
 {
  font-size: 8pt;
  font-family: 'Gill Sans MT';
  color: #0000ff;
  text-decoration: underline;
 }
-span.rvts30
+span.rvts31
 {
  font-family: 'Gill Sans MT';
 }
