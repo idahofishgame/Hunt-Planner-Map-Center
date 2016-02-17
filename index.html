@@ -18,8 +18,8 @@
 		 <link rel="stylesheet" href="//code.jquery.com/ui/1.10.1/themes/smoothness/jquery-ui.css">
 
     <!-- Custom styles for this template -->
-    <link rel="stylesheet" href="//js.arcgis.com/3.9/js/dojo/dijit/themes/claro/claro.css">
-    <link rel="stylesheet" type="text/css" href="//js.arcgis.com/3.9/js/esri/css/esri.css">
+    <link rel="stylesheet" href="//js.arcgis.com/3.10/js/dojo/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" type="text/css" href="//js.arcgis.com/3.10/js/esri/css/esri.css">
 		<link rel="stylesheet" type="text/css" href="src/css/bootstrap-select.css">		
     <link rel="stylesheet" type="text/css" href="src/css/bootstrapmap.css">
 		<link rel="stylesheet" type="text/css" href="src/css/layout.css" >
@@ -723,29 +723,28 @@
 								<option value="170">Bear 8502 - Area 22-1</option>
 								<option value="145">Bear 8503 - Area 32-1</option>
 								<option value="170">Bear 8504 - Area 22-1</option>
-								<option value="1046">Turkey 9001: 36B-1</option>
-								<option value="1046">Turkey 9002: 36B-2</option>
-								<option value="445">Turkey 9003: 38-1</option>
-								<option value="445">Turkey 9004: 38-2</option>
-								<option value="45">Turkey 9005: 50-1</option>
-								<option value="45">Turkey 9006: 50-2</option>
-								<option value="45">Turkey 9007: 50-3</option>
-								<option value="239">Turkey 9008: 54-1</option>
-								<option value="239">Turkey 9009: 54-2</option>
-								<option value="239">Turkey 9010: 54-3</option>
-								<option value="259">Turkey 9011: 68A-1</option>
-								<option value="259">Turkey 9012: 68A-2</option>
-								<option value="259">Turkey 9013: 68A-3</option>
-								<option value="262">Turkey 9014: 71-1</option>
-								<option value="262">Turkey 9015: 71-2</option>
-								<option value="262">Turkey 9016: 71-3</option>
-								<option value="280">Turkey 9017: 22-1</option>
-								<option value="211">Turkey 9018: 31-1</option>
-								<option value="45">Turkey 9019: 50-4</option>
-								<option value="1047">Turkey 9020: 54-4</option>
+								<option value="1338">Turkey 9001: 36B-1</option>
+								<option value="1338">Turkey 9002: 36B-2</option>
+								<option value="445">Turkey 9003: 38-1A</option>
+								<option value="445">Turkey 9004: 38-1B</option>
+								<option value="445">Turkey 9005: 38-2</option>
+								<option value="445">Turkey 9006: 38-2A</option>
+								<option value="446">Turkey 9007: 50-1</option>
+								<option value="446">Turkey 9008: 50-2</option>
+								<option value="446">Turkey 9009: 50-3</option>
+								<option value="239">Turkey 9010: 54-1</option>
+								<option value="239">Turkey 9011: 54-2</option>
+								<option value="239">Turkey 9012: 54-3</option>
+								<option value="259">Turkey 9013: 68A-1</option>
+								<option value="259">Turkey 9014: 68A-2</option>
+								<option value="259">Turkey 9015: 68A-3</option>
+								<option value="170">Turkey 9016: 22-1</option>
+								<option value="170">Turkey 9017: 22-2</option>
+								<option value="1339">Turkey 9018: 32-1</option>
+								<option value="445">Turkey 9019: 38-3</option>
+								<option value="446">Turkey 9020: 50-4</option>
 								<option value="262">Turkey 9021: 71-4</option>
 								<option value="262">Turkey 9022: 71-5</option>
-								<option value="1163">Turkey 9023: 73-1</option>
 							</select></td>
 						</tr>
 						<tr>
@@ -994,6 +993,8 @@
 								<br/><br/>
 								When the map is ready, "CLICK HERE TO DOWNLOAD YOUR MAP" will appear in this window.  Click this hyperlink to open your map.
 								<br/><br/>
+                                The PDF maps are georeference.  You can use the <a href="http://www.avenza.com/pdf-maps" target="_blank">Avenza PDF Maps app</a> to interact with a map to view your location, record GPS tracks, add placemarks, and find places on your Apple or Android device.  You can also measure height, width, or area and view cursor coordinates using the measure tools in <a href="https://helpx.adobe.com/acrobat/using/grids-guides-measurements-pdfs.html" target="_blank">Adobe Acrobat Reader</a>. The maps use coordinate system WGS 84.
+                                <br/><br/>
 								<input type="submit" id="btnPDF" value="Create Map!">
 								<span id="printStatus"></span><img id="loadingPrint" src="//fishandgame.idaho.gov/ifwis/images/loading.gif" style="display:none;" />
 								<br/><br/>
@@ -1100,7 +1101,7 @@
                        <h4 class="modal-title">WARNING!</h4>
                    </div>
                    <div class="modal-body">
-                       <p>There are further restrictions within a hunt area you selected (the area with lines through it).  Please consult the <a href="https://fishandgame.idaho.gov/public/hunt/rules/" target="_blank">hunting regulations</a>.</p>
+                       <p>There may be further restrictions within a hunt area you selected (the area with lines through it).  Please consult the <a href="https://fishandgame.idaho.gov/public/hunt/rules/" target="_blank">hunting regulations</a>.</p>
                        <br/>
                        <button class="btnWarningClose" data-dismiss="modal"
                                onclick="window.open('https://fishandgame.idaho.gov/public/hunt/rules/', '_blank')">OK</button>
@@ -1129,9 +1130,9 @@
 													<input id="queryCheckbox" type="checkbox" style="margin-left:-10px;" />
 												</span>
 												<label for="queryCheckbox" style="font-size:15px; margin-bottom:5px"> Highlighted Hunt Areas </label>
-												<label class='huntDisclaimer'>If hunt area has lines through it, further restrictions apply. <a href='http://fishandgame.idaho.gov/public/hunt/' target='_blank'>Consult Regulations</a></label>
+												<label class='huntDisclaimer'>If hunt area has lines through it, further restrictions may apply. <a href='http://fishandgame.idaho.gov/public/hunt/' target='_blank'>Consult Regulations</a></label>
 												<div id="queryLabel1Div"  style="display: none; margin-left:27px;">
-													<img class="agsjsTOCIcon" data-dojo-attach-point="iconNode" src="src/images/queryIMG.png"/>
+													<img class="agsjsTOCIcon" data-dojo-attach-point="iconNode" src="src/images/queryIMG3.png"/>
 													<span id="queryLabel1" class="agsjsTOCServiceLayerLabel" data-dojo-attach-point="labelNode"></span>
 												</div>
 												<div id="queryLabel2Div"  style="display: none;">
@@ -1173,7 +1174,7 @@
 									</div>
 								</div>	
 									<div id="tocDiv"></div>
-<!--									<div id="fireLayersDiv">
+<!-- 									<div id="fireLayersDiv">
 										<div id="TOCNode_fireLayers" class="agsjsTOCNode">
 											<div class="agsjsTOCRootLayer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 0px;" title="Wildfire & Closures Related Layers">
 												<span class="agsjsTOCContent" data-dojo-attach-point="contentNode">
@@ -1184,7 +1185,7 @@
 												</span>
 											</div>			
 											 <div data-dojo-attach-point="containerNode">
-												<div id="TOCNode_fireLayers_0" class="agsjsTOCNode">
+ 												<div id="TOCNode_fireLayers_0" class="agsjsTOCNode">
 													<div class="agsjsTOCServiceLayer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 18px;">
 														<span class="agsjsTOCContent" data-dojo-attach-point="contentNode">
 															<span data-dojo-attach-point="checkContainerNode">
@@ -1233,7 +1234,7 @@
 												</div>
 											</div>
 										</div>
-									</div>-->
+									</div> -->
 							</div>
 							<li><a id="basemapNav1"><i class="glyphicon glyphicon-globe"></i> Change the Basemap</a></li>
 							<li><a id="huntNav1"><i class="glyphicon glyphicon-flash"></i> Highlight a Hunt Area</a></li>
@@ -1297,7 +1298,7 @@
 		};
 	</script>	
 	
-    <script src="//js.arcgis.com/3.9"></script>
+    <script src="//js.arcgis.com/3.10"></script>
     <script src="src/js/map.js"></script>
     <!-- Bootstrap core JavaScript
     ================================================== -->

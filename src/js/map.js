@@ -24,8 +24,8 @@
 	"esri/dijit/Basemap",
 	"esri/dijit/BasemapGallery",
 	"agsjs/layers/GoogleMapsLayer",
-	"esri/InfoTemplate",
 	"esri/dijit/Popup",
+	"esri/InfoTemplate",
 	"esri/dijit/PopupTemplate",
 	"esri/layers/ArcGISDynamicMapServiceLayer",
 	"esri/layers/WMSLayer",
@@ -56,11 +56,12 @@
 	"dojo/domReady!"
 ],
 	function (
-	esriConfig, urlUtils, Map, LocateButton, Scalebar, request, scaleUtils, FeatureLayer, SimpleRenderer, PictureMarkerSymbol, SimpleMarkerSymbol, SimpleFillSymbol, SimpleLineSymbol, TextSymbol, Font, Color, Point, Multipoint, arcgisUtils, webMercatorUtils, GraphicsLayer, BasemapLayer, Basemap, BasemapGallery, GoogleMapsLayer, InfoTemplate, Popup, PopupTemplate, ArcGISDynamicMapServiceLayer, WMSLayer, QueryTask, Query, TOC, Geocoder, GeometryService, Measurement, Draw, Graphic, PrintParameters, PrintTemplate, PrintTask, dom, domClass, domConstruct, JSON, on, parser, query, sniff, connect, arrayUtils, lang, registry, BootstrapMap
+	esriConfig, urlUtils, Map, LocateButton, Scalebar, request, scaleUtils, FeatureLayer, SimpleRenderer, PictureMarkerSymbol, SimpleMarkerSymbol, SimpleFillSymbol, SimpleLineSymbol, TextSymbol, Font, Color, Point, Multipoint, arcgisUtils, webMercatorUtils, GraphicsLayer, BasemapLayer, Basemap, BasemapGallery, GoogleMapsLayer, Popup, InfoTemplate, PopupTemplate, ArcGISDynamicMapServiceLayer, WMSLayer, QueryTask, Query, TOC, Geocoder, GeometryService, Measurement, Draw, Graphic, PrintParameters, PrintTemplate, PrintTask, dom, domClass, domConstruct, JSON, on, parser, query, sniff, connect, arrayUtils, lang, registry, BootstrapMap
 ) {
 
         //Proxy settings
-        esriConfig.defaults.io.proxyUrl = "https://fishandgame.idaho.gov/ifwis/gis_proxy/proxy.ashx";
+        //esriConfig.defaults.io.proxyUrl = "https://fishandgame.idaho.gov/ifwis/gis_proxy/proxy.ashx";
+				esriConfig.defaults.io.proxyUrl = "https://fishandgame.idaho.gov/ifwis/jsb/restful/proxyget";
         esriConfig.defaults.io.alwaysUseProxy = false;
         /*
          urlUtils.addProxyRule({
@@ -77,8 +78,12 @@
             clearFileInputField(uploadForm);
         });
 
+        setTimeout(function(){
+            $("#loading").hide();
+        }, 5000);
+
         //create a popup div
-        var popup = Popup({
+        var popup = new Popup({
             titleInBody: false
         }, domConstruct.create("div"));
 
@@ -191,7 +196,7 @@
         var worldTopoBasemap = new Basemap({
             layers: [worldTopo],
             title: "Esri World Topographic",
-            thumbnailUrl: "https://www.arcgis.com/sharing/rest/content/items/6e03e8c26aad4b9c92a87c1063ddb0e3/info/thumbnail/topo_map_2.jpg"
+            thumbnailUrl: "src/images/world_topo.png"
         });
         basemapGallery.add(worldTopoBasemap);
 
@@ -200,7 +205,7 @@
         var usgsBasemap = new Basemap({
             layers: [usgsTopo],
             title: "Esri USGS Topographic",
-            thumbnailUrl: "https://www.arcgis.com/sharing/rest/content/items/931d892ac7a843d7ba29d085e0433465/info/thumbnail/usa_topo.jpg"
+            thumbnailUrl: "src/images/usa_topo.jpg"
         });
         basemapGallery.add(usgsBasemap);
 
@@ -210,7 +215,7 @@
         var imageryLabelBasemap = new Basemap({
             layers: [Imagery],
             title: "Esri Satellite Imagery",
-            thumbnailUrl: "https://www.esri.com/~/media/Images/Content/Software/arcgis/arcgisonline/graphics/basemaps/world_imagery.png"
+            thumbnailUrl: "src/images/world_imagery.png"
         });
         basemapGallery.add(imageryLabelBasemap);
 
@@ -220,7 +225,7 @@
         var terrainLabelBasemap = new Basemap({
             layers: [Terrain, Reference],
             title: "Esri Labeled Terrain",
-            thumbnailUrl: "https://www.arcgis.com/sharing/rest/content/items/aab054ab883c4a4094c72e949566ad40/info/thumbnail/terrain_labels.jpg"
+            thumbnailUrl: "src/images/world_terrain_base.png"
         });
         basemapGallery.add(terrainLabelBasemap);
 
@@ -229,7 +234,7 @@
         var natGeoBasemap = new Basemap({
             layers: [natGeo],
             title: "Esri Natl Geographic",
-            thumbnailUrl: "https://www.arcgis.com/sharing/rest/content/items/b9b1b422198944fbbd5250b3241691b6/info/thumbnail/natgeo3.jpg"
+            thumbnailUrl: "src/images/natl_geo.png"
         });
         basemapGallery.add(natGeoBasemap);
 
@@ -278,7 +283,48 @@
             map.reorderLayer(googleLayer, 1);
             googleLayer.setMapTypeId(agsjs.layers.GoogleMapsLayer.MAP_TYPE_TERRAIN);
         });
-
+				
+				//infoTemplate for the Big Game hunting restrictions layer
+				var _bigGameHuntResInfoTemplate = new InfoTemplate();
+				_bigGameHuntResInfoTemplate.setTitle("Big Game Hunting Restriction");
+				
+				_bigGameHuntResInfoTemplate.setContent(
+					"<b>Area: </b>${Closed_Are}<br/>" +
+					"<b>Restriction: </b>${Comments}</br>"
+				);
+				
+				var _furbearerHuntResInfoTemplate = new InfoTemplate();
+				_furbearerHuntResInfoTemplate.setTitle("Furbearer Hunting Restriction");
+				
+				_furbearerHuntResInfoTemplate.setContent(
+					"<b>Area: </b>${Closed_Are}<br/>" +
+					"<b>Restriction: </b>${Comments}</br>"
+				);
+				
+				var _uplandGameBirdTurkeyHuntResInfoTemplate = new InfoTemplate();
+				_uplandGameBirdTurkeyHuntResInfoTemplate.setTitle("Upland Game Bird/Turkey Hunting Restriction");
+				
+				_uplandGameBirdTurkeyHuntResInfoTemplate.setContent(
+					"<b>Area: </b>${Closed_Are}<br/>" +
+					"<b>Restriction: </b>${Comments}</br>"
+				);
+				
+				var _uplandGameHuntResInfoTemplate = new InfoTemplate();
+				_uplandGameHuntResInfoTemplate.setTitle("Upland Game Hunting Restriction");
+				
+				_uplandGameHuntResInfoTemplate.setContent(
+					"<b>Area: </b>${Closed_Are}<br/>" +
+					"<b>Restriction: </b>${Comments}</br>"
+				);
+				
+				var _waterfowlHuntResInfoTemplate = new InfoTemplate();
+				_waterfowlHuntResInfoTemplate.setTitle("Waterfowl Hunting Restriction");
+				
+				_waterfowlHuntResInfoTemplate.setContent(
+					"<b>Area: </b>${Closed_Are}<br/>" +
+					"<b>Restriction: </b>${Comments}</br>"
+				);
+				
         //popup window template for the Campground feature layer
         var campgroundPopupTemplate = new PopupTemplate({
             title: "Campground Info",
@@ -306,7 +352,7 @@
 
         //popup window template for the fire closure feature layer.  NO WILDFIRES AT THIS TIME.  Keep for next year.
 
-/*        var closurePopupTemplate = new PopupTemplate({
+ /*       var closurePopupTemplate = new PopupTemplate({
             title: "Fire Closure Info",
             fieldInfos: [{
                 fieldName: "NAME", visible: true,
@@ -318,10 +364,10 @@
             "<b>Name: </b>${NAME}<br/>" +
             "<b>Effective Date: </b>${UPDATE_}<br/>" +
             "<a style='cursor:pointer;' href='${URL}' target='_blank'>InciWeb Description</a>"
-        );*/
+        );
 
         //popup window template for the fire perimeter feature layer. NO WILDFIRES AT THIS TIME.  Keep for next year.
-/*        var perimeterPopupTemplate = new PopupTemplate({
+        var perimeterPopupTemplate = new PopupTemplate({
             title: "{fire_name} Fire",
             fieldInfos: [{
                 fieldName: "fire_name", visible: true,
@@ -339,6 +385,13 @@
         //add layers (or groups of layers) to the map.
         huntLayers = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Data/Hunting/MapServer",
             {id: "Hunt_Area"});
+				huntLayers.setInfoTemplates({
+						13: {infoTemplate: _bigGameHuntResInfoTemplate},
+						14: {infoTemplate: _furbearerHuntResInfoTemplate},
+						15: {infoTemplate: _uplandGameBirdTurkeyHuntResInfoTemplate},
+						16: {infoTemplate: _uplandGameHuntResInfoTemplate},
+						17: {infoTemplate: _waterfowlHuntResInfoTemplate}
+				});						
         adminLayers = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Data/AdministrativeBoundaries/MapServer",
             {id: "Adminstrative_Boundary"});
         surfaceMgmtLayer = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/Basemaps/SurfaceMgmt_WildlifeTracts/MapServer/0",
@@ -354,7 +407,7 @@
                 outFields: ["*"],
                 infoTemplate: campgroundPopupTemplate
             });
-/*        fireLayer0 = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/External/InciWeb_FireClosures/MapServer/0",
+/*         fireLayer0 = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/External/InciWeb_FireClosures/MapServer/0",
             {
                 id: "Fire_Closure",
                 outFields: ['NAME', 'URL', 'UPDATE_'],
@@ -367,7 +420,7 @@
                 id: "Fire_Perimeter",
                 outFields: ['acres', 'active', 'fire_name', 'inciweb_id'],
                 infoTemplate: perimeterPopupTemplate
-            });
+            }); 
         //esriConfig.defaults.io.corsEnabledServers.push("activefiremaps.fs.fed.us");
         fireLayer3 = new WMSLayer("http://activefiremaps.fs.fed.us/cgi-bin/mapserv.exe?map=conus.map&", {
             id: "MODIS_Fire_Detection",
@@ -375,7 +428,7 @@
             version: "1.1.1",
             visibleLayers: [4, 5, 6],
             format: "png"
-        });*/
+        }); */
 
         //add the Table of Contents.  Layers can be toggled on/off. Symbology is displayed.  Each "layer group" has a transparency slider.
         map.on('load', function (evt) {
@@ -417,17 +470,16 @@
                 $('.agsjsTOCServiceLayerLabel').click(function () {
                     $(this).siblings('span').children('input').click();
                 });
-                $("#TOCNode_Surface_Management .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by BLM. <a href='http://cloud.insideidaho.org/webApps/metadataViewer/default.aspx?path=%5c%5cintranet.rocket.net%5cinsideprod%5cdata%5canonymous%5cblm%5cRLTY_SMA_PUB_24K_POLY.shp.xml' target='_blank'>Learn More</a></div>");
-                $("#TOCNode_Trails_and_Roads .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by IDPR. <a href='http://www.trails.idaho.gov/trails/' target='_blank'>Learn More</a></div>");
-                $("#TOCNode_Campgrounds .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Maintained by IDPR. <a href='http://parksandrecreation.idaho.gov/activities/camping-reservations' target='_blank'>Learn More</a></div>");
-/*                $("#TOCNode_fireLayers_1 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Provided by IDL.</div>");
-                $("#TOCNode_fireLayers_0 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Please contact USFS national forests for
-                 road and trail closures.</div>");
+                $("#TOCNode_Surface_Management .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>IMPORTANT: Please be sure to obtain landowner permission before entering or crossing private lands. Data maintained by BLM. <a href='http://cloud.insideidaho.org/webApps/metadataViewer/default.aspx?path=%5c%5cintranet.rocket.net%5cinsideprod%5cdata%5canonymous%5cblm%5cRLTY_SMA_PUB_24K_POLY.shp.xml' target='_blank'>Learn More</a></div>");
+                $("#TOCNode_Trails_and_Roads .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Data maintained by IDPR. <a href='http://www.trails.idaho.gov/trails/' target='_blank'>Learn More</a></div>");
+                $("#TOCNode_Campgrounds .agsjsTOCRootLayerLabel").append("<div class='disclaimer'>Data maintained by IDPR. <a href='http://parksandrecreation.idaho.gov/activities/camping-reservations' target='_blank'>Learn More</a></div>");
+/*                  $("#TOCNode_fireLayers_1 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Provided by IDL.</div>");
+                $("#TOCNode_fireLayers_0 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Please contact USFS national forests for road and trail closures.</div>");
                 $("#TOCNode_fireLayers_2 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Maintained by GeoMAC. <a href='http://wildfire.usgs.gov/geomac/' target='_blank'>Learn More</a></div>");
-                $("#TOCNode_fireLayers_3 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Maintained by USFS-RSAC. <a href='http://activefiremaps.fs.fed.us/' target='_blank'>Learn More</a></div>");
-                 $('.agsjsTOCRootLayerLabel').click(function(){
+                $("#TOCNode_fireLayers_3 .agsjsTOCServiceLayerLabel").append("<div class='disclaimer'>Maintained by USFS-RSAC. <a href='http://activefiremaps.fs.fed.us/' target='_blank'>Learn More</a></div>"); */
+                $('.agsjsTOCRootLayerLabel').click(function(){
                  $(this).siblings('span').children('input').click();
-                 }); */
+                }); 
             });
         });
 
@@ -436,14 +488,14 @@
         surfaceMgmtLayer.hide();
         trailLayers.hide();
         campgroundLayer.hide();
-        //fireLayer0.hide();
-        //fireLayer1.hide();
-        //fireLayer2.hide();
-        //fireLayer3.hide();
+/*         fireLayer0.hide();
+        fireLayer1.hide();
+        fireLayer2.hide(); 
+        fireLayer3.hide(); */
         map.reorderLayer(surfaceMgmtLayer, 0);
 
         //uncheck fire Layer Checkboxes
-        /*$("#fireLayersCheckbox").prop("checked", false);
+/*         $("#fireLayersCheckbox").prop("checked", false);
         $("#fireLayer0Checkbox").prop("checked", false);
         $("#fireLayer1Checkbox").prop("checked", false);
         $("#fireLayer2Checkbox").prop("checked", false);
@@ -496,19 +548,19 @@
             } else {
                 fireLayer2.hide();
             }
-        });
+        }); 
         //toggle fireLayer3 on/off when checkbox is toggled on/off
         $("#fireLayer3Checkbox").change(function(){
          if ($(this).prop('checked')) {
          fireLayer3.show();
+				 console.log("Show MODIS");
          $("#fireLayersCheckbox").prop("checked", true);
 
          } else {
          fireLayer3.hide();
          $("#fireLayersCheckbox").prop("checked", false);
          }
-         })
-        ;*/
+         }); */
 
         //Enable mobile scrolling by calling $('.selectpicker').selectpicker('mobile'). The method for detecting the browser is left up to the user. This enables the device's native menu for select menus.
         if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
@@ -817,7 +869,7 @@
             //initialize query
             newQuery = new Query();
             newQuery.returnGeometry = true;
-            newQuery.outFields = ["ID", "FLAG"]
+            newQuery.outFields = ["*"]
             newHighlight = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
                 new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
                     new Color([18,237,18]), 3),
@@ -1109,7 +1161,7 @@
 				//Add label at the selected area center.
 				var pt = new Point(polyCenter,map.spatialReference);
 				var queryMapLabel3Graphic = new Graphic (pt, textSymbol);
-				queryLabelLayer.add(queryMapLabel3Graphic);
+				//queryLabelLayer.add(queryMapLabel3Graphic);
 				
 				//Zoom to full extent.
 				zoomToState();
