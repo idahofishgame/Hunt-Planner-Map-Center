@@ -1,5 +1,7 @@
-HuntPlanner MapCenter
+HuntPlanner MapCenter 2.0
 ============================
+
+The IDFG HuntPlanner Map Center was given an overhaul 3/24/2017.  JavaScript, CSS, and HTML was updated to latest versions, most tools are now accessible via sidebar panel collapse instead of modals, the sidebar is completely expandable/collapsable.  This has all the great tools and functionality but has a clean new look.
 
 The IDFG Map Center application is a tool for hunters to explore hunting opportunities in Idaho.
 
