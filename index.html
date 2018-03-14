@@ -7,22 +7,18 @@
     <meta name="description" content="Idaho Fish and Game Hunt Planner Map Center">
     <meta name="author" content="IFWIS">
     <title>IDFG Hunt Planner Map Center</title>
-    <link rel = "icon" href="https://fishandgame.idaho.gov/images/icons/favicon.ico" type="image/x-icons" />
+    <link rel = "icon" href="https://idfg.idaho.gov/images/icons/favicon.ico" type="image/x-icons" />
 		
     <!-- CSS CDNs -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">		
-    <link rel="stylesheet" href="https://js.arcgis.com/3.19/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.20/dijit/themes/claro/claro.css">
     <link rel="stylesheet" href="https://js.arcgis.com/3.20/esri/css/esri.css">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
-    <link rel="stylesheet" href="https://esri.github.io/bootstrap-map-js/src/css/bootstrapmap.css">
 		<!--Custom styles -->
-<!-- 		<link rel="stylesheet" href="src/css/layout.css"> -->
+ 		<!-- <link rel="stylesheet" href="src/css/layout.css"> -->
 		<!-- Uglified/minified custom css code. -->
-     <link rel="stylesheet" type="text/css" href="src/dist/styles.css">
+    <link rel="stylesheet" type="text/css" href="src/dist/styles.css">
 
-    <link rel="apple-touch-icon" href="/bootstrap/img/apple-touch-icon.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/bootstrap/img/apple-touch-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/bootstrap/img/apple-touch-icon-114x114.png">
   </head>
 	
   <body class="claro">
@@ -68,8 +64,8 @@
 								<em>NOTE: Some layers (depending on the data source and your network speed) may take some time to render.</em></p>
 								
 								<h4><i class="glyphicon glyphicon-globe"></i> Change the Basemap</h4>
-								<p>You may select from a number of basemaps including Esri ArcGIS topgraphic, satellite imagery, and National Geographic basemaps and Google imagery hybrid and terrain.<br/>
-								<em>NOTE: When creating a PDF, please choose a non-Google basemap.</em></p>
+								<p>You may select from a number of basemaps including Esri ArcGIS topgraphic, satellite imagery, USGS Topo, USGS National Map, etc.<br/>
+								<em>NOTE: When creating a PDF, please choose one of the first four basmap options.</em></p>
 								
 								<h4><i class="glyphicon glyphicon-flash"></i> Highlight a Hunt Area</h4>
 								<p>Select a hunt area from the list and the map will zoom and highlight the boundary in purple.</p>
@@ -138,7 +134,7 @@
                </div>
            </div>
        </div>
-    <!-- Bootstrap-map-js -->
+    <!-- Layout -->
 		<div id="map-layout" class="row">
 			<div class="row">
 				<!-- sidebar -->
@@ -209,27 +205,41 @@
 												<input id="fireLayersCheckbox" type="checkbox" class="esriCheckbox"/>
 											</span>
 											<label class="esriLabel" for="fireLayersCheckbox">Wildfire & Closure Related Layers</label>
-												<div id="TOCNode_fireLayers_0" class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 10px; padding-bottom: 5px; border-top-width: 0px !important">
+												<div id="TOCNode_significantClosures_1" class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 10px; padding-bottom: 5px; border-top-width: 0px !important">
+													<span data-dojo-attach-point="contentNode">
+														<span data-dojo-attach-point="checkContainerNode">
+															<input id="significantClosure1Checkbox" type="checkbox" class="esriCheckbox"></input>
+														</span>
+														<img src="src/images/PioneerSalvageClosure.png"><label class="esriLabel fireLabel" for="significantClosure1Checkbox" style="display:inline-block; padding-left:5px !important; font-weight:normal;">Pioneer Fire Recovery Closure</label>
+												</div>
+												<!-- <div id="TOCNode_fireLayers_0" class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 10px; padding-bottom: 5px; border-top-width: 0px !important">
 													<span data-dojo-attach-point="contentNode">
 														<span data-dojo-attach-point="checkContainerNode">
 															<input id="fireLayer0Checkbox" type="checkbox" class="esriCheckbox"></input>
 														</span>
 														<img src="src/images/FireClosures.png"><label class="esriLabel fireLabel" for="fireLayer0Checkbox" style="display:inline-block; padding-left:5px !important; font-weight:normal;">Fire Emergency Area Closures</label>
 												</div>
+												<div id="TOCNode_fireLayers_X" class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 10px; padding-bottom: 5px; border-top-width: 0px !important">
+													<span data-dojo-attach-point="contentNode">
+														<span data-dojo-attach-point="checkContainerNode">
+															<input id="fireLayerXCheckbox" type="checkbox" class="esriCheckbox"></input>
+														</span>
+														<img src="src/images/ActiveFireReport.png"><label class="esriLabel fireLabel" for="fireLayerXCheckbox" style="display:inline-block; padding-left:5px !important; font-weight:normal;">Active Fire Report</label>
+												</div>
 												<div id="TOCNode_fireLayers_1" class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 10px; padding-bottom: 5px; border-top-width: 0px !important">
 													<span data-dojo-attach-point="contentNode">
 														<span data-dojo-attach-point="checkContainerNode">
 															<input id="fireLayer1Checkbox" type="checkbox" class="esriCheckbox"></input>
 														</span>
-														<img src="src/images/ActiveFirePerimeters.png"><label class="esriLabel fireLabel" for="fireLayer1Checkbox" style="display:inline-block; padding-left:5px !important; font-weight:normal;">2016 Active Fire Perimeters</label>
-												</div>
-												<div id="TOCNode_fireLayers_2" class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 10px; padding-bottom: 5px; border-top-width: 0px !important">
+														<img src="src/images/ActiveFirePerimeters.png"><label class="esriLabel fireLabel" for="fireLayer1Checkbox" style="display:inline-block; padding-left:5px !important; font-weight:normal;">2017 Active Fire Perimeters</label>
+												</div> -->
+<!-- 												<div id="TOCNode_fireLayers_2" class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 10px; padding-bottom: 5px; border-top-width: 0px !important">
 													<span data-dojo-attach-point="contentNode">
 														<span data-dojo-attach-point="checkContainerNode">
 															<input id="fireLayer2Checkbox" type="checkbox" class="esriCheckbox"></input>
 														</span>
-														<img src="src/images/InactiveFirePerimeters.png"><label class="esriLabel fireLabel" for="fireLayer2Checkbox" style="display:inline-block; padding-left:5px !important; font-weight:normal;">2016 All Fire Perimeters</label>
-												</div>
+														<img src="src/images/InactiveFirePerimeters.png"><label class="esriLabel fireLabel" for="fireLayer2Checkbox" style="display:inline-block; padding-left:5px !important; font-weight:normal;">2017 All Fire Perimeters</label>
+												</div> -->
 												<div id="TOCNode_fireLayers_3" class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 10px; padding-bottom: 5px; border-top-width: 0px !important">
 													<span data-dojo-attach-point="contentNode">
 														<span data-dojo-attach-point="checkContainerNode">
@@ -238,15 +248,22 @@
 														<label class="esriLabel fireLabel" for="fireLayer3Checkbox" style="padding-left:5px !important; padding-bottom:0px !important; font-weight:normal;">Past Year Fire Perimeters</label>
 														<img src="src/images/PastYearPerimeters.png">
 												</div>
-												<div id="TOCNode_fireLayers_4" class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 10px; padding-bottom: 5px; border-top-width: 0px !important">
+ 												<div id="TOCNode_fireLayers_4" class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 10px; padding-bottom: 5px; border-top-width: 0px !important">
 													<span data-dojo-attach-point="contentNode">
 														<span data-dojo-attach-point="checkContainerNode">
 															<input id="fireLayer4Checkbox" type="checkbox" class="esriCheckbox"></input>
 														</span>
 														<label class="esriLabel fireLabel" for="fireLayer4Checkbox" style="padding-left:5px !important; padding-bottom:0px !important; font-weight:normal;">MODIS Fire Detections</label>
-														<img src="src/images/MODIS2016.png">
+														<img src="src/images/MODIS2017.png">
 												</div>
-												<p class='disclaimer'>Perimeters layers are maintained by USGS GeoMAC. <a href='https://wildfire.usgs.gov/geomac/' target='_blank'>Learn More</a></p>
+												<div id="TOCNode_significantClosures_0" class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 10px; padding-bottom: 5px; border-top-width: 0px !important">
+													<span data-dojo-attach-point="contentNode">
+														<span data-dojo-attach-point="checkContainerNode">
+															<input id="significantClosure0Checkbox" type="checkbox" class="esriCheckbox"></input>
+														</span>
+														<img src="src/images/WilksClosure.png"><label class="esriLabel fireLabel" for="significantClosure0Checkbox" style="display:inline-block; padding-left:5px !important; font-weight:normal;">Wilks Development - Limited Access</label>
+												</div></br>
+												<p class='disclaimer'>Active Fire Reports and perimeter layers are maintained by USGS GeoMAC. <a href='https://wildfire.usgs.gov/geomac/' target='_blank'>Learn More</a></p>
 												<p class='disclaimer'>MODIS layer is maintained by USFS RSAC. <a href='https://fsapps.nwcg.gov/afm/' target='_blank'>Learn More</a></p>
 												<p class='disclaimer'>Fire restrictions may be in place. <a href='http://www.idahofireinfo.com/p/fire-restrictions.html' target='_blank'>Learn More</a></p>							
 										</div>	
@@ -258,24 +275,6 @@
 							<div id="basemapCollapse" class="panel-collapse collapse">
 								<div class="panel-body">
 									<div id="basemapDiv"></div>
-									<div id="googleMapsDiv">
-										<div id="googleHybridNode" class="esriBasemapGalleryNode">
-												<input type="image" class="esriBasemapGalleryThumbnail" src="src/images/GoogleHybrid.jpg" id="googleHybrid">
-											<div class="esriBasemapGalleryLabelContainer">
-												<span alt="Google Hybrid" title="Google Hybrid">
-													Google Hybrid
-												</span>
-											</div>
-										</div>
-										<div id="googleTerrainNode" class="esriBasemapGalleryNode">
-												<input type="image" class="esriBasemapGalleryThumbnail" src="src/images/GoogleTerrain.jpg" id="googleTerrain">
-											<div class="esriBasemapGalleryLabelContainer">
-												<span alt="Google Terrain" title="Google Terrain">
-													Google Terrain
-												</span>
-											</div>
-										</div>
-									</div>
 								</div>
 							</div>
 							<li><a id="huntNav1"><i class="glyphicon glyphicon-flash"></i> Highlight a Hunt Area</a></li>
@@ -308,7 +307,7 @@
 											<option value="209">Deer 1019 - Area 30</option>
 											<option value="210">Deer 1020 - Area 30A</option>
 											<option value="211">Deer 1021 - Area 31</option>
-											<option value="212">Deer 1022 - Area 32</option>
+											<option value="1360">Deer 1022 - Area 32</option>
 											<option value="213">Deer 1023 - Area 32A</option>
 											<option value="217">Deer 1024 - Area 36</option>
 											<option value="218">Deer 1025 - Area 36A</option>
@@ -316,12 +315,12 @@
 											<option value="1148">Deer 1027 - Area 38-1</option>
 											<option value="223">Deer 1028 - Area 39</option>
 											<option value="224">Deer 1029 - Area 40</option>
-											<option value="225">Deer 1030 - Area 41</option>
+											<option value="1354">Deer 1030 - Area 41</option>
 											<option value="226">Deer 1031 - Area 42</option>
 											<option value="228">Deer 1032 - Area 44</option>
-											<option value="892">Deer 1033 - Area 45-1</option>
+											<option value="1365">Deer 1033 - Area 45</option>
 											<option value="231">Deer 1034 - Area 47</option>
-											<option value="42">Deer 1035 - Area 47-1</option>
+											<option value="1366">Deer 1035 - Area 47-1</option>
 											<option value="232">Deer 1036 - Area 48</option>
 											<option value="233">Deer 1037 - Area 49</option>
 											<option value="46">Deer 1038 - Area 50-1</option>
@@ -333,11 +332,11 @@
 											<option value="242">Deer 1044 - Area 57</option>
 											<option value="242">Deer 1045 - Area 57</option>
 											<option value="55">Deer 1046 - Area 58-1</option>
-											<option value="56">Deer 1047 - Area 60-1</option>
+											<option value="1367">Deer 1047 - Area 60-1</option>
 											<option value="249">Deer 1048 - Area 62</option>
 											<option value="255">Deer 1049 - Area 66</option>
 											<option value="256">Deer 1050 - Area 66A</option>
-											<option value="257">Deer 1051 - Area 67</option>
+											<option value="1358">Deer 1051 - Area 67</option>
 											<option value="260">Deer 1052 - Area 69</option>
 											<option value="261">Deer 1053 - Area 70</option>
 											<option value="261">Deer 1054 - Area 70</option>
@@ -346,95 +345,95 @@
 											<option value="270">Deer 1057 - Area 78</option>
 											<option value="188">Deer 1058 - Area 13</option>
 											<option value="194">Deer 1059 - Area 18</option>
-											<option value="201">Deer 1060 - Area 22</option>
-											<option value="943">Deer 1061 - Area 28-1</option>
-											<option value="211">Deer 1062 - Area 31</option>
-											<option value="212">Deer 1063 - Area 32</option>
-											<option value="213">Deer 1064 - Area 32A</option>
-											<option value="227">Deer 1065 - Area 43</option>
-											<option value="228">Deer 1066 - Area 44</option>
-											<option value="229">Deer 1067 - Area 45</option>
-											<option value="1150">Deer 1068 - Area 45-2</option>
-											<option value="232">Deer 1069 - Area 48</option>
-											<option value="233">Deer 1070 - Area 49</option>
-											<option value="236">Deer 1071 - Area 52</option>
-											<option value="239">Deer 1072 - Area 54</option>
-											<option value="240">Deer 1073 - Area 55</option>
-											<option value="56">Deer 1074 - Area 60-1</option>
-											<option value="296">Deer 1075 - Area 66-1</option>
-											<option value="257">Deer 1076 - Area 67</option>
-											<option value="223">Deer 1077 - Area 39</option>
-											<option value="57">Deer 1078 - Area 60-2</option>
-											<option value="249">Deer 1079 - Area 62</option>
-											<option value="252">Deer 1080 - Area 63A</option>
-											<option value="255">Deer 1081 - Area 66</option>
-											<option value="257">Deer 1082 - Area 67</option>
-											<option value="260">Deer 1083 - Area 69</option>
-											<option value="264">Deer 1084 - Area 73</option>
-											<option value="1307">Deer 1085 - Area 21-1</option>
-											<option value="201">Deer 1086 - Area 22</option>
-											<option value="642">Deer 1087 - Area 39-1</option>
-											<option value="224">Deer 1088 - Area 40</option>
-											<option value="1114">Deer 1089 - Area 41-1</option>
-											<option value="228">Deer 1090 - Area 44</option>
-											<option value="229">Deer 1091 - Area 45</option>
-											<option value="1329">Deer 1092 - Area 53-1</option>
-											<option value="239">Deer 1093 - Area 54</option>
-											<option value="259">Deer 1094 - Area 68A</option>
-											<option value="261">Deer 1095 - Area 70</option>
-											<option value="1188">Deer 1096 - Area 72-1</option>
-											<option value="181">Deer 1097 - Area 8A</option>
-											<option value="184">Deer 1098 - Area 10A</option>
-											<option value="200">Deer 1099 - Area 21A</option>
-											<option value="201">Deer 1100 - Area 22</option>
-											<option value="91">Deer 1101 - Area 29-1</option>
-											<option value="210">Deer 1102 - Area 30A</option>
-											<option value="26">Deer 1103 - Area 33-1</option>
-											<option value="227">Deer 1104 - Area 43</option>
-											<option value="229">Deer 1105 - Area 45</option>
-											<option value="893">Deer 1106 - Area 45-3</option>
-											<option value="48">Deer 1107 - Area 51-1</option>
-											<option value="237">Deer 1108 - Area 52A</option>
-											<option value="248">Deer 1109 - Area 61</option>
-											<option value="787">Deer 1110 - Area 64-1</option>
-											<option value="258">Deer 1111 - Area 68</option>
-											<option value="186">Deer 1112 - Area 11A</option>
-											<option value="943">Deer 1113 - Area 28-1</option>
-											<option value="145">Deer 1114 - Area 32-1</option>
-											<option value="228">Deer 1115 - Area 44</option>
-											<option value="290">Deer 1116 - Area 45-4</option>
-											<option value="231">Deer 1117 - Area 47</option>
-											<option value="231">Deer 1118 - Area 47</option>
-											<option value="239">Deer 1119 - Area 54</option>
-											<option value="239">Deer 1120 - Area 54</option>
-											<option value="1153">Deer 1121 - Area 55-1</option>
-											<option value="1153">Deer 1122 - Area 55-1</option>
-											<option value="1186">Deer 1123 - Area 8-1X</option>
-											<option value="1067">Deer 1124 - Area 21-1X</option>
-											<option value="1069">Deer 1125 - Area 36A-1X</option>
-											<option value="107">Deer 1126 - Area 39-1X</option>
-											<option value="1149">Deer 1127 - Area 40-1X</option>
-											<option value="1184">Deer 1128 - Area 1-1X</option>
-											<option value="1202">Deer 1129 - Area 3-1X</option>
-											<option value="180">Deer 1130 - Area 8X</option>
-											<option value="3">Deer 1131 - Area 8A-1X</option>
-											<option value="4">Deer 1132 - Area 10A-1X</option>
-											<option value="1113">Deer 1133 - Area 11-1X</option>
-											<option value="186">Deer 1134 - Area 11AX</option>
-											<option value="1111">Deer 1135 - Area 15-1X</option>
-											<option value="1112">Deer 1136 - Area 16-1X</option>
-											<option value="1067">Deer 1137 - Area 21-1X</option>
-											<option value="1058">Deer 1138 - Area 32-1X</option>
-											<option value="1309">Deer 1139 - Area 32-2X</option>
-											<option value="1069">Deer 1140 - Area 36A-1X</option>
+											<option value="943">Deer 1060 - Area 28-1</option>
+											<option value="1376">Deer 1061 - Area 36B-1</option>
+											<option value="227">Deer 1062 - Area 43</option>
+											<option value="228">Deer 1063 - Area 44</option>
+											<option value="1365">Deer 1064 - Area 45</option>
+											<option value="1365">Deer 1065 - Area 45</option>
+											<option value="239">Deer 1066 - Area 54</option>
+											<option value="240">Deer 1067 - Area 55</option>
+											<option value="1367">Deer 1068 - Area 60-1</option>
+											<option value="1379">Deer 1069 - Area 73-1</option>
+											<option value="223">Deer 1070 - Area 39</option>
+											<option value="1368">Deer 1071 - Area 60-2</option>
+											<option value="249">Deer 1072 - Area 62</option>
+											<option value="252">Deer 1073 - Area 63A</option>
+											<option value="255">Deer 1074 - Area 66</option>
+											<option value="257">Deer 1075 - Area 67</option>
+											<option value="260">Deer 1076 - Area 69</option>
+											<option value="264">Deer 1077 - Area 73</option>
+											<option value="1307">Deer 1078 - Area 21-1</option>
+											<option value="201">Deer 1079 - Area 22</option>
+											<option value="642">Deer 1080 - Area 39-1</option>
+											<option value="224">Deer 1081 - Area 40</option>
+											<option value="1114">Deer 1082 - Area 41-1</option>
+											<option value="228">Deer 1083 - Area 44</option>
+											<option value="229">Deer 1084 - Area 45</option>
+											<option value="1329">Deer 1085 - Area 53-1</option>
+											<option value="239">Deer 1086 - Area 54</option>
+											<option value="259">Deer 1087 - Area 68A</option>
+											<option value="261">Deer 1088 - Area 70</option>
+											<option value="1188">Deer 1089 - Area 72-1</option>
+											<option value="181">Deer 1090 - Area 8A</option>
+											<option value="184">Deer 1091 - Area 10A</option>
+											<option value="200">Deer 1092 - Area 21A</option>
+											<option value="201">Deer 1093 - Area 22</option>
+											<option value="91">Deer 1094 - Area 29-1</option>
+											<option value="210">Deer 1095 - Area 30A</option>
+											<option value="26">Deer 1096 - Area 33-1</option>
+											<option value="227">Deer 1097 - Area 43</option>
+											<option value="229">Deer 1098 - Area 45</option>
+											<option value="48">Deer 1099 - Area 51-1</option>
+											<option value="236">Deer 1100 - Area 52</option>
+											<option value="237">Deer 1101 - Area 52A</option>
+											<option value="242">Deer 1102 - Area 57</option>											
+											<option value="248">Deer 1103 - Area 61</option>
+											<option value="787">Deer 1104 - Area 64-1</option>
+											<option value="265">Deer 1105 - Area 73A</option>
+											<option value="186">Deer 1106 - Area 11A</option>
+											<option value="943">Deer 1107 - Area 28-1</option>
+											<option value="145">Deer 1108 - Area 32-1</option>
+											<option value="1376">Deer 1109 - Area 36B-1</option>
+											<option value="228">Deer 1110 - Area 44</option>
+											<option value="290">Deer 1111 - Area 45-1</option>
+											<option value="231">Deer 1112 - Area 47</option>
+											<option value="231">Deer 1113 - Area 47</option>
+											<option value="239">Deer 1114 - Area 54</option>
+											<option value="239">Deer 1115 - Area 54</option>
+											<option value="1153">Deer 1116 - Area 55-1</option>
+											<option value="1153">Deer 1117 - Area 55-1</option>
+											<option value="1186">Deer 1118 - Area 8-1X</option>
+											<option value="1067">Deer 1119 - Area 21-1X</option>
+											<option value="1069">Deer 1120 - Area 36A-1X</option>
+											<option value="107">Deer 1121 - Area 39-1X</option>
+											<option value="1149">Deer 1122 - Area 40-1X</option>
+											<option value="1372">Deer 1123 - Area 1-1X</option>
+											<option value="1373">Deer 1124 - Area 2-1X</option>											
+											<option value="1374">Deer 1125 - Area 3-1X</option>
+											<option value="1375">Deer 1126 - Area 5-1X</option>											
+											<option value="180">Deer 1127 - Area 8X</option>
+											<option value="3">Deer 1128 - Area 8A-1X</option>
+											<option value="4">Deer 1129 - Area 10A-1X</option>
+											<option value="1113">Deer 1130 - Area 11-1X</option>
+											<option value="186">Deer 1131 - Area 11AX</option>
+											<option value="1111">Deer 1132 - Area 15-1X</option>
+											<option value="1112">Deer 1133 - Area 16-1X</option>
+											<option value="1067">Deer 1134 - Area 21-1X</option>
+											<option value="1058">Deer 1135 - Area 32-1X</option>
+											<option value="1309">Deer 1136 - Area 32-2X</option>
+											<option value="1069">Deer 1137 - Area 36A-1X</option>
+											<option value="1148">Deer 1138 - Area 38-1X</option>
+											<option value="1148">Deer 1139 - Area 38-1X</option>
+											<option value="1148">Deer 1140 - Area 38-1X</option>
 											<option value="1148">Deer 1141 - Area 38-1X</option>
-											<option value="1148">Deer 1142 - Area 38-1X</option>
-											<option value="1148">Deer 1143 - Area 38-1X</option>
-											<option value="1148">Deer 1144 - Area 38-1X</option>
-											<option value="982">Deer 1145 - Area 50-1X</option>
-											<option value="252">Deer 1146 - Area 63AX</option>
-											<option value="259">Deer 1147 - Area 68AX</option>
-											<option value="1262">Deer 1148 - Area 73-1X</option>
+											<option value="1377">Deer 1142 - Area 50-1X</option>
+											<option value="1368">Deer 1143 - Area 60-1X</option>
+											<option value="1378">Deer 1144 - Area 60A-1X</option>											
+											<option value="252">Deer 1145 - Area 63AX</option>
+											<option value="259">Deer 1146 - Area 68AX</option>
+											<option value="1380">Deer 1147 - Area 73-1X</option>
+											<option value="1381">Deer 1148 - Area 78-1X</option>											
 											<option value="271">Deer 1149 - Area 1-1</option>
 											<option value="185">Deer 1150 - Area 11</option>
 											<option value="186">Deer 1151 - Area 11A</option>
@@ -449,22 +448,26 @@
 											<option value="207">Deer 1160 - Area 28</option>
 											<option value="91">Deer 1161 - Area 29-1</option>
 											<option value="26">Deer 1162 - Area 33-1</option>
-											<option value="218">Deer 1163 - Area 36A</option>
-											<option value="219">Deer 1164 - Area 36B</option>
-											<option value="223">Deer 1165 - Area 39</option>
-											<option value="224">Deer 1166 - Area 40</option>
-											<option value="226">Deer 1167 - Area 42</option>
-											<option value="229">Deer 1168 - Area 45</option>
-											<option value="892">Deer 1169 - Area 45-1</option>
-											<option value="231">Deer 1170 - Area 47</option>
-											<option value="46">Deer 1171 - Area 50-1</option>
-											<option value="239">Deer 1172 - Area 54</option>
-											<option value="239">Deer 1173 - Area 54</option>
-											<option value="240">Deer 1174 - Area 55</option>
-											<option value="1153">Deer 1175 - Area 55-1</option>
-											<option value="242">Deer 1176 - Area 57</option>
-											<option value="261">Deer 1177 - Area 70</option>
-											<option value="270">Deer 1178 - Area 78</option>
+											<option value="217">Deer 1163 - Area 36</option>
+											<option value="218">Deer 1164 - Area 36A</option>
+											<option value="219">Deer 1165 - Area 36B</option>
+											<option value="223">Deer 1166 - Area 39</option>
+											<option value="224">Deer 1167 - Area 40</option>
+											<option value="226">Deer 1168 - Area 42</option>
+											<option value="228">Deer 1169 - Area 44</option>
+											<option value="229">Deer 1170 - Area 45</option>
+											<option value="1365">Deer 1171 - Area 45</option>
+											<option value="231">Deer 1172 - Area 47</option>
+											<option value="46">Deer 1173 - Area 50-1</option>
+											<option value="236">Deer 1174 - Area 52</option>
+											<option value="239">Deer 1175 - Area 54</option>
+											<option value="239">Deer 1176 - Area 54</option>
+											<option value="240">Deer 1177 - Area 55</option>
+											<option value="1153">Deer 1178 - Area 55-1</option>
+											<option value="242">Deer 1179 - Area 57</option>
+											<option value="242">Deer 1180 - Area 57</option>
+											<option value="261">Deer 1181 - Area 70</option>
+											<option value="270">Deer 1182 - Area 78</option>
 											<option value="1347">Deer 1180 - Area 69-1X</option>
 											<option value="185">Elk 2001 - Area 11</option>
 											<option value="194">Elk 2002 - Area 18</option>
@@ -483,221 +486,270 @@
 											<option value="1123">Elk 2015 - Area 41-1</option>
 											<option value="1123">Elk 2016 - Area 41-1</option>
 											<option value="1123">Elk 2017 - Area 41-1</option>
-											<option value="226">Elk 2018 - Area 42</option>
-											<option value="227">Elk 2019 - Area 43</option>
+											<option value="1123">Elk 2018 - Area 41-1</option>
+											<option value="226">Elk 2019 - Area 42</option>
 											<option value="227">Elk 2020 - Area 43</option>
-											<option value="228">Elk 2021 - Area 44</option>
+											<option value="227">Elk 2021 - Area 43</option>
 											<option value="228">Elk 2022 - Area 44</option>
-											<option value="290">Elk 2023 - Area 45-1</option>
-											<option value="1064">Elk 2024 - Area 46-1</option>
+											<option value="228">Elk 2023 - Area 44</option>
+											<option value="290">Elk 2024 - Area 45</option>
 											<option value="1064">Elk 2025 - Area 46-1</option>
-											<option value="232">Elk 2026 - Area 48</option>
-											<option value="232">Elk 2027 - Area 48</option>
-											<option value="233">Elk 2028 - Area 49</option>
-											<option value="233">Elk 2029 - Area 49</option>
-											<option value="652">Elk 2030 - Area 50-1</option>
-											<option value="652">Elk 2031 - Area 50-1</option>
-											<option value="235">Elk 2032 - Area 51</option>
-											<option value="235">Elk 2033 - Area 51</option>
-											<option value="291">Elk 2034 - Area 52A-1</option>
-											<option value="239">Elk 2035 - Area 54</option>
-											<option value="1101">Elk 2036 - Area 55-1</option>
-											<option value="55">Elk 2037 - Area 58-1</option>
-											<option value="57">Elk 2038 - Area 60-1</option>
-											<option value="131">Elk 2039 - Area 60-2</option>
-											<option value="248">Elk 2040 - Area 61</option>
-											<option value="299">Elk 2041 - Area 66A-1</option>
-											<option value="299">Elk 2042 - Area 66A-1</option>
-											<option value="139">Elk 2043 - Area 70-1</option>
-											<option value="139">Elk 2044 - Area 70-1</option>
-											<option value="298">Elk 2045 - Area 75-1</option>
-											<option value="1184">Elk 2046 - Area 1-1</option>
-											<option value="1263">Elk 2047 - Area 3-1</option>
-											<option value="1154">Elk 2048 - Area 5-1</option>
-											<option value="1154">Elk 2049 - Area 5-1</option>
-											<option value="69">Elk 2050 - Area 8-1</option>
-											<option value="736">Elk 2051 - Area 8-2</option>
-											<option value="71">Elk 2052 - Area 10A-1</option>
-											<option value="71">Elk 2053 - Area 10A-1</option>
-											<option value="185">Elk 2054 - Area 11</option>
-											<option value="185">Elk 2055 - Area 11</option>
-											<option value="185">Elk 2056 - Area 11</option>
-											<option value="896">Elk 2057 - Area 11-1</option>
-											<option value="186">Elk 2058 - Area 11A</option>
-											<option value="188">Elk 2059 - Area 13</option>
-											<option value="1192">Elk 2060 - Area 14-1</option>
-											<option value="897">Elk 2061 - Area 14-2</option>
-											<option value="1053">Elk 2062 - Area 16-1</option>
-											<option value="194">Elk 2063 - Area 18</option>
-											<option value="1193">Elk 2064 - Area 18-1</option>
-											<option value="196">Elk 2065 - Area 19A</option>
-											<option value="1314">Elk 2066 - Area 21-1</option>
-											<option value="201">Elk 2067 - Area 22</option>
-											<option value="78">Elk 2068 - Area 22-1</option>
-											<option value="78">Elk 2069 - Area 22-1</option>
-											<option value="78">Elk 2070 - Area 22-1</option>
-											<option value="79">Elk 2071 - Area 22-2</option>
-											<option value="82">Elk 2072 - Area 23-1</option>
-											<option value="82">Elk 2073 - Area 23-1</option>
-											<option value="83">Elk 2074 - Area 23-2</option>
-											<option value="83">Elk 2075 - Area 23-2</option>
-											<option value="1315">Elk 2076 - Area 23-3</option>
-											<option value="1315">Elk 2077 - Area 23-3</option>
-											<option value="85">Elk 2078 - Area 24-1</option>
-											<option value="86">Elk 2079 - Area 24-2</option>
-											<option value="208">Elk 2080 - Area 29</option>
-											<option value="209">Elk 2081 - Area 30</option>
-											<option value="1266">Elk 2082 - Area 30A-1</option>
-											<option value="1266">Elk 2083 - Area 30A-1</option>
-											<option value="211">Elk 2084 - Area 31</option>
-											<option value="211">Elk 2085 - Area 31</option>
-											<option value="96">Elk 2086 - Area 32-1</option>
-											<option value="96">Elk 2087 - Area 32-1</option>
-											<option value="213">Elk 2088 - Area 32A</option>
-											<option value="213">Elk 2089 - Area 32A</option>
-											<option value="213">Elk 2090 - Area 32A</option>
-											<option value="213">Elk 2091 - Area 32A</option>
+											<option value="1416">Elk 2026 - Area 46-2</option>
+											<option value="1416">Elk 2027 - Area 46-2</option>
+											<option value="232">Elk 2028 - Area 48</option>
+											<option value="232">Elk 2029 - Area 48</option>
+											<option value="233">Elk 2030 - Area 49</option>
+											<option value="233">Elk 2031 - Area 49</option>
+											<option value="652">Elk 2032 - Area 50-1</option>
+											<option value="652">Elk 2033 - Area 50-1</option>
+											<option value="235">Elk 2034 - Area 51</option>
+											<option value="235">Elk 2035 - Area 51</option>
+											<option value="236">Elk 2036 - Area 52</option>
+											<option value="236">Elk 2037 - Area 52</option>
+											<option value="291">Elk 2038 - Area 52A-1</option>
+											<option value="239">Elk 2039 - Area 54</option>
+											<option value="1101">Elk 2040 - Area 55-1</option>
+											<option value="55">Elk 2041 - Area 58-1</option>
+											<option value="57">Elk 2042 - Area 60-1</option>
+											<option value="131">Elk 2043 - Area 60-2</option>
+											<option value="248">Elk 2044 - Area 61</option>
+											<option value="299">Elk 2045 - Area 66A-1</option>
+											<option value="299">Elk 2046 - Area 66A-1</option>
+											<option value="139">Elk 2047 - Area 70-1</option>
+											<option value="139">Elk 2048 - Area 70-1</option>
+											<option value="298">Elk 2049 - Area 75-1</option>
+											<option value="1397">Elk 2050 - Area 1-1</option>
+											<option value="1479">Elk 2051 - Area 2-1</option>
+											<option value="1480">Elk 2052 - Area 3-1</option>
+											<option value="1398">Elk 2053 - Area 4-1</option>
+											<option value="1399">Elk 2054 - Area 4A-1</option>
+											<option value="1481">Elk 2055 - Area 5-1</option>
+											<option value="1400">Elk 2056 - Area 6-1</option>
+											<option value="69">Elk 2057 - Area 8-1</option>
+											<option value="736">Elk 2058 - Area 8-2</option>
+											<option value="71">Elk 2059 - Area 10A-1</option>
+											<option value="71">Elk 2060 - Area 10A-1</option>
+											<option value="185">Elk 2061 - Area 11</option>
+											<option value="185">Elk 2062 - Area 11</option>
+											<option value="896">Elk 2063 - Area 11-1</option>
+											<option value="186">Elk 2064 - Area 11A</option>
+											<option value="188">Elk 2065 - Area 13</option>
+											<option value="1192">Elk 2066 - Area 14-1</option>
+											<option value="897">Elk 2067 - Area 14-2</option>
+											<option value="1053">Elk 2068 - Area 16-1</option>
+											<option value="194">Elk 2069 - Area 18</option>
+											<option value="1193">Elk 2070 - Area 18-1</option>
+											<option value="196">Elk 2071 - Area 19A</option>
+											<option value="1401">Elk 2072 - Area 19A-1</option>
+											<option value="1314">Elk 2073 - Area 21A-1</option>
+											<option value="1405">Elk 2074 - Area 22-1</option>
+											<option value="280">Elk 2075 - Area 22-2</option>
+											<option value="82">Elk 2076 - Area 23-1</option>
+											<option value="82">Elk 2077 - Area 23-1</option>
+											<option value="83">Elk 2078 - Area 23-2</option>
+											<option value="83">Elk 2079 - Area 23-2</option>
+											<option value="1315">Elk 2080 - Area 23-3</option>
+											<option value="1315">Elk 2081 - Area 23-3</option>
+											<option value="85">Elk 2082 - Area 24-1</option>
+											<option value="86">Elk 2083 - Area 24-2</option>
+											<option value="1408">Elk 2084 - Area 28-1</option>
+											<option value="1408">Elk 2085 - Area 28-1</option>
+											<option value="208">Elk 2086 - Area 29</option>
+											<option value="209">Elk 2087 - Area 30</option>
+											<option value="1266">Elk 2088 - Area 30A-1</option>
+											<option value="1266">Elk 2089 - Area 30A-1</option>
+											<option value="211">Elk 2090 - Area 31</option>
+											<option value="211">Elk 2091 - Area 31</option>
 											<option value="1120">Elk 2092 - Area 32A-1</option>
 											<option value="102">Elk 2093 - Area 36A-1</option>
-											<option value="651">Elk 2094 - Area 36A-2</option>
-											<option value="1268">Elk 2095 - Area 36B-1</option>
-											<option value="1268">Elk 2096 - Area 36B-1</option>
-											<option value="220">Elk 2097 - Area 37</option>
-											<option value="220">Elk 2098 - Area 37</option>
-											<option value="221">Elk 2099 - Area 37A</option>
-											<option value="108">Elk 2100 - Area 39-1</option>
-											<option value="1060">Elk 2101 - Area 39-2</option>
-											<option value="111">Elk 2102 - Area 40-1</option>
-											<option value="111">Elk 2103 - Area 40-1</option>
-											<option value="1123">Elk 2104 - Area 41-1</option>
-											<option value="1123">Elk 2105 - Area 41-1</option>
-											<option value="1269">Elk 2106 - Area 43-1</option>
-											<option value="228">Elk 2107 - Area 44</option>
-											<option value="228">Elk 2108 - Area 44</option>
-											<option value="290">Elk 2109 - Area 45-1</option>
-											<option value="290">Elk 2110 - Area 45-1</option>
-											<option value="1064">Elk 2111 - Area 46-1</option>
-											<option value="1064">Elk 2112 - Area 46-1</option>
-											<option value="1064">Elk 2113 - Area 46-1</option>
-											<option value="1064">Elk 2114 - Area 46-1</option>
-											<option value="117">Elk 2115 - Area 48-1</option>
-											<option value="118">Elk 2116 - Area 48-2</option>
-											<option value="898">Elk 2117 - Area 48-3</option>
-											<option value="233">Elk 2118 - Area 49</option>
-											<option value="233">Elk 2119 - Area 49</option>
-											<option value="233">Elk 2120 - Area 49</option>
-											<option value="1270">Elk 2121 - Area 50-2</option>
-											<option value="900">Elk 2122 - Area 50-3</option>
-											<option value="235">Elk 2123 - Area 51</option>
-											<option value="235">Elk 2124 - Area 51</option>
-											<option value="291">Elk 2125 - Area 52A-1</option>
-											<option value="239">Elk 2126 - Area 54</option>
-											<option value="1153">Elk 2127 - Area 55-2</option>
-											<option value="243">Elk 2128 - Area 58</option>
-											<option value="883">Elk 2129 - Area 59-1</option>
-											<option value="131">Elk 2130 - Area 60-2</option>
-											<option value="248">Elk 2131 - Area 61</option>
-											<option value="256">Elk 2132 - Area 66A</option>
-											<option value="1128">Elk 2133 - Area 67-1</option>
-											<option value="268">Elk 2134 - Area 76</option>
-											<option value="1065">Elk 2135 - Area 76-1</option>
-											<option value="172">Elk 2136 - Area 1</option>
-											<option value="173">Elk 2137 - Area 2</option>
-											<option value="174">Elk 2138 - Area 3</option>
-											<option value="177">Elk 2139 - Area 5</option>
-											<option value="896">Elk 2140 - Area 11-1</option>
-											<option value="188">Elk 2141 - Area 13</option>
-											<option value="1059">Elk 2142 - Area 39-3</option>
-											<option value="1159">Elk 2143 - Area 62-1</option>
-											<option value="194">Elk 2144 - Area 18</option>
-											<option value="223">Elk 2145 - Area 39</option>
-											<option value="111">Elk 2146 - Area 40-1</option>
-											<option value="1123">Elk 2147 - Area 41-1</option>
-											<option value="228">Elk 2148 - Area 44</option>
-											<option value="290">Elk 2149 - Area 45-1</option>
-											<option value="1064">Elk 2150 - Area 46-1</option>
-											<option value="239">Elk 2151 - Area 54</option>
-											<option value="185">Elk 2152 - Area 11</option>
-											<option value="201">Elk 2153 - Area 22</option>
-											<option value="203">Elk 2154 - Area 24</option>
-											<option value="210">Elk 2155 - Area 30A</option>
-											<option value="1121">Elk 2156 - Area 32A-2</option>
-											<option value="285">Elk 2157 - Area 33-1</option>
-											<option value="26">Elk 2158 - Area 33-2</option>
-											<option value="223">Elk 2159 - Area 39</option>
-											<option value="223">Elk 2160 - Area 39</option>
-											<option value="1064">Elk 2161 - Area 46-1</option>
-											<option value="239">Elk 2162 - Area 54</option>
-											<option value="1153">Elk 2163 - Area 55-2</option>
-											<option value="248">Elk 2164 - Area 61</option>
-											<option value="1236">Elk 2165 - Area 64-1</option>
-											<option value="296">Elk 2166 - Area 66-1</option>
-											<option value="172">Elk 2167 - Area 1</option>
-											<option value="173">Elk 2168 - Area 2</option>
-											<option value="174">Elk 2169 - Area 3</option>
-											<option value="177">Elk 2170 - Area 5</option>
-											<option value="208">Elk 2171 - Area 29</option>
-											<option value="209">Elk 2172 - Area 30</option>
-											<option value="218">Elk 2173 - Area 36A</option>
-											<option value="220">Elk 2174 - Area 37</option>
-											<option value="693">Elk 2175 - Area 44-1</option>
-											<option value="652">Elk 2176 - Area 50-1</option>
-											<option value="239">Elk 2177 - Area 54</option>
-											<option value="57">Elk 2178 - Area 60-1</option>
-											<option value="296">Elk 2179 - Area 66-1</option>
-											<option value="1194">Elk 2180 - Area 18-1X</option>
-											<option value="1194">Elk 2181 - Area 18-1X</option>
-											<option value="1317">Elk 2182 - Area 32-1X</option>
-											<option value="1317">Elk 2183 - Area 32-1X</option>
-											<option value="1155">Elk 2184 - Area 52A-1X</option>
-											<option value="1155">Elk 2185 - Area 52A-1X</option>
-											<option value="648">Elk 2186 - Area 31-1</option>
-											<option value="1316">Elk 2187 - Area 31-2</option>
-											<option value="97">Elk 2188 - Area 32-2</option>
-											<option value="1318">Elk 2189 - Area 39-4</option>
-											<option value="1314">Elk 2190 - Area 21-1X</option>
-											<option value="1122">Elk 2191 - Area 39-1X</option>
-											<option value="1319">Elk 2192 - Area 41-1X</option>
-											<option value="152">Elk 2193 - Area 44-1X</option>
-											<option value="152">Elk 2194 - Area 44-1X</option>
-											<option value="960">Elk 2195 - Area 45-1X</option>
-											<option value="960">Elk 2196 - Area 45-1X</option>
-											<option value="1320">Elk 2197 - Area 49-1X</option>
-											<option value="1320">Elk 2198 - Area 49-1X</option>
-											<option value="185">Elk 2199 - Area 11</option>
-											<option value="188">Elk 2200 - Area 13</option>
-											<option value="194">Elk 2201 - Area 18</option>
-											<option value="208">Elk 2202 - Area 29</option>
-											<option value="218">Elk 2203 - Area 36A</option>
-											<option value="102">Elk 2204 - Area 36A-1</option>
-											<option value="102">Elk 2205 - Area 36A-1</option>
-											<option value="651">Elk 2206 - Area 36A-2</option>
-											<option value="651">Elk 2207 - Area 36A-2</option>
-											<option value="220">Elk 2208 - Area 37</option>
-											<option value="220">Elk 2209 - Area 37</option>
-											<option value="220">Elk 2210 - Area 37</option>
-											<option value="221">Elk 2211 - Area 37A</option>
-											<option value="227">Elk 2212 - Area 43</option>
-											<option value="290">Elk 2213 - Area 45-1</option>
-											<option value="233">Elk 2214 - Area 49</option>
-											<option value="652">Elk 2215 - Area 50-1</option>
-											<option value="239">Elk 2216 - Area 54</option>
-											<option value="239">Elk 2217 - Area 54</option>
-											<option value="239">Elk 2218 - Area 54</option>
-											<option value="55">Elk 2219 - Area 58-1</option>
-											<option value="248">Elk 2220 - Area 61</option>
-											<option value="248">Elk 2221 - Area 61</option>
-											<option value="1159">Elk 2222 - Area 62-1</option>
-											<option value="299">Elk 2223 - Area 66A-1</option>
-											<option value="299">Elk 2224 - Area 66A-1</option>
-											<option value="1128">Elk 2225 - Area 67-1</option>
-											<option value="296">Elk 2230 - Area 66-1X</option>
-											<option value="826">Elk 2250 - Area 8-1X</option>
-											<option value="1314">Elk 2251 - Area 21-1X</option>
-											<option value="1123">Elk 2252 - Area 41-2X</option>
-											<option value="906">Elk 2253 - Area 63-1X</option>
-											<option value="1314">Elk 2254 - Area 21-1X</option>
-											<option value="1319">Elk 2255 - Area 41-1X</option>
+											<option value="102">Elk 2094 - Area 36A-1</option>
+											<option value="651">Elk 2095 - Area 36A-2</option>
+											<option value="651">Elk 2096 - Area 36A-2</option>
+											<option value="1411">Elk 2097 - Area 36B-1</option>
+											<option value="1411">Elk 2098 - Area 36B-1</option>
+											<option value="220">Elk 2099 - Area 37</option>
+											<option value="220">Elk 2100 - Area 37</option>
+											<option value="1412">Elk 2101 - Area 37-1</option>
+											<option value="1413">Elk 2102 - Area 37-2</option>
+											<option value="221">Elk 2103 - Area 37A</option>
+											<option value="108">Elk 2104 - Area 39-1</option>
+											<option value="1060">Elk 2105 - Area 39-2</option>
+											<option value="111">Elk 2106 - Area 40-1</option>
+											<option value="111">Elk 2107 - Area 40-1</option>
+											<option value="1123">Elk 2108 - Area 41-1</option>
+											<option value="1123">Elk 2109 - Area 41-1</option>
+											<option value="1123">Elk 2110 - Area 41-1</option>
+											<option value="1269">Elk 2111 - Area 43-1</option>
+											<option value="228">Elk 2112 - Area 44</option>
+											<option value="228">Elk 2113 - Area 44</option>
+											<option value="229">Elk 2114 - Area 45</option>
+											<option value="229">Elk 2115 - Area 45</option>
+											<option value="229">Elk 2116 - Area 45</option>
+											<option value="1064">Elk 2117 - Area 46-1</option>
+											<option value="1416">Elk 2118 - Area 46-2</option>
+											<option value="1416">Elk 2119 - Area 46-2</option>
+											<option value="1416">Elk 2120 - Area 46-2</option>
+											<option value="117">Elk 2121 - Area 48-1</option>
+											<option value="118">Elk 2122 - Area 48-2</option>
+											<option value="898">Elk 2123 - Area 48-3</option>
+											<option value="233">Elk 2124 - Area 49</option>
+											<option value="233">Elk 2125 - Area 49</option>
+											<option value="233">Elk 2126 - Area 49</option>
+											<option value="652">Elk 2127 - Area 50-1</option>
+											<option value="1270">Elk 2128 - Area 50-2</option>
+											<option value="900">Elk 2129 - Area 50-3</option>
+											<option value="235">Elk 2130 - Area 51</option>
+											<option value="236">Elk 2131 - Area 52</option>
+											<option value="236">Elk 2132 - Area 52</option>
+											<option value="236">Elk 2133 - Area 52</option>
+											<option value="291">Elk 2134 - Area 52A-1</option>
+											<option value="239">Elk 2135 - Area 54</option>
+											<option value="1153">Elk 2136 - Area 55-2</option>
+											<option value="241">Elk 2137 - Area 56</option>
+											<option value="243">Elk 2138 - Area 58</option>
+											<option value="883">Elk 2139 - Area 59-1</option>
+											<option value="131">Elk 2140 - Area 60-2</option>
+											<option value="248">Elk 2141 - Area 61</option>
+											<option value="256">Elk 2142 - Area 66A</option>
+											<option value="1422">Elk 2143 - Area 67-1</option>
+											<option value="268">Elk 2144 - Area 76</option>
+											<option value="1065">Elk 2145 - Area 76-1</option>
+											<option value="896">Elk 2146 - Area 11-1</option>
+											<option value="188">Elk 2147 - Area 13</option>
+											<option value="1059">Elk 2148 - Area 39-3</option>
+											<option value="229">Elk 2149 - Area 45</option>
+											<option value="236">Elk 2150 - Area 52</option>
+											<option value="1159">Elk 2151 - Area 62-1</option>
+											<option value="194">Elk 2152 - Area 18</option>
+											<option value="223">Elk 2153 - Area 39</option>
+											<option value="111">Elk 2154 - Area 40-1</option>
+											<option value="1123">Elk 2155 - Area 41-1</option>
+											<option value="228">Elk 2156 - Area 44</option>
+											<option value="290">Elk 2157 - Area 45-1</option>
+											<option value="1064">Elk 2158 - Area 46-1</option>
+											<option value="239">Elk 2159 - Area 54</option>
+											<option value="185">Elk 2160 - Area 11</option>
+											<option value="201">Elk 2161 - Area 22</option>
+											<option value="203">Elk 2162 - Area 24</option>
+											<option value="210">Elk 2163 - Area 30A</option>
+											<option value="1121">Elk 2164 - Area 32A-2</option>
+											<option value="285">Elk 2165 - Area 33-1</option>
+											<option value="26">Elk 2166 - Area 33-2</option>
+											<option value="102">Elk 2167 - Area 36A-1</option>
+											<option value="651">Elk 2168 - Area 36A-2</option>
+											<option value="223">Elk 2169 - Area 39</option>
+											<option value="223">Elk 2170 - Area 39</option>
+											<option value="1064">Elk 2171 - Area 46-1</option>
+											<option value="652">Elk 2172 - Area 50-1</option>
+											<option value="239">Elk 2173 - Area 54</option>
+											<option value="1153">Elk 2174 - Area 55-2</option>
+											<option value="248">Elk 2175 - Area 61</option>
+											<option value="1236">Elk 2176 - Area 64-1</option>
+											<option value="296">Elk 2177 - Area 66-1</option>
+											<option value="1423">Elk 2178 - Area 76-2</option>
+											<option value="172">Elk 2179 - Area 1</option>
+											<option value="173">Elk 2180 - Area 2</option>
+											<option value="174">Elk 2181 - Area 3</option>
+											<option value="175">Elk 2182 - Area 4</option>
+											<option value="177">Elk 2183 - Area 5</option>
+											<option value="178">Elk 2184 - Area 6</option>
+											<option value="208">Elk 2185 - Area 29</option>
+											<option value="209">Elk 2186 - Area 30</option>
+											<option value="218">Elk 2187 - Area 36A</option>
+											<option value="220">Elk 2188 - Area 37</option>
+											<option value="693">Elk 2189 - Area 44-1</option>
+											<option value="233">Elk 2190 - Area 49</option>
+											<option value="652">Elk 2191 - Area 50-1</option>
+											<option value="239">Elk 2192 - Area 54</option>
+											<option value="57">Elk 2193 - Area 60-1</option>
+											<option value="296">Elk 2194 - Area 66-1</option>
+											<option value="1194">Elk 2195 - Area 18-1X</option>
+											<option value="1194">Elk 2196 - Area 18-1X</option>
+											<option value="1317">Elk 2197 - Area 32-1X</option>
+											<option value="1317">Elk 2198 - Area 32-1X</option>
+											<option value="1155">Elk 2200 - Area 52A-1X</option>
+											<option value="1155">Elk 2201 - Area 52A-1X</option>
+											<option value="97">Elk 2202 - Area 32-1</option>
+											<option value="1404">Elk 2203 - Area 21A-1X</option>
+											<option value="1409">Elk 2204 - Area 31-1X</option>
+											<option value="1316">Elk 2205 - Area 31-2X</option>
+											<option value="1122">Elk 2206 - Area 39-1X</option>
+											<option value="1414">Elk 2207 - Area 39-4X</option>
+											<option value="1319">Elk 2208 - Area 41-1X</option>
+											<option value="1415">Elk 2209 - Area 44-1X</option>
+											<option value="1415">Elk 2210 - Area 44-1X</option>
+											<option value="960">Elk 2211 - Area 45-1X</option>
+											<option value="960">Elk 2212 - Area 45-1X</option>
+											<option value="1417">Elk 2213 - Area 46-1X</option>
+											<option value="1417">Elk 2214 - Area 46-1X</option>
+											<option value="1418">Elk 2215 - Area 49-1X</option>
+											<option value="1418">Elk 2216 - Area 49-1X</option>
+											<option value="1419">Elk 2217 - Area 52-1X</option>
+											<option value="1419">Elk 2218 - Area 52-1X</option>
+											<option value="185">Elk 2219 - Area 11</option>
+											<option value="188">Elk 2220 - Area 13</option>
+											<option value="194">Elk 2221 - Area 18</option>
+											<option value="208">Elk 2222 - Area 29</option>
+											<option value="218">Elk 2223 - Area 36A</option>
+											<option value="102">Elk 2224 - Area 36A-1</option>
+											<option value="102">Elk 2225 - Area 36A-1</option>
+											<option value="102">Elk 2226 - Area 36A-1</option>
+											<option value="102">Elk 2227 - Area 36A-1</option>
+											<option value="651">Elk 2228 - Area 36A-2</option>
+											<option value="651">Elk 2229 - Area 36A-2</option>
+											<option value="651">Elk 2230 - Area 36A-2</option>
+											<option value="651">Elk 2231 - Area 36A-2</option>
+											<option value="220">Elk 2232 - Area 37</option>
+											<option value="220">Elk 2233 - Area 37</option>
+											<option value="220">Elk 2234 - Area 37</option>
+											<option value="1413">Elk 2235 - Area 37-2</option>
+											<option value="221">Elk 2236 - Area 37A</option>
+											<option value="227">Elk 2237 - Area 43</option>
+											<option value="228">Elk 2238 - Area 44</option>
+											<option value="290">Elk 2239 - Area 45-1</option>
+											<option value="229">Elk 2240 - Area 45</option>
+											<option value="229">Elk 2241 - Area 45</option>
+											<option value="229">Elk 2242 - Area 49</option>
+											<option value="652">Elk 2243 - Area 50-1</option>
+											<option value="652">Elk 2244 - Area 50-1</option>
+											<option value="239">Elk 2245 - Area 54</option>
+											<option value="239">Elk 2246 - Area 54</option>
+											<option value="239">Elk 2247 - Area 54</option>
+											<option value="55">Elk 2248 - Area 58-1</option>
+											<option value="248">Elk 2249 - Area 61</option>
+											<option value="248">Elk 2250 - Area 61</option>
+											<option value="1159">Elk 2251 - Area 62-1</option>
+											<option value="299">Elk 2252 - Area 66A-1</option>
+											<option value="299">Elk 2253 - Area 66A-1</option>
+											<option value="1422">Elk 2254 - Area 67-1</option>
+											<option value="1402">Elk 2260 - Area 21-1X</option>
+											<option value="1406">Elk 2261 - Area 22-1X</option>
+											<option value="1123">Elk 2262 - Area 41-2X</option>
+											<option value="1393">Elk 2263 - Area 50-1X</option>
+											<option value="1393">Elk 2264 - Area 50-1X</option>
+											<option value="1390">Elk 2265 - Area 51-1X</option>
+											<option value="1421">Elk 2266 - Area 63-1X</option>
+											<option value="1423">Elk 2267 - Area 76-1X</option>
+											<option value="1406">Elk 2268 - Area 21-1X</option>
+											<option value="1407">Elk 2269 - Area 22-2X</option>
+											<option value="1409">Elk 2270 - Area 31-1X</option>
+											<option value="1470">Elk 2271 - Area 41-1X</option>
+											<option value="1393">Elk 2272 - Area 50-1X</option>
+											<option value="1390">Elk 2273 - Area 51-1X</option>
+											<option value="1402">Elk 2280 - Area 21-1X</option>
+											<option value="1406">Elk 2281 - Area 22-1X</option>
+											<option value="1123">Elk 2282 - Area 41-2X</option>
+											<option value="1421">Elk 2283 - Area 63-1X</option>
+											<option value="1393">Elk 2284 - Area 50-1X</option>
+											<option value="1393">Elk 2285 - Area 50-1X</option>
+											<option value="1390">Elk 2286 - Area 51-1X</option>
+											<option value="1423">Elk 2287 - Area 76-1X</option>
+											<option value="1402">Elk 2288 - Area 21-1X</option>
+											<option value="1407">Elk 2289 - Area 22-1X</option>
+											<option value="1410">Elk 2290 - Area 31-3X</option>
+											<option value="1470">Elk 2291 - Area 41-1X</option>
+											<option value="1393">Elk 2292 - Area 50-1X</option>
+											<option value="1390">Elk 2293 - Area 51-1X</option>
 											<option value="312">Moose 3001 - Area 1-1</option>
 											<option value="312">Moose 3002 - Area 1-1</option>
 											<option value="312">Moose 3003 - Area 1-1</option>
@@ -814,53 +866,56 @@
 											<option value="143">Antelope 4002 - Area 30-1</option>
 											<option value="146">Antelope 4003 - Area 36B-1</option>
 											<option value="147">Antelope 4004 - Area 37-1</option>
-											<option value="223">Antelope 4005 - Area 39</option>
-											<option value="224">Antelope 4006 - Area 40</option>
-											<option value="150">Antelope 4007 - Area 41-1</option>
-											<option value="152">Antelope 4008 - Area 44-1</option>
-											<option value="153">Antelope 4009 - Area 45-1</option>
-											<option value="230">Antelope 4010 - Area 46</option>
-											<option value="233">Antelope 4011 - Area 49</option>
-											<option value="234">Antelope 4012 - Area 50</option>
-											<option value="904">Antelope 4013 - Area 51-1</option>
-											<option value="656">Antelope 4014 - Area 52-1</option>
-											<option value="301">Antelope 4015 - Area 52A-1</option>
-											<option value="239">Antelope 4016 - Area 54</option>
-											<option value="243">Antelope 4017 - Area 58</option>
-											<option value="883">Antelope 4018 - Area 59-1</option>
-											<option value="164">Antelope 4019 - Area 60A-1</option>
-											<option value="905">Antelope 4020 - Area 63-1</option>
-											<option value="258">Antelope 4021 - Area 68</option>
-											<option value="1129">Antelope 4022 - Area 76-1</option>
-											<option value="152">Antelope 4023 - Area 44-1</option>
-											<option value="693">Antelope 4024 - Area 44-2</option>
-											<option value="233">Antelope 4025 - Area 49</option>
-											<option value="1271">Antelope 4026 - Area 54-1</option>
-											<option value="906">Antelope 4027 - Area 63-2</option>
-											<option value="1160">Antelope 4028 - Area 21A-1</option>
-											<option value="31">Antelope 4029 - Area 40-1</option>
+											<option value="1425">Antelope 4005 - Area 38-1</option>
+											<option value="223">Antelope 4006 - Area 39</option>
+											<option value="224">Antelope 4007 - Area 40</option>
+											<option value="151">Antelope 4008 - Area 41-1</option>
+											<option value="152">Antelope 4009 - Area 44-1</option>
+											<option value="153">Antelope 4010 - Area 45-1</option>
+											<option value="230">Antelope 4011 - Area 46</option>
+											<option value="233">Antelope 4012 - Area 49</option>
+											<option value="234">Antelope 4013 - Area 50</option>
+											<option value="904">Antelope 4014 - Area 51-1</option>
+											<option value="656">Antelope 4015 - Area 52-1</option>
+											<option value="301">Antelope 4016 - Area 52A-1</option>
+											<option value="239">Antelope 4017 - Area 54</option>
+											<option value="1101">Antelope 4018 - Area 55-1</option>
+											<option value="243">Antelope 4019 - Area 58</option>
+											<option value="883">Antelope 4020 - Area 59-1</option>
+											<option value="164">Antelope 4021 - Area 60A-1</option>
+											<option value="905">Antelope 4022 - Area 63-1</option>
+											<option value="258">Antelope 4023 - Area 68</option>
+											<option value="1129">Antelope 4024 - Area 76-1</option>
+											<option value="152">Antelope 4025 - Area 44-1</option>
+											<option value="693">Antelope 4026 - Area 44-2</option>
+											<option value="1271">Antelope 4027 - Area 54-1</option>
+											<option value="1426">Antelope 4028 - Area 63-2</option>
+											<option value="1160">Antelope 4029 - Area 21A-1</option>
 											<option value="31">Antelope 4030 - Area 40-1</option>
-											<option value="989">Antelope 4031 - Area 45-2</option>
+											<option value="31">Antelope 4031 - Area 40-1</option>
 											<option value="989">Antelope 4032 - Area 45-2</option>
-											<option value="42">Antelope 4033 - Area 46-1</option>
+											<option value="989">Antelope 4033 - Area 45-2</option>
 											<option value="42">Antelope 4034 - Area 46-1</option>
-											<option value="239">Antelope 4035 - Area 54</option>
-											<option value="258">Antelope 4036 - Area 68</option>
-											<option value="258">Antelope 4037 - Area 68</option>
-											<option value="210">Antelope 4038 - Area 30A</option>
-											<option value="151">Antelope 4039 - Area 41-2</option>
-											<option value="231">Antelope 4040 - Area 47</option>
-											<option value="906">Antelope 4041 - Area 63-2</option>
-											<option value="906">Antelope 4042 - Area 63-2</option>
-											<option value="1272">Antelope 4043 - Area 36A-1</option>
-											<option value="165">Antelope 4044 - Area 61-1</option>
-											<option value="145">Antelope 4045 - Area 32-1</option>
-											<option value="223">Antelope 4046 - Area 39</option>
-											<option value="656">Antelope 4047 - Area 52-1</option>
-											<option value="1203">Antelope 4048 - Area 54-2</option>
-											<option value="906">Antelope 4049 - Area 63-2</option>
-											<option value="960">Antelope 4050 - Area 45-1X</option>
-											<option value="991">Antelope 4051 - Area 46-1X</option>
+											<option value="42">Antelope 4035 - Area 46-1</option>
+											<option value="239">Antelope 4036 - Area 54</option>
+											<option value="1101">Antelope 4037 - Area 55-1</option>
+											<option value="258">Antelope 4038 - Area 68</option>
+											<option value="258">Antelope 4039 - Area 68</option>
+											<option value="210">Antelope 4040 - Area 30A</option>
+											<option value="150">Antelope 4041 - Area 41-2</option>
+											<option value="231">Antelope 4042 - Area 47</option>
+											<option value="1426">Antelope 4043 - Area 63-2</option>
+											<option value="1426">Antelope 4044 - Area 63-2</option>
+											<option value="1272">Antelope 4045 - Area 36A-1</option>
+											<option value="165">Antelope 4046 - Area 61-1</option>
+											<option value="1424">Antelope 4047 - Area 32-1</option>
+											<option value="223">Antelope 4048 - Area 39</option>
+											<option value="223">Antelope 4049 - Area 39</option>
+											<option value="656">Antelope 4050 - Area 52-1</option>
+											<option value="1203">Antelope 4051 - Area 54-2</option>
+											<option value="1426">Antelope 4052 - Area 63-2</option>
+											<option value="960">Antelope 4053 - Area 45-1X</option>
+											<option value="991">Antelope 4054 - Area 46-1X</option>
 											<option value="1348">Rocky Mtn Sheep 5001 - Area 11</option>
 											<option value="381">Rocky Mtn Sheep 5002 - Area 19*</option>
 											<option value="1298">Rocky Mtn Sheep 5003 - Area 19A</option>
@@ -922,28 +977,32 @@
 											<option value="170">Bear 8502 - Area 22-1</option>
 											<option value="145">Bear 8503 - Area 32-1</option>
 											<option value="170">Bear 8504 - Area 22-1</option>
-											<option value="1338">Turkey 9001: 36B-1</option>
+											<option value="1482">Turkey 9001: 21A-1</option>
 											<option value="1338">Turkey 9002: 36B-1</option>
 											<option value="445">Turkey 9003: 38-1</option>
 											<option value="445">Turkey 9004: 38-1</option>
-											<option value="445">Turkey 9005: 38-1</option>
-											<option value="445">Turkey 9006: 38-1</option>
-											<option value="446">Turkey 9007: 50-1</option>
-											<option value="446">Turkey 9008: 50-1</option>
-											<option value="446">Turkey 9009: 50-1</option>
-											<option value="239">Turkey 9010: 54</option>
-											<option value="239">Turkey 9011: 54</option>
-											<option value="239">Turkey 9012: 54</option>
-											<option value="259">Turkey 9013: 68A</option>
-											<option value="259">Turkey 9014: 68A</option>
+											<option value="446">Turkey 9005: 50-1</option>
+											<option value="239">Turkey 9006: 54</option>
+											<option value="259">Turkey 9007: 68A</option>
+											<option value="1338">Turkey 9008: 36B-1</option>
+											<option value="445">Turkey 9009: 38-1</option>
+											<option value="445">Turkey 9010: 38-1</option>
+											<option value="446">Turkey 9011: 50-1</option>
+											<option value="446">Turkey 9012: 50-1</option>
+											<option value="239">Turkey 9013: 54</option>
+											<option value="239">Turkey 9014: 54</option>
 											<option value="259">Turkey 9015: 68A</option>
-											<option value="170">Turkey 9016: 22-1</option>
+											<option value="259">Turkey 9016: 68A</option>
 											<option value="170">Turkey 9017: 22-1</option>
-											<option value="1339">Turkey 9018: 32-1</option>
-											<option value="445">Turkey 9019: 38-1</option>
-											<option value="446">Turkey 9020: 50-1</option>
-											<option value="262">Turkey 9021: 71</option>
-											<option value="262">Turkey 9022: 71</option>
+											<option value="446">Turkey 9018: 50-1</option>
+											<option value="262">Turkey 9019: 71</option>
+											<option value="1482">Turkey 9020: 21A-1</option>
+											<option value="170">Turkey 9021: 22-1</option>
+											<option value="1483">Turkey 9022: 22-2</option>
+											<option value="1339">Turkey 9023: 32-1</option>
+											<option value="1338">Turkey 9024: 36B-1</option>
+											<option value="445">Turkey 9025: 38-1</option>
+											<option value="262">Turkey 9026: 71</option>
 										</select></td>
 									<tr>
 										<td>Game Management Units: </td>
@@ -1064,7 +1123,7 @@
 							<li><a id="pdfNav1"><i class="glyphicon glyphicon-print"></i> Create Printable Map</a></li>
 							<!-- Print Collapse -->
 							<div id="pdfCollapse" class="panel-collapse collapse">
-								<div class="modal-body">
+								<div class="modal-body pdfBody">
 									<!--	<div id="pdfNote">
 											<h2>Due to high server load we have temporarily disabled printing to keep the Map Center available. We apologize for the inconvenience.</h2>
 										</div>-->
@@ -1094,6 +1153,7 @@
 											<div id="div_for_pdf"></div>
 											<span id="note">NOTE: The PDF maps are georeference.  You can use the <a class="Link" href="https://www.avenza.com/pdf-maps" target="_blank">Avenza PDF Maps app</a> to interact with a map to view your location, record GPS tracks, add placemarks, and find places on your Apple or Android device. The maps use coordinate system WGS 84.</span>
 									</div>
+									<p id="wrongBasemap" class='printDisclaimer'>Please select one of the first four basemaps to enable the 'Create Printable Map' tool.</p>
 								</div>
 							</div>
 							<li><a id="helpNav1"><i class="glyphicon glyphicon-question-sign"></i> How To...</a></li>
@@ -1116,33 +1176,20 @@
 						</div>
 					</div>
 				</div>
+				<!-- /map -->
 			</div>
-		<!-- /map -->
 		</div>
-	
-		<script type="text/javascript">
-			var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-			var dojoConfig = {
-					//The location.pathname.replace() logic below may look confusing but all its doing is
-					// enabling us to load the api from a CDN and load local modules from the correct location.
-					packages: [{
-							name: "application",
-							location: package_path + '//esri.github.com/bootstrap-map-js/src/js'
-					}],
-					paths: {
-					//if you want to host on your own server, download and put in folders then use path like: 
-							agsjs: location.pathname.replace(/\/[^/]+$/, '') + 'src/agsjs' 
-					}
-			};
-		</script>	
+		
+		<!-- JS CDNs -->
 		<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
 		<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
 		<script src="https://js.arcgis.com/3.20"></script>
-		<!-- <script src="src/js/map.js"></script> -->
-		<!-- uglified/minified src/js code. -->
-  	  <script src="src/dist/main.min.js"></script>
+		<!-- Custom JS -->
+ 		<!-- <script src="src/js/map.js"></script> -->
+		<!-- Uglified/minified src/js code. -->
+   	<script src="src/dist/main.min.js"></script>
 		<script>
 			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

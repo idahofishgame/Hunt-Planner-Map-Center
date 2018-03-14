@@ -119,62 +119,43 @@ span.rvts20
  font-weight: bold;
  color: #ff0000;
 }
-span.rvts21
-{
- font-size: 12pt;
- font-family: 'Gill Sans MT';
- font-weight: bold;
- color: ;
-}
-span.rvts22
-{
- font-size: 12pt;
- font-family: 'Gill Sans MT';
- color: ;
-}
-span.rvts23
-{
- font-size: 12pt;
- font-family: 'Gill Sans MT';
- color: #ff0000;
-}
-a.rvts24, span.rvts24
+a.rvts21, span.rvts21
 {
  font-size: 12pt;
  font-family: 'Gill Sans MT';
  color: #0000ff;
  text-decoration: none;
 }
-span.rvts25
+span.rvts22
 {
  font-size: 8pt;
  font-family: 'Gill Sans MT';
  vertical-align: super;
 }
-span.rvts26
+span.rvts23
 {
  font-size: 14pt;
  font-family: 'Gill Sans MT';
 }
-span.rvts27
+span.rvts24
 {
  font-size: 12pt;
  font-family: 'Gill Sans MT';
  font-style: italic;
 }
-span.rvts28
+span.rvts25
 {
  font-size: 8pt;
  font-family: 'Gill Sans MT';
 }
-a.rvts29, span.rvts29
+a.rvts26, span.rvts26
 {
  font-size: 8pt;
  font-family: 'Gill Sans MT';
  color: #0000ff;
  text-decoration: underline;
 }
-span.rvts30
+span.rvts27
 {
  font-family: 'Gill Sans MT';
 }

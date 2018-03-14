@@ -1152,7 +1152,6 @@ require([
 	"esri/dijit/Scalebar",
 	"esri/request",
 	"esri/geometry/scaleUtils",
-	"esri/layers/FeatureLayer",
 	"esri/renderers/SimpleRenderer",
 	"esri/symbols/PictureMarkerSymbol",
 	"esri/symbols/SimpleMarkerSymbol",
@@ -1165,17 +1164,19 @@ require([
 	"esri/geometry/Multipoint", 
 	"esri/arcgis/utils",
 	"esri/geometry/webMercatorUtils",
+	"esri/layers/FeatureLayer",
 	"esri/layers/GraphicsLayer",
+	"esri/layers/ArcGISTiledMapServiceLayer",
+	"esri/layers/VectorTileLayer",
+	"esri/layers/ArcGISDynamicMapServiceLayer",
+	"esri/layers/WMSLayer",
 	"esri/dijit/LayerList",
 	"esri/dijit/BasemapLayer",
 	"esri/dijit/Basemap",
 	"esri/dijit/BasemapGallery",
-	"agsjs/layers/GoogleMapsLayer",
 	"esri/dijit/Popup",
+	"esri/dijit/PopupTemplate",	
 	"esri/InfoTemplate",
-	"esri/dijit/PopupTemplate",
-	"esri/layers/ArcGISDynamicMapServiceLayer",
-	"esri/layers/WMSLayer",
 	"esri/tasks/QueryTask",
 	"esri/tasks/query",
 	"esri/dijit/Search",
@@ -1202,17 +1203,12 @@ require([
 	"dojo/domReady!"
 ],
 	function (
-	esriConfig, urlUtils, Map, LocateButton, Scalebar, request, scaleUtils, FeatureLayer, SimpleRenderer, PictureMarkerSymbol, SimpleMarkerSymbol, SimpleFillSymbol, SimpleLineSymbol, TextSymbol, Font, Color, Point, Multipoint, arcgisUtils, webMercatorUtils, GraphicsLayer, LayerList, BasemapLayer, Basemap, BasemapGallery, GoogleMapsLayer, Popup, InfoTemplate, PopupTemplate, ArcGISDynamicMapServiceLayer, WMSLayer, QueryTask, Query, Search, Extent, GeometryService, Measurement, Draw, Graphic, PrintParameters, PrintTemplate, PrintTask, dom, domClass, domConstruct, JSON, on, parser, query, sniff, connect, arrayUtils, lang, registry
+	esriConfig, urlUtils, Map, LocateButton, Scalebar, request, scaleUtils, SimpleRenderer, PictureMarkerSymbol, SimpleMarkerSymbol, SimpleFillSymbol, SimpleLineSymbol, TextSymbol, Font, Color, Point, Multipoint, arcgisUtils, webMercatorUtils, FeatureLayer, GraphicsLayer, ArcGISTiledMapServiceLayer, VectorTileLayer, ArcGISDynamicMapServiceLayer, WMSLayer, LayerList, BasemapLayer, Basemap, BasemapGallery, Popup, PopupTemplate, InfoTemplate, QueryTask, Query, Search, Extent, GeometryService, Measurement, Draw, Graphic, PrintParameters, PrintTemplate, PrintTask, dom, domClass, domConstruct, JSON, on, parser, query, sniff, connect, arrayUtils, lang, registry
 ) {
 		//Proxy settings
- 		esriConfig.defaults.io.proxyUrl = "https://fishandgame.idaho.gov/ifwis/gis_proxy/proxy.ashx?";
+ 		esriConfig.defaults.io.proxyUrl = "https://idfg.idaho.gov/ifwis/gis_proxy/proxy.ashx?";
 		esriConfig.defaults.io.alwaysUseProxy = false;
 		esriConfig.defaults.io.corsDetection = false;
-		/*
-		 urlUtils.addProxyRule({
-		 urlPrefix: "http://wildfire.cr.usgs.gov/",
-		 proxyUrl: "https://fishandgame.idaho.gov/ifwis/gis_proxy/proxy.ashx"
-		 });*/
 
 		// call the parser to create the dijit layout dijits
 		parser.parse(); // note djConfig.parseOnLoad = false;
@@ -1234,12 +1230,17 @@ require([
 
 		//Get a reference to the ArcGIS Map class
 		map = Map("mapDiv", {
-				basemap: "topo",
 				center: [-114.52, 45.50],
 				zoom: 6,
 				autoResize: true,
 				infoWindow: popup
 		});
+		
+ 		//You cannot set the default basemap to a vector basemap using the map reference above.
+		//Workaround = add vectorTileLayer over hillshade initially and just remove once the basemap is changed.
+		var defaultBasemap1 = new ArcGISTiledMapServiceLayer("https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer");
+		var defaultBasemap2 = new VectorTileLayer("https://www.arcgis.com/sharing/rest/content/items/86d5ed4b6dc741de9dad5f0fbe09ae95/resources/styles/root.json?f=pjson");
+		map.addLayers([defaultBasemap1,defaultBasemap2]);
 
 		//create a domClass to customize the look of the popup window
 		domClass.add(map.infoWindow.domNode, "myTheme");
@@ -1291,9 +1292,11 @@ require([
 
 		//show coordinates as the user scrolls around the map. In Desktop, it displays where ever the mouse is hovering.  In mobile, the user must tap the screen to get the coordinates.
 		function showCoordinates(evt) {
-				//the map is in web mercator but display coordinates in geographic (lat, long) & UTM NAD 27 Zone 11 & 12
-				var utm11SR = new esri.SpatialReference({wkid: 26711});
-				var utm12SR = new esri.SpatialReference({wkid: 26712});
+				//the map is in web mercator but display coordinates in geographic (lat, long) & UTM NAD 83 Zone 11 & 12
+				//var utm11SR = new esri.SpatialReference({wkid: 26711}); - WKID for NAD27 Zone 11
+				//var utm12SR = new esri.SpatialReference({wkid: 26712}); - WKID for NAD27 Zone 12
+				var utm11SR = new esri.SpatialReference({wkid: 102205});
+				var utm12SR = new esri.SpatialReference({wkid: 102206});
 				var gsvc = new esri.tasks.GeometryService("//tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
 				var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
 				//display mouse coordinates
@@ -1301,19 +1304,19 @@ require([
 				if (mp.x <= -114 && mp.x >= -120) { //if hovering in zone 11
 						gsvc.project([evt.mapPoint], utm11SR, function (result) {
 								$("#info2").show();
-								$("#info2").html("NAD27 UTM 11T: " + result[0].x.toFixed() + ', ' + result[0].y.toFixed());
+								$("#info2").html("NAD83 UTM 11T: " + result[0].x.toFixed() + ', ' + result[0].y.toFixed());
 						});
 				} else if (mp.x > -114 && mp.x <= -108) { //if hovering in zone 12
 						gsvc.project([evt.mapPoint], utm12SR, function (result) {
 								$("#info2").show();
-								$("#info2").html("NAD27 UTM 12T: 0" + result[0].x.toFixed() + ', ' + result[0].y.toFixed());
+								$("#info2").html("NAD83 UTM 12T: 0" + result[0].x.toFixed() + ', ' + result[0].y.toFixed());
 						});
 				} else {
 						$("#info2").hide();
 				}
 		}
 
-		//add the basemap gallery, in this case we'll display maps from ArcGIS.com including bing maps
+		//add the basemap gallery, in this case we'll display maps from ArcGIS.com
 		basemapGallery = new BasemapGallery({
 				showArcGISBasemaps: false,
 				map: map,
@@ -1324,11 +1327,6 @@ require([
 				console.log("basemap gallery error:  ", msg);
 		});
 
-		$("#basemapDiv").click(function () {
-				//If a google basemap was previously selected, remove it to see the esri basemap (google maps are 'on top of' esri maps)
-				map.removeLayer(googleLayer);
-		});
-
 		//Add the World Topo basemap to the basemap gallery.
 		var worldTopo = new BasemapLayer({url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer"});
 		var worldTopoBasemap = new Basemap({
@@ -1337,163 +1335,287 @@ require([
 				thumbnailUrl: "src/images/world_topo.png"
 		});
 		basemapGallery.add(worldTopoBasemap);
-
-		//Add the USA Topo basemap to the basemap gallery.
-		var usgsTopo = new BasemapLayer({url: "https://services.arcgisonline.com/ArcGIS/rest/services/USA_Topo_Maps/MapServer"});
-		var usgsBasemap = new Basemap({
-				layers: [usgsTopo],
-				title: "Esri USGS Topographic",
-				thumbnailUrl: "src/images/usa_topo.jpg"
-		});
-		basemapGallery.add(usgsBasemap);
-
-		//Add the Imagery with Labels basemap to the basemap gallery.
-		var Imagery = new BasemapLayer({url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"});
-		//var Reference = new BasemapLayer({url: "//services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer"});
-		var imageryLabelBasemap = new Basemap({
+		
+		//Add the Imagery basemap to the basemap gallery.
+		 var Imagery = new BasemapLayer({url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"});
+		 var imageryBasemap = new Basemap({
 				layers: [Imagery],
 				title: "Esri Satellite Imagery",
 				thumbnailUrl: "src/images/world_imagery.png"
-		});
-		basemapGallery.add(imageryLabelBasemap);
+		 });
+		 basemapGallery.add(imageryBasemap);
 
-		//Add the National Geographic basemap to the basemap gallery.
+		//Add the USA Topo basemap to the basemap gallery.
+		var usaTopo = new BasemapLayer({url: "https://services.arcgisonline.com/ArcGIS/rest/services/USA_Topo_Maps/MapServer"});
+		var usaBasemap = new Basemap({
+				layers: [usaTopo],
+				title: "Esri USGS Topographic",
+				thumbnailUrl: "src/images/usa_topo.jpg"
+		});
+		basemapGallery.add(usaBasemap);
+		
+		//Add the USGS topo basemap to the basemap gallery.
+		var usgsTopo = new BasemapLayer({url: "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer"});
+		var usgsTopoBasemap = new Basemap({
+				layers: [usgsTopo],
+				title: "USGS National Map",
+				thumbnailUrl: "src/images/usgstopo.jpg"
+		});
+		basemapGallery.add(usgsTopoBasemap);
+		
+		//Add the World Topo Vector basemap to the basemap gallery.
+		 var Hillshade = new BasemapLayer({url: "https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer"});
+		 var worldTopoHigh = new BasemapLayer({
+				styleUrl: "https://www.arcgis.com/sharing/rest/content/items/86d5ed4b6dc741de9dad5f0fbe09ae95/resources/styles/root.json?f=pjson",
+				type: "VectorTileLayer"
+		 });
+		 var worldTopoHighBasemap = new Basemap({
+				layers: [Hillshade,worldTopoHigh],
+				title: "Esri Hi-Res World Topographic",
+				thumbnailUrl: "src/images/topoHigh.jpg"
+		 });
+		 basemapGallery.add(worldTopoHighBasemap);
+
+		//Add the Imagery with Labels basemap to the basemap gallery.
+		 var Imagery = new BasemapLayer({url: "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"});
+		 var Reference = new BasemapLayer({
+				styleUrl: "https://www.arcgis.com/sharing/rest/content/items/af6063d6906c4eb589dfe03819610660/resources/styles/root.json?f=pjson",
+				type: "VectorTileLayer"
+		 });
+		 var imageryLabelBasemap = new Basemap({
+				layers: [Imagery,Reference],
+				title: "Esri Imagery w/Labels",
+				thumbnailUrl: "src/images/imageryLabels.jpg"
+		 });
+		 basemapGallery.add(imageryLabelBasemap);
+		 
+/* 		//Add the World Navigation (simple - like Google Maps) basemap to the basemap gallery.
+		 var simple = new BasemapLayer({
+				styleUrl: "https://www.arcgis.com/sharing/rest/content/items/e19e9330bf08490ca8353d76b5e2e658/resources/styles/root.json?f=pjson",
+				type: "VectorTileLayer"
+		 });
+		 var simpleBasemap = new Basemap({
+				layers: [simple],
+				title: "Esri Hi-Resolution Simple",
+				thumbnailUrl: "src/images/simple.jpg"
+		 });
+		 basemapGallery.add(simpleBasemap); */
+
+/* 		//Add the National Geographic basemap to the basemap gallery.
 		var natGeo = new BasemapLayer({url: "https://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer"});
 		var natGeoBasemap = new Basemap({
 				layers: [natGeo],
 				title: "Esri Natl Geographic",
 				thumbnailUrl: "src/images/natl_geo.png"
 		});
-		basemapGallery.add(natGeoBasemap);
-
-		//Add Google Map basemap layers to the basemap gallery.  NOTE: GOOGLE BASEMAPS WILL NOT PRINT. Make sure your users know they must select an if they are going to create a Printable Map.
-		googleLayer = new agsjs.layers.GoogleMapsLayer({
-				id: 'google',
-				apiOptions: {
-						v: '3.6' // use a specific version is recommended for production system.
-				},
-				mapOptions: {
-						streetViewControl: false // use false if do not want street view. Default is true.
-				}
+		basemapGallery.add(natGeoBasemap); */
+		
+/* 		//Add the OpenStreetMap basemap to the basemap gallery.
+		var osm = new Basemap({
+			layers: [new BasemapLayer({
+				type: "OpenStreetMap"
+			})],
+			id: "osm",
+			title: "Open Street Map",
+			thumbnailUrl: "src/images/osm.jpg"
 		});
-
-		$("#googleHybrid").click(function () {
-				map.addLayer(googleLayer);
-				map.reorderLayer(googleLayer, 1);
-				googleLayer.setMapTypeId(agsjs.layers.GoogleMapsLayer.MAP_TYPE_HYBRID);
+		basemapGallery.add(osm); */
+			
+		//Remove the default "basemaps" if one of the other basemaps are selected.
+		$("#basemapDiv").click(function () {
+				//Remove the default "basemap" layers once a user has selected a basemap.
+				defaultBasemap1.hide();
+				defaultBasemap2.hide();
 		});
-
-		$("#googleTerrain").click(function () {
-				map.addLayer(googleLayer);
-				map.reorderLayer(googleLayer, 1);
-				googleLayer.setMapTypeId(agsjs.layers.GoogleMapsLayer.MAP_TYPE_TERRAIN);
+	
+		//You cannot print vector basemaps. :(  Disable the 'Create Map!' button when they are selected.
+		if (defaultBasemap1.visible == true || defaultBasemap2.visible === true )
+			{
+				$("#btnPDF").prop('disabled', true);
+				$("#pdfNote").hide();
+				$("#wrongBasemap").show();
+			}
+		$("#galleryNode_basemap_4, #galleryNode_basemap_5").click(function() {
+			$("#btnPDF").prop('disabled', true);
+			$("#pdfNote").hide();
+			$("#wrongBasemap").show();	
+		//Enable the 'Create Map!' button when printable basemaps are selected.
+		});
+		$("#galleryNode_basemap_0, #galleryNode_basemap_1, #galleryNode_basemap_2, #galleryNode_basemap_3").click(function() {
+			$("#btnPDF").prop('disabled', false);
+			$("#pdfNote").show();
+			$("#wrongBasemap").hide();
 		});
 		
 		//infoTemplate for the Big Game hunting restrictions layer
 		var _bigGameHuntResInfoTemplate = new InfoTemplate();
 		_bigGameHuntResInfoTemplate.setTitle("Big Game Hunting Restriction");
 		_bigGameHuntResInfoTemplate.setContent(
-				"<b>Area: </b>${Closed_Are}<br/>" +
-				"<b>Restriction: </b>${Comments}</br>"
+			"<b>Area: </b>${Closed_Are}<br/>" +
+			"<b>Restriction: </b>${Comments}</br>"
 		);
 		var _uplandGameBirdTurkeyHuntResInfoTemplate = new InfoTemplate();
 		_uplandGameBirdTurkeyHuntResInfoTemplate.setTitle("Upland Game Bird/Turkey Hunting Restriction");
 		_uplandGameBirdTurkeyHuntResInfoTemplate.setContent(
-				"<b>Area: </b>${Closed_Are}<br/>" +
-				"<b>Restriction: </b>${Comments}</br>"
+			"<b>Area: </b>${Closed_Are}<br/>" +
+			"<b>Restriction: </b>${Comments}</br>"
 		);
 		var _uplandGameHuntResInfoTemplate = new InfoTemplate();
 		_uplandGameHuntResInfoTemplate.setTitle("Upland Game Hunting Restriction");
 		_uplandGameHuntResInfoTemplate.setContent(
-				"<b>Area: </b>${Closed_Are}<br/>" +
-				"<b>Restriction: </b>${Comments}</br>"
+			"<b>Area: </b>${Closed_Are}<br/>" +
+			"<b>Restriction: </b>${Comments}</br>"
 		);
 		var _waterfowlHuntResInfoTemplate = new InfoTemplate();
 		_waterfowlHuntResInfoTemplate.setTitle("Waterfowl Hunting Restriction");
 		_waterfowlHuntResInfoTemplate.setContent(
-				"<b>Area: </b>${Closed_Are}<br/>" +
-				"<b>Restriction: </b>${Comments}</br>"
+			"<b>Area: </b>${Closed_Are}<br/>" +
+			"<b>Restriction: </b>${Comments}</br>"
+		);
+		var _furbearerHuntResInfoTemplate = new InfoTemplate();
+		_furbearerHuntResInfoTemplate.setTitle("Furbearer Hunting Restrictions");
+		_furbearerHuntResInfoTemplate.setContent(
+			"<b>Area: </b>${Closed_Are}<br/>" +
+			"<b>Restriction: </b>${Comments}</br>"
 		);
 
 		//popup window template for the Campground feature layer
 		var campgroundPopupTemplate = new PopupTemplate({
-				title: "Campground Info",
-				fieldInfos: [{
-						fieldName: "NAME", visible: true,
-						fieldName: "Phone", visible: true,
-						fieldName: "Rate", visible: true,
-						fieldName: "Season", visible: true,
-						fieldName: "Sites", visible: true,
-						fieldName: "Max_Length", visible: true,
-						fieldName: "Type", visible: true,
-						fieldName: "URL", visible: true
-				}]
+			title: "Campground Info",
+			fieldInfos: [{
+				fieldName: "NAME", visible: true,
+				fieldName: "Phone", visible: true,
+				fieldName: "Rate", visible: true,
+				fieldName: "Season", visible: true,
+				fieldName: "Sites", visible: true,
+				fieldName: "Max_Length", visible: true,
+				fieldName: "Type", visible: true,
+				fieldName: "URL", visible: true
+			}]
 		});
 		campgroundPopupTemplate.setContent(
-				"<b>Name: </b>${NAME}<br/>" +
-				"<b>Phone: </b>${Phone}</br>" +
-				"<b>Fee/Rate: </b>${Rate}</br>" +
-				"<b>Season: </b>${Season}</br>" +
-				"<b>Number of Sites: </b>${Sites}</br>" +
-				"<b>Max # of Days at Site*: </b>${Max_Length}</br>" +
-				"<b>* </b> 0 = No Limit</br>" +
-				"<b>Site Administrator: </b>${Type}</br>"
+			"<b>Name: </b>${NAME}<br/>" +
+			"<b>Phone: </b>${Phone}</br>" +
+			"<b>Fee/Rate: </b>${Rate}</br>" +
+			"<b>Season: </b>${Season}</br>" +
+			"<b>Number of Sites: </b>${Sites}</br>" +
+			"<b>Max # of Days at Site*: </b>${Max_Length}</br>" +
+			"<b>* </b> 0 = No Limit</br>" +
+			"<b>Site Administrator: </b>${Type}</br>"
 		);
-
+		
+		//popup window template for the road closure feature layer
+		var roadClosurePopupTemplate = new PopupTemplate({
+			title: "Road & Trail Closure Info",
+			fieldInfos: [{
+				fieldName: "ID", visible: true,
+				fieldName: "NAME", visible: true,
+				fieldName: "JURISDICTION", visible: true,
+				fieldName: "OFFICE", visible: true,
+				fieldName: "OFFICE_PHONE", visible: true,
+				fieldName: "Alerts", visible: true,
+				fieldName: "SHERIFF_PHONE", visible: true,
+			}]
+		});
+		roadClosurePopupTemplate.setContent(
+			"<b>Road/Trail #: </b>${ID}</br>" +
+			"<b>Name: </b>${NAME}</br>" +
+			"<b>Jurisdiction: </b>${JURISDICTION}</br>" +
+			"<b>Office: </b>${OFFICE}</br>" +
+			"<b>Office Phone #: </b>${OFFICE_PHONE}</br>" +
+			"<b>Sheriff Phone #: </b>${SHERIFF_PHONE}</br>" +
+			"<a style='cursor:pointer;' href='${Alerts}' target='_blank'>Alert Info</a>"
+		);
+		
 		//popup window template for the fire closure feature layer.
 		var closurePopupTemplate = new PopupTemplate({
-				title: "Fire Closure Info",
-				fieldInfos: [{
-						fieldName: "NAME", visible: true,
-						fieldName: "URL", visible: true,
-						fieldName: "UPDATE_", visible: true
-				}]
+			title: "Fire Closure Info",
+			fieldInfos: [{
+				fieldName: "NAME", visible: true,
+				fieldName: "URL", visible: true,
+				fieldName: "UPDATE_", visible: true
+			}]
 		});
 		closurePopupTemplate.setContent(
-				"<b>Name: </b>${NAME}<br/>" +
-				"<b>Effective Date: </b>${UPDATE_}<br/>" +
-				"<a style='cursor:pointer;' href='${URL}' target='_blank'>InciWeb Description</a>"
+			"<b>Name: </b>${NAME}<br/>" +
+			"<b>Effective Date: </b>${UPDATE_}<br/>" +
+			"<a style='cursor:pointer;' href='${URL}' target='_blank'>InciWeb Description</a>"
 		);
 
 		//popup window template for the fire perimeter feature layer. NO WILDFIRES AT THIS TIME.  Keep for next year.
-	 /*  var perimeterPopupTemplate = new PopupTemplate({
+	  var perimeterPopupTemplate = new PopupTemplate({
 				title: "{fire_name} Fire",
 				fieldInfos: [{
-						fieldName: "incidentname", visible: true,
-						fieldName: "gisacres", visible: true,
-						fieldName: "active", visible: true,
-						fieldName: "inciwebid", visible: true
+					fieldName: "incidentname", visible: true,
+					fieldName: "gisacres", visible: true,
+					fieldName: "active", visible: true,
+					fieldName: "inciwebid", visible: true
 				}]
 		});
 		perimeterPopupTemplate.setContent(
-				"<b>Acres: </b>${gisacres}<br/>" +
-				"<b>Active (Y/N): </b>${active}</br/>" +
-				"<b><a target='_blank' href=//inciweb.nwcg.gov/incident/${inciwebid}>Click for InciWeb Information</a></b>"
-		); */
+			"<b>Acres: </b>${gisacres}<br/>" +
+			"<b>Active (Y/N): </b>${active}<br/>" +
+			"<b><a target='_blank' href=//inciweb.nwcg.gov/incident/${inciwebid}>Click for InciWeb Information</a></b>"
+		);
+		
+		//popup window template for the active fire report feature layer.
+		var fireReportPopupTemplate = new PopupTemplate({
+			title: "Active Fire Report",
+			fieldInfos: [{
+				fieldName: "FIRE_NAME", visible: true,
+				fieldName: "PER_CONT", visible: true,
+				fieldName: "AREA_", visible: true,
+				fieldName: "START_DATE", visible: true
+			}]
+		});
+		fireReportPopupTemplate.setContent(
+			"The <b>${FIRE_NAME} Fire</b> began on <b>${START_DATE:DateFormat(selector:'date')}</b>. It is <b>${AREA_:NumberFormat(places:0)} acres</b> and is <b>${PER_CONT}%</b> contained.<br/>" +
+			"<b><a target='_blank' href=https://www.nifc.gov/fireInfo/nfn.htm>Click for More Info</a></b>"
+		);
+
+		//popup window template for the significant closures feature layers.
+		var significantClosuresPopupTemplate = new PopupTemplate({
+			fieldInfos: [{
+				fieldName: "Name", visible: true,
+				fieldName: "More_Info", visible: true
+			}]
+		});
+		significantClosuresPopupTemplate.setContent(
+			"${Name}<br/>" +
+			"<a target='_blank' href=${More_Info}>Click for More Info</a></b>"
+		);
 
 		//add layers (or groups of layers) to the map.
-		huntLayers = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Data/Hunting/MapServer",
-			 {id: "Hunt_Related_Layers"});
+		huntLayers = new ArcGISDynamicMapServiceLayer("https://idfg.idaho.gov/gis/rest/services/Data/Hunting/MapServer",
+			{
+				id: "Hunt_Related_Layers",
+				outFields: ["*"]
+			});
 		huntLayers.setInfoTemplates({
-			13: {infoTemplate: _bigGameHuntResInfoTemplate},
-			14: {infoTemplate: _uplandGameBirdTurkeyHuntResInfoTemplate},
-			15: {infoTemplate: _uplandGameHuntResInfoTemplate},
-			16: {infoTemplate: _waterfowlHuntResInfoTemplate}
-		});						
-		adminLayers = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Data/AdministrativeBoundaries/MapServer",
-			 {id: "Administrative_Boundaries"});
-/* 		surfaceMgmtLayer = new esri.layers.ArcGISTiledMapServiceLayer("https://gis.blm.gov/arcgis/rest/services/lands/BLM_Natl_SMA_Cached_without_PriUnk/MapServer",
-		{
-			id: "Land_Management_Layer",
-			opacity: 0.5
-		}); */
-		surfaceMgmtLayer = new ArcGISDynamicMapServiceLayer("https://fishandgame.idaho.gov/gis/rest/services/Basemaps/SurfaceMgmt_BLMsymbology/MapServer",
-		{
-			id: "Land_Management_Layer",
-			outFields: ["*"],
-			opacity: 0.7
-		});
-		var trailLayers = new ArcGISDynamicMapServiceLayer("https://gis2.idaho.gov/arcgis/rest/services/DPR/Idaho_Trails_Map/MapServer",
+				14: {infoTemplate: _bigGameHuntResInfoTemplate},
+				15: {infoTemplate: _uplandGameBirdTurkeyHuntResInfoTemplate},
+				16: {infoTemplate: _uplandGameHuntResInfoTemplate},
+				17: {infoTemplate: _waterfowlHuntResInfoTemplate},
+				18: {infoTemplate: _furbearerHuntResInfoTemplate},
+			});						
+		adminLayers = new ArcGISDynamicMapServiceLayer("https://idfg.idaho.gov/gis/rest/services/Data/AdministrativeBoundaries/MapServer",
+			{id: "Administrative_Boundaries"});
+		stateLandsLayer = new FeatureLayer("https://services2.arcgis.com/1cvrwLhZRFh3okEF/ArcGIS/rest/services/PubliclyAccessibleLands/FeatureServer/0",
+			{
+				id: "State_Endowment_Lands",
+				opacity: 1
+			});
+		surfaceMgmtLayer = new esri.layers.ArcGISTiledMapServiceLayer("https://idfg.idaho.gov/gis/rest/services/Basemaps/SurfaceMgmt_BLM_Symbology/MapServer",
+			{
+				id: "State_&_Federal_Land_Management",
+				opacity: 0.7
+			});
+		landCoverLayer = new ArcGISDynamicMapServiceLayer("https://idfg.idaho.gov/gis/rest/services/External/MRLC_NationalLandCoverDatabase2011/MapServer/",
+			{
+				id: "Land_Cover",
+				opacity: 0.4
+			});
+		trailLayers = new ArcGISDynamicMapServiceLayer("https://gis2.idaho.gov/arcgis/rest/services/DPR/Idaho_Trails_Map/MapServer",
 			{id:"Roads_&_Trails_(zoom_in_to_activate)"});
 		trailLayers.setVisibleLayers([4,5,6,7,8,9,10,11,12,13]);
 		campgroundLayer = new FeatureLayer("https://gis2.idaho.gov/arcgis/rest/services/ADM/Campgrounds/MapServer/0",
@@ -1502,43 +1624,80 @@ require([
 				outFields: ["*"],
 				infoTemplate: campgroundPopupTemplate
 			});
-		fireLayer0 = new FeatureLayer("https://fishandgame.idaho.gov/gis/rest/services/External/InciWeb_FireClosures/MapServer/0",
+		roadClosureLayer = new FeatureLayer("https://gis2.idaho.gov/arcgis/rest/services/DPR/Idaho_Trails_Map/MapServer/1",
+			{
+			id: "Road_and_Trail_Closures_(zoom_in_to_activate)",
+				outFields: ["*"],
+				infoTemplate: roadClosurePopupTemplate
+			});
+ 		/* fireLayer0 = new FeatureLayer("https://idfg.idaho.gov/gis/rest/services/External/InciWeb_FireClosures/MapServer/0",
 			{
 				id: "Fire_Emergency_Closure_Areas",
 				outFields: ['NAME', 'URL', 'UPDATE_'],
 				infoTemplate: closurePopupTemplate
 			});
-		/* fireLayer1 = new FeatureLayer("https://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/2",
+		fireLayer1 = new FeatureLayer("https://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/2",
 			{
 				id: "Active_Fire_Perimeter",
 				outFields: ['gisacres', 'active', 'incidentname', 'inciwebid'],
 				infoTemplate: perimeterPopupTemplate
-			});
-		fireLayer2 = new FeatureLayer("https://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/4",
+			}); */
+		fireLayer2 = new FeatureLayer("https://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/FeatureServer/4",
 			{
 				id: "Inactive_Fire_Perimeters",
 				outFields: ['gisacres', 'active', 'incidentname', 'inciwebid'],
+				visible: false,
 				infoTemplate: perimeterPopupTemplate
 			});
-		fireLayer3 = new FeatureLayer("https://rmgsc.cr.usgs.gov/ArcGIS/rest/services/geomac_dyn/MapServer/21",
+		fireLayer3 = new FeatureLayer("https://rmgsc.cr.usgs.gov/ArcGIS/rest/services/geomac_dyn/MapServer/26",
 			{
 			id: "Past_Fire_Perimeters",
-			opacity: "0.4"
+			opacity: "0.7",
+			visible: false
 			});
-		fireLayer4 = new WMSLayer("https://activefiremaps.fs.fed.us/cgi-bin/mapserv.exe?map=conus.map&", { !!! URL NOT WORKING - UPDATE NEXT SEASON !!!
+		fireLayer3.setDefinitionExpression("year_ in ('2013','2014','2015','2016', '2017')");
+ 		fireLayer4 = new WMSLayer("https://fsapps.nwcg.gov/afm/cgi-bin/mapserv.exe?map=conus.map&", {
 			id: "MODIS_Fire_Detection",
 			opacity: "0.4",
 			version: "1.1.1",
-			visibleLayers: [4, 5, 6],
+			visibleLayers: [4,5,6],
 			format: "png"
+		});
+/* 		fireLayerX = new FeatureLayer("https://utility.arcgis.com/usrsvcs/servers/ab338b46b77b4765b0a04e883de77db6/rest/services/LiveFeeds/Wildfire_Activity/MapServer/0",
+		{
+			id: "Active_Fire_Report",
+			outFields: ["*"],
+			infoTemplate: fireReportPopupTemplate
 		}); */
+		pioneerSalvageClosure = new FeatureLayer("https://idfg.idaho.gov/gis/rest/services/External/SignificantClosureAreas_ForMapCenters/MapServer/0",
+		{
+			id: "PioneerFire_SalvageClosure",
+			outFields: ["*"],
+			infoTemplate: significantClosuresPopupTemplate
+		});
+		wilksClosure = new FeatureLayer("https://idfg.idaho.gov/gis/rest/services/External/SignificantClosureAreas_ForMapCenters/MapServer/1",
+		{
+			id: "Wilks_PrivatLandClosure",
+			outFields: ["*"],
+			infoTemplate: significantClosuresPopupTemplate
+		});
 		
-		map.addLayers([surfaceMgmtLayer, fireLayer0, adminLayers, huntLayers, trailLayers, campgroundLayer]);
+		map.addLayers([surfaceMgmtLayer, stateLandsLayer, landCoverLayer, fireLayer4, fireLayer3, fireLayer2, pioneerSalvageClosure, wilksClosure, adminLayers, huntLayers, trailLayers, roadClosureLayer, campgroundLayer]);
 		adminLayers.hide(); //So none of the layers are "on" except the GMU layer when the map loads.
 		surfaceMgmtLayer.hide();
+		stateLandsLayer.hide();
+		landCoverLayer.hide();
 		trailLayers.hide();
+		roadClosureLayer.hide();
 		campgroundLayer.hide();
-		fireLayer0.hide();
+		//fireLayer0.hide();
+		//fireLayer1.hide();
+		fireLayer2.hide();
+		fireLayer3.hide();
+		fireLayer4.hide();
+		//fireLayerX.hide();
+		pioneerSalvageClosure.hide();
+		wilksClosure.hide();
 
 		//Add a table of contents using the layerList widget. Layers can be toggled on/off. Symbology is displayed.  Each "layer group" has a transparency slider.
 		var layerList = new LayerList({
@@ -1549,11 +1708,19 @@ require([
 			showOpacitySlider: true,
 			layers: [
 				{
-					layer: campgroundLayer
+					layer: surfaceMgmtLayer
+				}, {
+					layer: stateLandsLayer,
+					title: "Idaho Dept. of Lands Endowment Lands (Publicly Accessible)"
+				}, {
+					layer: landCoverLayer,
+					title: "Land Cover"
 				}, {
 					layer: trailLayers
 				}, {
-					layer: surfaceMgmtLayer
+					layer: roadClosureLayer
+				}, {
+					layer: campgroundLayer
 				}, {
 					layer: adminLayers
 				}, {
@@ -1567,36 +1734,145 @@ require([
 			//Expand the Hunt Related Layers group on load.
 			//layerList._layersNode.firstElementChild.className += " esriListExpand";
 			//Add disclaimer and layer source information.
-			$("#tocDiv_checkbox_2").before("<div class='disclaimer'>IMPORTANT: Please be sure to obtain landowner permission before entering or crossing private lands. Land surface management data maintained by BLM. <a href='//cloud.insideidaho.org/webApps/metadataViewer/default.aspx?path=%5c%5cintranet.rocket.net%5cinsideprod%5cdata%5canonymous%5cblm%5cRLTY_SMA_PUB_24K_POLY.shp.xml' target='_blank'>Learn More</a></div>");
-			$("#tocDiv_checkbox_1").before("<div class='disclaimer'>Roads & trails data maintained by IDPR. <a href='//www.trails.idaho.gov/trails/' target='_blank'>Learn More</a></div>");
-			$("#tocDiv_checkbox_0").before("<div class='disclaimer'>Campground data maintained by IDPR. <a href='//parksandrecreation.idaho.gov/activities/camping' target='_blank'>Learn More</a></div>");
-			$("#fireLayersCheckbox").before("<div class='disclaimer'>Please contact USFS national forests for all road and trail closures.</div");
-			$("label[for=tocDiv_checkbox_1]").css("color", "#ccc");
+			$("label[for=tocDiv_checkbox_0]").after("<div class='disclaimer'>IMPORTANT: Please be sure to obtain landowner permission before entering or crossing private lands. State & federal land management data maintained by BLM (2013). <a href='//cloud.insideidaho.org/webApps/metadataViewer/default.aspx?path=%5c%5cintranet.rocket.net%5cinsideprod%5cdata%5canonymous%5cblm%5cRLTY_SMA_PUB_24K_POLY.shp.xml' target='_blank'>Learn More</a></div>");
+			$("label[for=tocDiv_checkbox_1]").after("<div class='disclaimer'>Endowment lands data maintained by Idaho Dept. of Lands (2017). This layer shows which endowment lands designated as Yes or No Known Public Access. <a href='//www.arcgis.com/home/item.html?id=eabf22046eb64525b0ccfd64a099e6eb#overview' target='_blank'>Learn More</a></div>");
+			$("label[for=tocDiv_checkbox_2]").after("<div class='disclaimer'>Land Cover data maintained by the Multi-Resolution Land Characteristics Consortium. <a href='//www.mrlc.gov/index.php' target='_blank'>Learn More</a></div>");
+			$("label[for=tocDiv_checkbox_3]").after("<div class='disclaimer'>Public roads & trails data maintained by IDPR. <a href='//www.trails.idaho.gov/trails/' target='_blank'>Learn More</a></div>");
+			$("label[for=tocDiv_checkbox_4]").after("<div class='disclaimer'>Public road & trail closure data maintained by IDPR. <a href='//www.trails.idaho.gov/trails/' target='_blank'>Learn More</a></div>");
+			$("label[for=tocDiv_checkbox_5]").after("<div class='disclaimer'>Campground data maintained by IDPR. <a href='//parksandrecreation.idaho.gov/activities/camping' target='_blank'>Learn More</a></div>");
+			$("#TOCNode_significantClosures_1").before("<div class='disclaimer'>Please contact USFS national forests and BLM districts for all public road and trail closures.</div>");
+			$("label[for=tocDiv_checkbox_4]").css("color", "#ccc");
+			$("label[for=tocDiv_checkbox_3]").css("color", "#ccc");
+			$("label[for=tocDiv_checkbox_0]").css("color", "black");
+			$("label[for=significantClosure0Checkbox]").after("<div class='sigClosureNote'>Permission-seekers may contact <a href='mailto:info@wilksdevelopment.com?Subject=Idaho%20Sportsmen%20Access%20,%20Attention:%20Jordan.' target='_blank'>info@wilksdevelopment.com</a>.  <a href='http://www.idahocountyfreepress.com/news/2017/apr/05/wilks-ranch-now-largest-single-landowner-idaho-cou/' target='_blank'>Learn More</a></div>");
+			$("label[for=significantClosure1Checkbox]").after("<div class='sigClosureNote'>Closed until June 1, 2018. <a href='https://www.fs.usda.gov/alerts/boise/alerts-notices' target='_blank'>Learn More</a></div>");
 		});
 		
 		//uncheck fire Layer Checkboxes
 		$("#fireLayersCheckbox").prop("checked", false);
-		$("#fireLayer0Checkbox").prop("checked", false);
+		//$("#fireLayer0Checkbox").prop("checked", false);
+		//$("#fireLayer1Checkbox").prop("checked", false);
+		$("#fireLayer2Checkbox").prop("checked", false);
+		$("#fireLayer3Checkbox").prop("checked", false);
+		$("#fireLayer4Checkbox").prop("checked", false);
+		//$("#fireLayerXCheckbox").prop("checked", false);
+		$("#significantClosure0Checkbox").prop("checked", false);
+		$("#significantClosure1Checkbox").prop("checked", false);
+		
+		
 		//toggle all fireLayers off when the fireLayersCheckbox is unchecked.
 		$("#fireLayersCheckbox").change(function () {
 				if ($(this).prop('checked')) {
-						fireLayer0.show();
-						 $("#fireLayer0Checkbox").prop("checked", true);
-						 } else {
-						 fireLayer0.hide();
-						$("#fireLayer0Checkbox").prop("checked", false);
+						//fireLayer0.show();
+						//fireLayer1.show();
+						fireLayer2.show();
+						fireLayer3.show();
+						fireLayer4.show();
+						//fireLayerX.show();
+						wilksClosure.show();
+						pioneerSalvageClosure.show();
+						//$("#fireLayer0Checkbox").prop("checked", true);
+						//$("#fireLayer1Checkbox").prop("checked", true);
+						$("#fireLayer2Checkbox").prop("checked", true);
+						$("#fireLayer3Checkbox").prop("checked", true);
+						$("#fireLayer4Checkbox").prop("checked", true);
+						//$("#fireLayerXCheckbox").prop("checked", true);
+						$("#significantClosure0Checkbox").prop("checked", true);
+						$("#significantClosure1Checkbox").prop("checked", true);
+		
+						} else {
+						//fireLayer0.hide();
+						//fireLayer1.hide();
+						fireLayer2.hide();
+						fireLayer3.hide();
+						fireLayer4.hide();
+						//fireLayerX.hide();		
+						wilksClosure.hide();
+						pioneerSalvageClosure.hide();
+						//$("#fireLayer0Checkbox").prop("checked", false);
+						//$("#fireLayer1Checkbox").prop("checked", false);
+						$("#fireLayer2Checkbox").prop("checked", false);
+						$("#fireLayer3Checkbox").prop("checked", false);
+						$("#fireLayer4Checkbox").prop("checked", false);
+						//$("#fireLayerXCheckbox").prop("checked", false);
+						$("#significantClosure0Checkbox").prop("checked", false);
+						$("#significantClosure1Checkbox").prop("checked", false);	
 				}
 		});
 		//toggle fireLayer0 on/off when checkbox is toggled on/off
-		 $("#fireLayer0Checkbox").change(function () {
-				if ($(this).prop('checked')) {
-						fireLayer0.show();
-						$("#fireLayersCheckbox").prop("checked", true);
-				} else {
-						fireLayer0.hide();
-						$("#fireLayersCheckbox").prop("checked", false);
-				}
+		/* $("#fireLayer0Checkbox").change(function () {
+			if ($(this).prop('checked')) {
+					fireLayer0.show();
+					$("#fireLayersCheckbox").prop("checked", true);
+			} else {
+					fireLayer0.hide();
+					$("#fireLayersCheckbox").prop("checked", false);
+			}
+		}); */
+		//toggle fireLayer1 on/off when checkbox is toggled on/off
+		/* $("#fireLayer1Checkbox").change(function () {
+			if ($(this).prop('checked')) {
+					fireLayer1.show();
+					$("#fireLayersCheckbox").prop("checked", true);
+			} else {
+					fireLayer1.hide();
+			}
+		}); */
+		//toggle fireLayer2 on/off when checkbox is toggled on/off
+		$("#fireLayer2Checkbox").change(function () {
+			if ($(this).prop('checked')) {
+					fireLayer2.show();
+					$("#fireLayersCheckbox").prop("checked", true);
+			} else {
+					fireLayer2.hide();
+			}
 		});
+		//toggle fireLayer3 on/off when checkbox is toggled on/off
+		$("#fireLayer3Checkbox").change(function () {
+			if ($(this).prop('checked')) {
+					fireLayer3.show();
+					$("#fireLayersCheckbox").prop("checked", true);
+			} else {
+					fireLayer3.hide();
+			}
+		});
+		//toggle fireLayer4 on/off when checkbox is toggled on/off
+		$("#fireLayer4Checkbox").change(function () {
+			if ($(this).prop('checked')) {
+					fireLayer4.show();
+					$("#fireLayersCheckbox").prop("checked", true);
+			} else {
+					fireLayer4.hide();
+			}
+		});
+		//toggle fireLayerX on/off when checkbox is toggled on/off
+		/* $("#fireLayerXCheckbox").change(function () {
+			if ($(this).prop('checked')) {
+					fireLayerX.show();
+					$("#fireLayersCheckbox").prop("checked", true);
+			} else {
+					fireLayerX.hide();
+			}
+		}); */
+		//toggle wilksClosure on/off when checkbox is toggled on/off
+		$("#significantClosure0Checkbox").change(function () {
+			if ($(this).prop('checked')) {
+					wilksClosure.show();
+					$("#fireLayersCheckbox").prop("checked", true);
+			} else {
+					wilksClosure.hide();
+			}
+		});
+		//toggle pioneerSalvageClosure on/off when checkbox is toggled on/off
+		$("#significantClosure1Checkbox").change(function () {
+			if ($(this).prop('checked')) {
+					pioneerSalvageClosure.show();
+					$("#fireLayersCheckbox").prop("checked", true);
+			} else {
+					pioneerSalvageClosure.hide();
+			}
+		});
+
 
 		//Enable mobile scrolling by calling $('.selectpicker').selectpicker('mobile'). The method for detecting the browser is left up to the user. This enables the device's native menu for select menus.
 		if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
@@ -1627,8 +1903,9 @@ require([
 			urlY = getVariableByName('Y');
 			if (typeof label != 'undefined') {
 					var str = label;
-					var res = label.replace("%26", "&");
-					var cleanLabel = res.split('+').join(' ');
+					var res1 = label.replace("%26", "&");
+					var res2 = res1.replace(/%2c/g, ",");
+					var cleanLabel = res2.split('+').join(' ');
 					label = cleanLabel;
 			} else {
 					label = "Selected Hunt Area";
@@ -1646,16 +1923,30 @@ require([
 			}
 		};
 
-		//Change the Roads & Trails layer label depending on map scale.
+		//Change the Roads & Trails (and closures) layer label depending on map scale.
 		map.on("extent-change", function () {
 				mapScale = map.getScale();
+				mapLevel = map.getLevel();
+				//console.log("Map Level: " + mapLevel);
+				//console.log("Map Scale: " + mapScale);
 				if (mapScale < 4622324){
-					$("label[for=tocDiv_checkbox_1]").css("color", "black");
-					$("label[for=tocDiv_checkbox_1]").text("Roads & Trails");
+					$("label[for=tocDiv_checkbox_3]").css("color", "black");
+					$("label[for=tocDiv_checkbox_3]").text("Roads & Trails");
+					$("label[for=tocDiv_checkbox_4]").css("color", "black");
+					$("label[for=tocDiv_checkbox_4]").text("Road & Trail Closures")
 				} else {
-					$("label[for=tocDiv_checkbox_1]").css("color", "#ccc");
-					$("label[for=tocDiv_checkbox_1]").text("Roads & Trails (zoom in to activate)");
+					$("label[for=tocDiv_checkbox_3]").css("color", "#ccc");
+					$("label[for=tocDiv_checkbox_3]").text("Roads & Trails (zoom in to activate)");
+					$("label[for=tocDiv_checkbox_4]").css("color", "#ccc");
+					$("label[for=tocDiv_checkbox_4]").text("Road & Trail Closures (zoom in to activate)");
 				}
+/* 				if (mapScale < 577790){
+					$("label[for=tocDiv_checkbox_]").css("color", "black");
+					$("label[for=tocDiv_checkbox_2]").text("Road & Trail Closures");
+				} else {
+					$("label[for=tocDiv_checkbox_2]").css("color", "#ccc");
+					$("label[for=tocDiv_checkbox_2]").text("Roads & Trail Closures (zoom in to activate)");
+				} */
 		});
 
 		//toggle query layer on/off when checkbox is toggled on/off
@@ -1711,7 +2002,7 @@ require([
 						$("#queryLabel1Div").show();
 
 						//Create a KML of the user-selected GMUs, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
-						var gmuKMLlink = "//fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/3/query?where=ID in (" + gmuID +
+						var gmuKMLlink = "//idfg.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/3/query?where=ID in (" + gmuID +
 								")&outfields=NAME&f=kmz"
 						$("#gmuKML").attr("href", gmuKMLlink);
 						$("#gmuKML").show();
@@ -1742,7 +2033,7 @@ require([
 						$("#queryLabel2Div").show();
 
 						//Create a KML of the user-selected Elk Zones, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
-						var elkzoneKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/4/query?where=ID in (" +
+						var elkzoneKMLlink = "https://idfg.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/4/query?where=ID in (" +
 								elkID + ")&outfields=NAME&f=kmz"
 						$("#elkzoneKML").attr("href", elkzoneKMLlink);
 						$("#elkzoneKML").show();
@@ -1773,7 +2064,7 @@ require([
 						$("#queryLabel3Div").show();
 
 						//Create a KML of the user-selected controlled hunts, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
-						var chuntKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/5/query?where=AreaID in (" +
+						var chuntKMLlink = "https://idfg.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/5/query?where=AreaID in (" +
 								chuntID + ")&outfields=BigGame,HuntArea&f=kmz"
 						$("#chuntKML").attr("href", chuntKMLlink);
 						$("#chuntKML").show();
@@ -1804,7 +2095,7 @@ require([
 						$("#queryLabel4Div").show();
 
 						//Create a KML of the user-selected waterfowl hunt areas, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
-						var waterfowlKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/6/query?where=ID in (" +
+						var waterfowlKMLlink = "https://idfg.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/6/query?where=ID in (" +
 								waterfowlID + ")&outfields=Area_Name&f=kmz"
 						$("#waterfowlKML").attr("href", waterfowlKMLlink);
 						$("#waterfowlKML").show();
@@ -1835,7 +2126,7 @@ require([
 						$("#queryLabel5Div").show();
 
 						//Create a KML of the user-selected game animal distributions, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
-						var gameDistributionKMLlink = "https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/7/query?where=ID in (" +
+						var gameDistributionKMLlink = "https://idfg.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/7/query?where=ID in (" +
 								gameDistributionID + ")&outfields=NAME&f=kmz"
 						$("#gameDistributionKML").attr("href", gameDistributionKMLlink);
 						$("#gameDistributionKML").show();
@@ -1871,7 +2162,7 @@ require([
 
 		function doQuery(areaID, layerID, label) {
 				//initialize query tasks
-				newQueryTask = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/" + layerID);
+				newQueryTask = new QueryTask("https://idfg.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/" + layerID);
 
 				//initialize query
 				newQuery = new Query();
@@ -1894,7 +2185,7 @@ require([
 
 		function doQuery1(gmuID, label) {
 				//initialize query tasks
-				newQueryTask1 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/3");
+				newQueryTask1 = new QueryTask("https://idfg.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/3");
 
 				//initialize query
 				newQuery1 = new Query();
@@ -1912,7 +2203,7 @@ require([
 
 		function doQuery2(elkID, label) {
 				//initialize query tasks
-				newQueryTask2 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/4");
+				newQueryTask2 = new QueryTask("https://idfg.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/4");
 
 				//initialize query
 				newQuery2 = new Query();
@@ -1930,7 +2221,7 @@ require([
 
 		function doQuery3(chuntID, label) {
 				//initialize query tasks
-				newQueryTask3 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/5");
+				newQueryTask3 = new QueryTask("https://idfg.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/5");
 
 				//initialize query
 				newQuery3 = new Query();
@@ -1953,7 +2244,7 @@ require([
 
 		function doQuery4(waterfowlID, label) {
 				//initialize query tasks
-				newQueryTask4 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/6");
+				newQueryTask4 = new QueryTask("https://idfg.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/6");
 
 				//initialize query
 				newQuery4 = new Query();
@@ -1971,7 +2262,7 @@ require([
 
 		function doQuery5(gameDistributionID, label) {
 				//initialize query tasks
-				newQueryTask5 = new QueryTask("https://fishandgame.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/7");
+				newQueryTask5 = new QueryTask("https://idfg.idaho.gov/gis/rest/services/Apps/MapCenterQueryLayers/MapServer/7");
 
 				//initialize query
 				newQuery5 = new Query();
@@ -2693,7 +2984,7 @@ require([
 		};
 		printParams.template = template;
 		
-		var printServiceUrl ='https://fishandgame.idaho.gov/gis/rest/services/Custom_IDFG_ExportWebMapTask/GPServer/Export%20Web%20Map';
+		var printServiceUrl ='https://idfg.idaho.gov/gis/rest/services/Custom_IDFG_ExportWebMapTask/GPServer/Export%20Web%20Map';
 		/* var printServiceUrl ='https://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task'; */
 		var printTask = new esri.tasks.PrintTask(printServiceUrl);	
 
@@ -2702,7 +2993,7 @@ require([
 			//alert(JSON.stringify(response));		
 			status.innerHTML = "";
 			//open the map PDF or image in a new browser window.
-			var new_url_for_map = response.url.replace("sslifwisiis","fishandgame.idaho.gov");
+			var new_url_for_map = response.url.replace("sslifwisiis","idfg.idaho.gov");
 			var currentTime = new Date();
 			var unique_PDF_url = new_url_for_map += "?ts="+currentTime.getTime();
 			//PDFwindow = window.open(new_url_for_map);
@@ -2745,7 +3036,7 @@ require([
 			$('#elkzone').append('<option value="' + this.ID + '">' + this.NAME + '</option>');
 		});
 		//populate the Waterfowl Hunt Areas dropdown with JSON vars.
-		var waterfowlList = [{"ID":"1","NAME":"Canada Goose Area 1"},{"ID":"2","NAME":"Canada Goose Area 2"},{"ID":"3","NAME":"Canada Goose Area 3"},{"ID":"4","NAME":"Duck Area 1"},{"ID":"5","NAME":"Duck Area 2"},{"ID":"6","NAME":"Light Goose Area 1"},{"ID":"7","NAME":"Light Goose Area 2"},{"ID":"8","NAME":"Light Goose Area 3"},{"ID":"9","NAME":"White-fronted Goose Area 1"},{"ID":"10","NAME":"White-fronted Goose Area 2"},{"ID":"11","NAME":"Sandhill Crane Area 1"},{"ID":"12","NAME":"Sandhill Crane Area 2"},{"ID":"13","NAME":"Sandhill Crane Area 3"},{"ID":"14","NAME":"Sandhill Crane Area 4"},{"ID":"15","NAME":"Sandhill Crane Area 5"},];
+		var waterfowlList = [{"ID":"1","NAME":"Canada Goose Area 1"},{"ID":"2","NAME":"Canada Goose Area 2"},{"ID":"3","NAME":"Canada Goose Area 3"},{"ID":"4","NAME":"Duck Area 1"},{"ID":"5","NAME":"Duck Area 2"},{"ID":"6","NAME":"Light Goose Area 1"},{"ID":"7","NAME":"Light Goose Area 2"},{"ID":"8","NAME":"Light Goose Area 3"},{"ID":"9","NAME":"Light Goose Area 4"},{"ID":"10","NAME":"White-fronted Goose Area 1"},{"ID":"11","NAME":"White-fronted Goose Area 2"},{"ID":"12","NAME":"White-fronted Goose Area 3"},{"ID":"13","NAME":"Sandhill Crane Area 1"},{"ID":"14","NAME":"Sandhill Crane Area 2"},{"ID":"15","NAME":"Sandhill Crane Area 3"},{"ID":"16","NAME":"Sandhill Crane Area 4"},{"ID":"17","NAME":"Sandhill Crane Area 5"},];
 		$.each(waterfowlList, function(){
 			$('#waterfowl').append('<option value="' + this.ID + '">' + this.NAME + '</option>');
 		});
@@ -2984,7 +3275,7 @@ require([
 	//Keypress event to launch help document
 	window.onkeydown = function(e) {
 		if (e.keyCode === 112) {
-			var win = window.open('https://fishandgame.idaho.gov/ifwis/huntplanner/mapcenter/HelpDocV2/IDFG%20Hunt%20Planner%20Map%20Center%20V2%20Help%20Documentation.html', '_blank');
+			var win = window.open('https://idfg.idaho.gov/ifwis/huntplanner/mapcenter/HelpDocV2/IDFG%20Hunt%20Planner%20Map%20Center%20V2%20Help%20Documentation.html', '_blank');
 			if (win) {
 					//Browser has allowed it to be opened
 					win.focus();

@@ -618,13 +618,13 @@ body, html {
 
 .red {
   color: red !important;
-	font-size: 14px;
+	font-size: 14px !important;
 	font-weight: normal;
 }
 
 .panel-collapse{
 	width: 100%;
-	max-height: 380px !important;
+	max-height: 370px !important;
 	overflow-y: auto;
 	overflow-x: hidden;
 	color: black !important;
@@ -900,7 +900,7 @@ img.ri:empty {
 	background-image: none !important;
 }
 
-.esriBasemapGalleryNode {
+ .esriBasemapGalleryNode {
 	width: 90px;
 }
 
@@ -909,18 +909,14 @@ img.ri:empty {
 	display: inline !important;
 }
 
-.esriBasemapGallerySelectedNode .esriBasemapGalleryThumbnail {
+/* .esriBasemapGallerySelectedNode .esriBasemapGalleryThumbnail {
 	border: 2px !important;
 	margin: 1px !important;
-}
+} */
 
- .esriBasemapGalleryThumbnail {
+/*  .esriBasemapGalleryThumbnail {
 	border: 0px !important;
-}
-
-#googleMapsDiv {
-	height: 120px !important;
-}
+} */
 
 #gmu, #elkzone, #chunt, #waterfowl, #gameDistribution, #userTextBox, #longitudeInput, #latitudeInput, #txtTitle {
 	margin-right: 5px;
@@ -1015,6 +1011,18 @@ ul.dropdown-menu.inner.selectpicker {
 	margin-left: 5px;
 }
 
+.sigClosureNote{
+	font-size: 12px;
+	color: #999;
+	margin-left: 35px;
+}
+
+.printDisclaimer{
+	font-size: 16px;
+	color: #999;
+	margin-left: 5px;
+}
+
 #legendNav1, #huntNav1, #kmlNav1, #basemapNav1, #uploadNav1, #geosearchNav1, #measurementNav1, #drawNav1, #pdfNav1, #helpNav1{
 	font-size: 16px;
 }
@@ -1053,7 +1061,7 @@ ul.dropdown-menu.inner.selectpicker {
     vertical-align: middle;
 }
 
-#Title{
+#Title {
 	margin: 10px;
 	font-size: 24px;
 }
@@ -1061,7 +1069,6 @@ ul.dropdown-menu.inner.selectpicker {
 .navbar-brand-image {
 		padding: 5px 0 5px 0px;
 		width: 40px;
-
 }
 
 @media(max-width: 295px) {
