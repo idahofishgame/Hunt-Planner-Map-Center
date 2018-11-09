@@ -705,6 +705,7 @@ border-bottom: 1px solid #3f4533;
 	border: 1px solid #a2a379;
 	border-left: none;
 	cursor: pointer;
+  font-size: 16px;
 }
 
 img.ri {
@@ -1231,13 +1232,10 @@ ul.dropdown-menu.inner.selectpicker {
   .navbar-inverse .navbar-toggle {
 	  border-color: #57671c;
   }
-  /* .navbar-inverse .navbar-toggle .glyphicon-link {
-	  background-color: #bddae8;
-  } */
   .navbar-collapse {
 	  padding: 0;
 	  border-top: 1px solid transparent;
-	  background-color: #a2a379;
+	  background-color: #3f4239;
   }
   .navbar-collapse.collapse {
 	  display: none !important;

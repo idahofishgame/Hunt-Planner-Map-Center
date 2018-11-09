@@ -106,7 +106,7 @@ body,html{padding:0;font-family:"HelveticaNeue-Light","Helvetica Neue Light","He
 .btn.disabled{display:none}#ReturnBtn.btn-default:focus,#ReturnBtn.btn-default:hover{background-color:#ffae00}
 .fullScreen{width:100% !important}.splitScreen{width:70%}@media(min-width:500px){#sidebar{width:25%;min-width:350px;float:left}
 }@media(max-width:500px){#sidebar{overflow:auto;height:90%}.controlBtns{height:10%}
-}@media(max-height:750px){#sidebar{overflow-y:auto;overflow-x:hidden}}#expandSidebar{position:absolute;text-align:center;width:36px;top:3px;left:0;padding:11px 4px 11px 3px;z-index:1;color:#e6e6d6;background-color:#3f4533;border:1px solid #a2a379;border-left:0;cursor:pointer}
+}@media(max-height:750px){#sidebar{overflow-y:auto;overflow-x:hidden}}#expandSidebar{position:absolute;text-align:center;width:36px;top:3px;left:0;padding:11px 4px 11px 3px;z-index:1;color:#e6e6d6;background-color:#3f4533;border:1px solid #a2a379;border-left:0;cursor:pointer;font-size:16px}
 img.ri{position:absolute;z-index:10001 !important;max-width:80%;top:10%;left:10%}
 img.ri:empty{top:50%;left:50%;-webkit-transform:translate(-50%,-50%);-moz-transform:translate(-50%,-50%);-ms-transform:translate(-50%,-50%);-o-transform:translate(-50%,-50%);transform:translate(-50%,-50%)}
 @media screen and (orientation:portrait){img.ri{max-width:50%}}@media screen and (orientation:landscape){img.ri{max-height:50%}
@@ -153,6 +153,6 @@ img.ri:empty{top:50%;left:50%;-webkit-transform:translate(-50%,-50%);-moz-transf
 .navbar-header{float:none}.container{padding-right:0;padding-left:0}.navbar-brand-image{margin-left:15px}
 .navbar-toggle{padding:12px 10px;display:block;border-radius:0;margin:0;border:0;height:50px;right:0;border-left:1px solid transparent;position:absolute}
 .navbar-inverse .navbar-toggle:hover,.navbar-inverse .navbar-toggle:focus{background-color:#3f4533}
-.navbar-inverse .navbar-toggle{border-color:#57671c}.navbar-collapse{padding:0;border-top:1px solid transparent;background-color:#a2a379}
+.navbar-inverse .navbar-toggle{border-color:#57671c}.navbar-collapse{padding:0;border-top:1px solid transparent;background-color:#3f4239}
 .navbar-collapse.collapse{display:none !important}.navbar-nav{margin:7.5px 30px;text-align:center}
 .collapse.in{display:block !important}}.btn{border-radius:0 !important}

@@ -4063,7 +4063,7 @@ require(["esri/config", "esri/urlUtils", "esri/arcgis/utils", "esri/map", "esri/
 		$("#mapView").addClass("fullScreen");
 		$("#mapView").removeClass("splitScreen");
 		$("#expandSidebar").removeClass("glyphicon-menu-left");
-		$("#expandSidebar").addClass("glyphicon-menu-hamburger");
+		$("#expandSidebar").addClass("glyphicon-list");
 		$("#mapView").css({
 			"display": "block"
 		});
@@ -4073,7 +4073,7 @@ require(["esri/config", "esri/urlUtils", "esri/arcgis/utils", "esri/map", "esri/
 		$(el).removeClass("collapse");
 		$("#mapView").removeClass("fullScreen");
 		$("#mapView").addClass("splitScreen");
-		$("#expandSidebar").removeClass("glyphicon-menu-hamburger");
+		$("#expandSidebar").removeClass("glyphicon-list");
 		$("#expandSidebar").addClass("glyphicon-menu-left");
 		if ($(window).width() < 500) {
 			$("#mapView").css({
