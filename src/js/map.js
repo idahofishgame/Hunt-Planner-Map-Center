@@ -2258,7 +2258,7 @@ require([
 			printParams.template = template;
 
 			//Generic Export Web Map Task//
-			var printServiceUrl = 'https://gis.idfg.idaho.gov/server/rest/services/Geoprocessing/ExportWebMap/GPServer/Export%20Web%20Map';
+			var printServiceUrl = 'https://gis.idfg.idaho.gov/server/rest/services/Geoprocessing/ExportWebMap2/GPServer/Export%20Web%20Map';
 			//Custom IDFG Export Web Map Task//
 			var printTask = new esri.tasks.PrintTask(printServiceUrl);
 
