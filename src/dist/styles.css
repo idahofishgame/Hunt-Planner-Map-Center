@@ -595,17 +595,17 @@ html {
 #sidebar .nav li>a:hover {
 	background-color: #7b755ccc !important;
 	color: #fff;
-  }
+}
   
-  #sidebar .nav>li>a {
-	border-bottom: 1px solid #3f4533;
-  }
+#sidebar .nav>li>a {
+border-bottom: 1px solid #3f4533;
+}
 
 #wrongBasemap{
 	display: none;
 }
 
-.glyphicon-link{
+.navbar .glyphicon{
 	font-size: 20px;
 	color: #a2a379;
 }
@@ -840,7 +840,7 @@ img.ri:empty {
 	outline: none;
   }
 
-  .esriList {
+.esriList {
     padding-left: 20px !important;
     padding-right: 20px !important;
 }

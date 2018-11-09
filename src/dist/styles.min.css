@@ -100,7 +100,7 @@ body,html{padding:0;font-family:"HelveticaNeue-Light","Helvetica Neue Light","He
 #mapDiv{padding:0;margin:0;height:100%;width:100%}#sidebar{padding:0;border-right:1px solid #4c4c4c}
 #sidebar,#sidebar a,#sidebar-footer{color:#3f4533;background-color:transparent;font-family:'Trebuchet MS','Helvetica Neue',Arial,Helvetica,sans-serif}
 .Link{color:#337ab7 !important}#sidebar .nav li>a:hover{background-color:#7b755ccc !important;color:#fff}
-#sidebar .nav>li>a{border-bottom:1px solid #3f4533}#wrongBasemap{display:none}.glyphicon-link{font-size:20px;color:#a2a379}
+#sidebar .nav>li>a{border-bottom:1px solid #3f4533}#wrongBasemap{display:none}.navbar .glyphicon{font-size:20px;color:#a2a379}
 .red{color:red !important;font-size:14px !important;font-weight:normal;margin:0}.panel-collapse{width:100%;max-height:380px !important;overflow-y:auto;overflow-x:hidden;color:black !important;background-color:#f8f8f8 !important;border-bottom:2px solid #ccc}
 .controlBtns{position:fixed;width:25%;min-width:350px;height:74px;bottom:0}#ReturnBtn{width:100%;height:100%;font-size:18px;font-weight:bold;color:white;border-radius:0;background-color:#f0ad4e;border-color:#eea236;display:none;position:relative;bottom:0;margin:0}
 .btn.disabled{display:none}#ReturnBtn.btn-default:focus,#ReturnBtn.btn-default:hover{background-color:#ffae00}
