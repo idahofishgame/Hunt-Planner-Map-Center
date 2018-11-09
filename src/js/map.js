@@ -1126,9 +1126,8 @@ require([
 				let res = decodeURIComponent(label);
 				let cleanLabel = res.split('+').join(' ');
 				label = cleanLabel;
-
 			} else {
-				label = "Selected Hunt Area";
+				label = "";
 			}
 
 			if (typeof areaID != 'undefined') {
@@ -1190,7 +1189,7 @@ require([
 				if (typeof label != 'undefined') {
 					label = label;
 				} else {
-					label = "Selected Hunt Area";
+					label = "";
 				}
 				if (typeof gmuID != 'undefined') {
 					doQuery1(gmuID, label);
@@ -1221,7 +1220,7 @@ require([
 				if (typeof label != 'undefined') {
 					label = label;
 				} else {
-					label = "Selected Hunt Area";
+					label = "";
 				}
 				if (typeof elkID != 'undefined') {
 					doQuery2(elkID, label);
@@ -1253,7 +1252,7 @@ require([
 				if (typeof label != 'undefined') {
 					label = label;
 				} else {
-					label = "Selected Hunt Area";
+					label = "";
 				}
 				if (typeof chuntID != 'undefined') {
 					doQuery3(chuntID, label);
@@ -1291,7 +1290,7 @@ require([
 				if (typeof label != 'undefined') {
 					label = label;
 				} else {
-					label = "Selected Hunt Area";
+					label = "";
 				}
 				if (typeof waterfowlID != 'undefined') {
 					doQuery4(waterfowlID, label);

@@ -2081,7 +2081,7 @@ require(["esri/config", "esri/urlUtils", "esri/arcgis/utils", "esri/map", "esri/
 			var cleanLabel = res.split('+').join(' ');
 			label = cleanLabel;
 		} else {
-			label = "Selected Hunt Area";
+			label = "";
 		}
 
 		if (typeof areaID != 'undefined') {
@@ -2153,7 +2153,7 @@ require(["esri/config", "esri/urlUtils", "esri/arcgis/utils", "esri/map", "esri/
 			if (typeof label != 'undefined') {
 				label = label;
 			} else {
-				label = "Selected Hunt Area";
+				label = "";
 			}
 			if (typeof gmuID != 'undefined') {
 				doQuery1(gmuID, label);
@@ -2184,7 +2184,7 @@ require(["esri/config", "esri/urlUtils", "esri/arcgis/utils", "esri/map", "esri/
 			if (typeof label != 'undefined') {
 				label = label;
 			} else {
-				label = "Selected Hunt Area";
+				label = "";
 			}
 			if (typeof elkID != 'undefined') {
 				doQuery2(elkID, label);
@@ -2216,7 +2216,7 @@ require(["esri/config", "esri/urlUtils", "esri/arcgis/utils", "esri/map", "esri/
 			if (typeof label != 'undefined') {
 				label = label;
 			} else {
-				label = "Selected Hunt Area";
+				label = "";
 			}
 			if (typeof chuntID != 'undefined') {
 				doQuery3(chuntID, label);
@@ -2254,7 +2254,7 @@ require(["esri/config", "esri/urlUtils", "esri/arcgis/utils", "esri/map", "esri/
 			if (typeof label != 'undefined') {
 				label = label;
 			} else {
-				label = "Selected Hunt Area";
+				label = "";
 			}
 			if (typeof waterfowlID != 'undefined') {
 				doQuery4(waterfowlID, label);
