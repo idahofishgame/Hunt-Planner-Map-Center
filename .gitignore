@@ -2,6 +2,9 @@
 Thumbs.db
 ehthumbs.db
 
+# node modules, will get recreated from package.json
+node_modules
+
 # Folder config file
 Desktop.ini
 
@@ -35,3 +38,4 @@ Icon
 .Spotlight-V100
 .Trashes
 .idea
+.vscode
