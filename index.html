@@ -1,291 +1,439 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="Idaho Fish and Game Hunt Planner Map Center">
-    <meta name="author" content="IFWIS">
-    <title>IDFG Hunt Planner Map Center</title>
-    <link rel = "icon" href="https://idfg.idaho.gov/images/icons/favicon.ico" type="image/x-icons" />
-		
-    <!-- CSS CDNs -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">		
-    <link rel="stylesheet" href="https://js.arcgis.com/3.20/dijit/themes/claro/claro.css">
-    <link rel="stylesheet" href="https://js.arcgis.com/3.20/esri/css/esri.css">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
-		<!--Custom styles -->
- 		<!-- <link rel="stylesheet" href="src/css/layout.css"> -->
-		<!-- Uglified/minified custom css code. -->
-    <link rel="stylesheet" type="text/css" href="src/dist/styles.css">
 
-  </head>
-	
-  <body class="claro">
-		<div id="loading">
-			<img id="loadingImg" src="src/images/loading2.gif" alt="Loading..." class="ri"/>
-		</div>
-		<div id="navbar-wrapper" class="navbar navbar-inverse navbar-fixed-top">
-			<div class="container">
-				<div class="navbar-header">
-					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-					</button>
-					<a class="navbar-brand">
-						<img class="navbar-brand-image" src="src/images/logo.png" border="0" width="30px">
-            <h4 id="Title">Map Center</h4>
-          </a>
-				</div>
-				<div class="collapse navbar-collapse">         
-					<ul class="nav navbar-nav">	
-						<li><a id="Idaho Fish and Game Homepage" href="https://idfg.idaho.gov/" target="_blank">Home</a></li>
-						<li><a id="Hunting" href="https://idfg.idaho.gov/public/hunt/" target="_blank">Hunting</a></li>
-						<li><a id="Huntplanner" href="https://idfg.idaho.gov/ifwis/huntplanner" target="_blank">Hunt Planner</a></li>
-						<li><a id="disclaimer">Disclaimer</a></li>
-					</ul>
-				</div>
-			</div>
-		</div>	
-		<!-- How To Modal -->
-		<div class="modal fade" id="helpModal" tabindex="-1" style="display: none;" aria-hidden="true">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-						<h4 class="modal-title">How To Use the Toolbar</h4>
-					</div>
-					<div class="modal-body">
-							 <strong>Use the toolbar located on the lefthand side of the map to modify the maps appearance and access tools for measuring, drawing and printing.</strong>
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="description" content="Idaho Fish and Game Hunt Planner Map Center">
+	<meta name="author" content="IFWIS">
+	<title>IDFG Hunt Planner Map Center</title>
+	<meta name="robots" content="index,follow" />
+	<meta name="DCTERMS.subject" content="Hunting" />
+	<meta name="DCTERMS.creator" content="Pam Bond, Idaho Fish and Game" />
+	<meta name="DCTERMS.created" content="2014-07-01" />
+	<meta name="DCTERMS.language" content="EN" />
+	<meta name="DCTERMS.publisher" content="State of Idaho" />
+	<meta name="DCTERMS.modified" content="2018-01-16" />
+	<meta name="DCTERMS.format" content="text/html" />
+	<link rel="icon" href="https://idfg.idaho.gov/favicon.ico" type="image/x-icon">
 
-								<h4><i class="glyphicon glyphicon-list"></i> Turn Layers On/Off</h4>
-								<p>Using the checkboxes, you may turn on and off layers of administrative boundaries, land management overlay, trails, campgrounds and wildfire activity.  See the visible layer symbology by clicking the Legend tab. Increase/decrease layer transparency using the slider found under the Opacity tab.<br/>								
-								<em>NOTE: Some layers (depending on the data source and your network speed) may take some time to render.</em></p>
-								
-								<h4><i class="glyphicon glyphicon-globe"></i> Change the Basemap</h4>
-								<p>You may select from a number of basemaps including Esri ArcGIS topgraphic, satellite imagery, USGS Topo, USGS National Map, etc.<br/>
-								<em>NOTE: When creating a PDF, please choose one of the first four basmap options.</em></p>
-								
-								<h4><i class="glyphicon glyphicon-flash"></i> Highlight a Hunt Area</h4>
-								<p>Select a hunt area from the list and the map will zoom and highlight the boundary in purple.</p>
-								
-								<h4><i class="glyphicon glyphicon-floppy-save"></i> Download Highlighted Area as KML</h4>
-								<p>After you have selected a hunt area from the list, this tool will be activated. Open the tool and click the hyperlink(s) to download Google Earth KML(s) of the hunt area(s) you highlighted.</p>
-								
-								<h4><i class="glyphicon glyphicon-floppy-open"></i> Upload Waypoints &amp; Tracks</h4>
-								<p>If you would like to add your own location data, such as GPS waypoints and tracks, upload them as a GPX file using this tool.  If you data is in another format such as kml, shp, txt, csv, wpt, dat, or some other GPS specific file type you may find <a href="https://www.gpsvisualizer.com/" target="_blank">GPS Visualizer</a> or <a href="https://www.gpsbabel.org/" target="_blank">GPSBabel</a> helpful tools for converting them to GPX.</p>
-								
-								<h4><i class="glyphicon glyphicon-search"></i> Search By Place or Coordinates</h4>
-								<p>Type a place into the place search box or coordinates in the longitude/latitude boxes and click <em>Go to Place/Go to Coords</em>.  The map will automatically zoom to the location. Coordinates will be labeled with the longitude/latitude. You may be use the clear buttons to clear the points graphics off the map.</p>
-								
-								<h4><i class="glyphicon glyphicon-screenshot"></i> Measurements &amp; Coordinates</h4>
-								<p>First, select your tool - Area, Distance, or Location.  Then, select the units you would like the results to be in (acres, sq miles, ...miles, meters,...degrees, DMS (degrees minutes seconds). Finally, begin taking measurements. Measurement results will appear in the lower right and the toolbar window.  Double-click to close polygons if measuring for area.</p>
-								
-								<h4><i class="glyphicon glyphicon-pencil"></i> Draw On the Map</h4>
-								<p>Select a draw tool and you can begin adding shapes to your map to highlight an area or specify a certain point.  Double click to close polygons. To add a text label to your map, first add the text you would like to appear in the textbox after <em>Add text to your map</em> and then click the <em>Add Text</em> button.  Click on the map to add the label.</p>
-								
-								<h4><i class="glyphicon glyphicon-print"></i> Creat Printable PDF</h4>
-								<p>Create a printable version of your customized map in Adobe's Portable Document Format (PDF) or as an image (PNG). You may add a custom title, select a layout, select a print format, and then click <em>Create Map!</em> to open the map in a new window.  Depending on the browser and PDF plug-in you are using, there are a number of ways to save/print the PDF/PNG by either using the browser menu or saving the PDF/PNG. It may take some time to generate the PDF/PNG.</p>
-								
-								<h4><i class="glyphicon glyphicon-envelope"></i> Contact Us & Help Us Improve!</h4>
-								<p>Have a question/comment/complaint about the Map Center? <a href="https://idfg.idaho.gov/ifwis/portal/contact#huntplanner" title="Send us a note">Contact Us</a>! Any feedback (good or bad) is greatly appreciated. Based off your comments we've already made a number of improvements.  Keep them coming!</p>
-								
-								<p>For more in-depth help documentation <strong><a href="https://idfg.idaho.gov/ifwis/huntplanner/mapcenter/HelpDocV2/IDFG%20Hunt%20Planner%20Map%20Center%20V2%20Help%20Documentation.html" target="_blank">Click here</a></strong>.</p>
-								
-								<button id="Close" type="button" class="btn" data-dismiss="modal">Close</button>
-					</div>
+	<!-- CSS CDNs -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://js.arcgis.com/3.25/dijit/themes/claro/claro.css">
+	<link rel="stylesheet" href="https://js.arcgis.com/3.25/esri/css/esri.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
+	<!--Custom styles -->
+	<!-- <link rel="stylesheet" href="src/css/layout.css"> -->
+	<!-- Uglified/minified custom css code. -->
+	<link rel="stylesheet" type="text/css" href="src/dist/styles.css">
+
+</head>
+
+<body class="claro">
+	<div id="loading">
+		<img id="loadingImg" src="src/images/loading2.gif" alt="Loading..." class="ri" />
+	</div>
+	<div id="navbar-wrapper" class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<!-- <span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span> -->
+					<span class="glyphicon glyphicon-link"></span>
+				</button>
+				<div class="navbar-brand">
+					<a href="https://idfg.idaho.gov" "Idaho Fish and Game Homepage">
+						<img class="navbar-brand-image" src="src/images/logo.png" width="30" style="padding-bottom:7px;" />
+					</a>
+					<h4 id="Title">
+						<strong>Idaho Hunt Planner</strong>
+					</h4>
+				</div>
+			</div>
+			<div class="collapse navbar-collapse">
+				<ul class="nav navbar-nav">
+					<li>
+						<a id="Idaho Fish and Game Homepage" href="https://idfg.idaho.gov/" target="_blank">Home</a>
+					</li>
+					<li>
+						<a id="Hunting" href="https://idfg.idaho.gov/public/hunt/" target="_blank">Hunting</a>
+					</li>
+					<li>
+						<a id="Huntplanner" href="https://idfg.idaho.gov/ifwis/huntplanner" target="_blank">Hunt Planner</a>
+					</li>
+					<li>
+						<a id="disclaimer">Disclaimer</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<!-- How To Modal -->
+	<div class="modal fade" id="helpModal" tabindex="-1" style="display: none;" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">How To Use the Toolbar</h4>
+				</div>
+				<div class="modal-body">
+					<strong>Use the toolbar located on the lefthand side of the map to modify the maps appearance and access tools for measuring,
+						drawing and printing.</strong>
+
+					<h4>
+						<i class="glyphicon glyphicon-list"></i> Turn Layers On/Off</h4>
+					<p>Using the checkboxes, you may turn on and off layers of administrative boundaries, land management overlay, trails,
+						campgrounds and wildfire activity. Increase/decrease layer opacity using the slider found under each layer.
+						<br/>
+						<em>NOTE: Some layers (depending on the data source and your network speed) may take some time to render.</em>
+					</p>
+
+					<h4>
+						<i class="glyphicon glyphicon-globe"></i> Change the Basemap</h4>
+					<p>You may select from a number of basemaps including Esri ArcGIS topgraphic, satellite imagery, USGS Topo, USGS National
+						Map, etc.
+						<br/>
+						<em>NOTE: When creating a PDF, please choose one of the first four basmap options.</em>
+					</p>
+
+					<h4>
+						<i class="glyphicon glyphicon-flash"></i> Highlight a Hunt Area</h4>
+					<p>Select a hunt area from the list and the map will zoom and highlight the boundary in purple.</p>
+
+					<h4>
+						<i class="glyphicon glyphicon-floppy-save"></i> Download Highlighted Area as KML</h4>
+					<p>After you have selected a hunt area from the list, this tool will be activated. Open the tool and click the hyperlink(s)
+						to download Google Earth KML(s) of the hunt area(s) you highlighted.</p>
+
+					<h4>
+						<i class="glyphicon glyphicon-floppy-open"></i> Upload Waypoints &amp; Tracks</h4>
+					<p>If you would like to add your own location data, such as GPS waypoints and tracks, upload them as a GPX file using this
+						tool. If you data is in another format such as kml, shp, txt, csv, wpt, dat, or some other GPS specific file type you
+						may find
+						<a href="https://www.gpsvisualizer.com/" target="_blank">GPS Visualizer</a> or
+						<a href="https://www.gpsbabel.org/" target="_blank">GPSBabel</a> helpful tools for converting them to GPX.</p>
+
+					<h4>
+						<i class="glyphicon glyphicon-search"></i> Search By Place or Coordinates</h4>
+					<p>Type a place into the place search box or coordinates in the longitude/latitude boxes and click
+						<em>Go to Place/Go to Coords</em>. The map will automatically zoom to the location. Coordinates will be labeled with the
+						longitude/latitude. You may be use the clear buttons to clear the points graphics off the map.</p>
+
+					<h4>
+						<i class="glyphicon glyphicon-screenshot"></i> Measurements &amp; Coordinates</h4>
+					<p>First, select your tool - Area, Distance, or Location. Then, select the units you would like the results to be in (acres,
+						sq miles, ...miles, meters,...degrees, DMS (degrees minutes seconds). Finally, begin taking measurements. Measurement
+						results will appear in the lower right and the toolbar window. Double-click to close polygons if measuring for area.</p>
+
+					<h4>
+						<i class="glyphicon glyphicon-pencil"></i> Draw On the Map</h4>
+					<p>Select a draw tool and you can begin adding shapes to your map to highlight an area or specify a certain point. Double
+						click to close polygons. To add a text label to your map, first add the text you would like to appear in the textbox
+						after
+						<em>Add text to your map</em> and then click the
+						<em>Add Text</em> button. Click on the map to add the label.</p>
+
+					<h4>
+						<i class="glyphicon glyphicon-print"></i> Creat Printable PDF</h4>
+					<p>Create a printable version of your customized map in Adobe's Portable Document Format (PDF) or as an image (PNG). You
+						may add a custom title, select a layout, select a print format, and then click
+						<em>Create Map!</em> to open the map in a new window. Depending on the browser and PDF plug-in you are using, there are
+						a number of ways to save/print the PDF/PNG by either using the browser menu or saving the PDF/PNG. It may take some
+						time to generate the PDF/PNG.</p>
+
+					<h4>
+						<i class="glyphicon glyphicon-envelope"></i> Contact Us & Help Us Improve!</h4>
+					<p>Have a question/comment/complaint about the Map Center?
+						<a target='_blank' href="https://idfg.idaho.gov/ifwis/portal/contact#huntplanner"
+						    title="Send us a note">Contact Us</a>! Any feedback (good or bad) is greatly appreciated. Based off your comments we've already made a number
+						of improvements. Keep them coming!</p>
+
+					<p>For more in-depth help documentation
+						<strong>
+							<a href="https://idfg.idaho.gov/ifwis/huntplanner/mapcenter/HelpDocV2/IDFG%20Hunt%20Planner%20Map%20Center%20Help%20Documentation.html"
+							    target="_blank">Click here</a>
+						</strong>.</p>
+
+					<button id="Close" type="button" class="btn" data-dismiss="modal">Close</button>
 				</div>
 			</div>
 		</div>
-		<!-- Disclaimer Modal -->
-		<div class="modal fade" id="disclaimerModal" tabindex="-1" style="display: none;" aria-hidden="true">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-						<h4 class="modal-title">Map Center Disclaimer</h4>
-					</div>
-					<div class="modal-body">
-						<p>The information displayed in this application are derived from Idaho Fish and Game (IDFG) digital GIS datasets, as well as data developed by other sources. The data presented in this application is not “live” data, but consists of data that is updated on a regular basis by IDFG and the other agencies that have provided data. Users of the information displayed in this application are strongly cautioned to verify all information before making any hunting decisions or pursuing game animals by referring to the boundaries published in the current IDFG regulation booklets.</p>
-						<p>This application is to be used for informational purposes only and has not been prepared for, nor is considered to be suitable for, legal, engineering, or surveying purposes. IDFG cannot accept any responsibility for any errors, omissions, or positional accuracy, and therefore, there are no warranties which accompany this product. In no event shall IDFG be liable for any special, indirect, or consequential damages or any damages whatsoever resulting from loss of use, data, or profits arising out of or in connection with the use or misuse of the information herein provided.</p>
-						<p>This application is maintained during normal business hours 8 a.m. to 5 p.m, Monday through Friday.  If any interruption in service occurs during non-business hours, please <a href="https://idfg.idaho.gov/ifwis/portal/contact#huntplanner" title="Send us a note" target="_blank">contact us</a> and the problem will be addressed at the beginning of the next business day.</p>
-						<p>To learn more about the application and to review known issues and application updates, go to the <a href="https://idfg.idaho.gov/ifwis/huntplanner/mapcenter/HelpDocV2/IDFG%20Hunt%20Planner%20Map%20Center%20V2%20Help%20Documentation.html" target="_blank">help documentation</a>.</p>
-						<p>In accordance with our <a href="https://idfg.idaho.gov/public/about/terms/" target="_blank">terms of use</a> for this site, you agree to this disclaimer.</p>
-						<br/><br/>
-						<button id="Close" type="button" class="btn" data-dismiss="modal">Close</button>
-					</div>
+	</div>
+	<!-- Disclaimer Modal -->
+	<div class="modal fade" id="disclaimerModal" tabindex="-1" style="display: none;" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">Map Center Disclaimer</h4>
+				</div>
+				<div class="modal-body">
+					<p>The information displayed in this application are derived from Idaho Fish and Game (IDFG) digital GIS datasets, as well
+						as data developed by other sources. The data presented in this application is not “live” data, but consists of data
+						that is updated on a regular basis by IDFG and the other agencies that have provided data. Users of the information
+						displayed in this application are strongly cautioned to verify all information before making any hunting decisions
+						or pursuing game animals by referring to the boundaries published in the current IDFG regulation booklets.</p>
+					<p>This application is to be used for informational purposes only and has not been prepared for, nor is considered to be
+						suitable for, legal, engineering, or surveying purposes. IDFG cannot accept any responsibility for any errors, omissions,
+						or positional accuracy, and therefore, there are no warranties which accompany this product. In no event shall IDFG
+						be liable for any special, indirect, or consequential damages or any damages whatsoever resulting from loss of use,
+						data, or profits arising out of or in connection with the use or misuse of the information herein provided.</p>
+					<p>This application is maintained during normal business hours 8 a.m. to 5 p.m, Monday through Friday. If any interruption
+						in service occurs during non-business hours, please
+						<a href="https://idfg.idaho.gov/ifwis/portal/contact#huntplanner"
+						    title="Send us a note" target="_blank">contact us</a> and the problem will be addressed at the beginning of the next business day.</p>
+					<p>To learn more about the application and to review known issues and application updates, go to the
+						<a href="https://idfg.idaho.gov/ifwis/huntplanner/mapcenter/HelpDocV2/IDFG%20Hunt%20Planner%20Map%20Center%20Help%20Documentation.html"
+						    target="_blank">help documentation</a>.</p>
+					<p>In accordance with our
+						<a href="https://idfg.idaho.gov/public/about/terms/" target="_blank">terms of use</a> for this site, you agree to this disclaimer.</p>
+					<br/>
+					<br/>
+					<button id="Close" type="button" class="btn" data-dismiss="modal">Close</button>
 				</div>
 			</div>
 		</div>
-       <!-- Hunt Restriction Modal -->
-       <div class="modal fade bs-example-modal-sm" id="huntWarningModal" tabindex="-1" style="display: none;" aria-hidden="true">
-           <div class="modal-dialog modal-sm">
-               <div class="modal-content">
-                   <div class="modal-header">
-                       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                       <h4 class="modal-title">WARNING!</h4>
-                   </div>
-                   <div class="modal-body">
-                       <p>There may be further restrictions within a hunt area you selected (the area with lines through it).  Please consult the <a href="https://idfg.idaho.gov/public/hunt/rules/" target="_blank">hunting regulations</a>.</p>
-                       <br/>
-                       <button class="btnWarningClose" data-dismiss="modal" onclick="window.open('https://idfg.idaho.gov/hunt/rules/', '_blank')">Close</button>
-                   </div>
-               </div>
-           </div>
-       </div>
-    <!-- Layout -->
-		<div id="map-layout" class="row">
-			<div class="row">
-				<!-- sidebar -->
-				<div id="sidebar" class="column col-md-3 sidebar-offcanvas">
-					<!-- tool nav -->
-						<ul class="nav">
-							<h4>Customize the Map</h4>
-							<li><a id="legendNav1"><i class="glyphicon glyphicon-list"></i> Turn Layers On/Off</a></li>
-							<!-- Legend Collapse -->
-							<div id="legendCollapse" class="panel-collapse collapse">
-								<div class="esriLayerList" role="presentation">
-									<div id="queryLabelDiv" class="esriTitle" style="display: none;">
-										<div class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-bottom: 10px;">
-											<span data-dojo-attach-point="contentNode">
-												<span data-dojo-attach-point="checkContainerNode">
-													<input id="queryCheckbox" type="checkbox" class="esriCheckbox"/>
-												</span>
-												<label class="esriLabel" for="queryCheckbox"> Highlighted Hunt Areas </label>
-												<label class='huntDisclaimer'>If hunt area has lines through it, further restrictions may apply. <a href='https://idfg.idaho.gov/public/hunt/' target='_blank'>Consult Regulations</a></label>
-												<div id="queryLabel3Div"  style="display: none;">
-													<img data-dojo-attach-point="iconNode" src="src/images/queryIMG3.png"/>
-													<span id="queryLabel3" data-dojo-attach-point="labelNode"></span>
-												</div>
-												<div id="queryLabel1Div"  style="display: none;">
-													<img data-dojo-attach-point="iconNode" src="src/images/queryIMG.png"/>
-													<span id="queryLabel1" data-dojo-attach-point="labelNode"></span>
-												</div>													
-												<div id="queryLabel2Div"  style="display: none;">
-													<img data-dojo-attach-point="iconNode" src="src/images/queryIMG2.png"/>
-													<span id="queryLabel2" data-dojo-attach-point="labelNode"></span>
-												</div>								
-												<div id="queryLabel4Div"  style="display: none;">
-													<img data-dojo-attach-point="iconNode" src="src/images/queryIMG4.png"/>
-													<span id="queryLabel4" data-dojo-attach-point="labelNode"></span>
-												</div>
-												<div id="queryLabel5Div"  style="display: none;">
-													<img data-dojo-attach-point="iconNode" src="src/images/queryIMG5.png"/>
-													<span id="queryLabel5" data-dojo-attach-point="labelNode"></span>
-												</div>
-											</span>	
+	</div>
+	<!-- Hunt Restriction Modal -->
+	<div class="modal fade bs-example-modal-sm" id="huntWarningModal" tabindex="-1" style="display: none;" aria-hidden="true">
+		<div class="modal-dialog modal-sm alert alert-danger">
+			<!-- <div class="modal-content"> -->
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">...Some things are unmappable.</h4>
+				</div>
+				<div class="modal-body">
+					<p>There may be further restrictions within the hunt area you selected.</p><p>Please consult the
+						<a class='alert-link' href="https://idfg.idaho.gov/public/hunt/rules/" target="_blank">hunting regulations</a> for more information.</p>
+					<div style='margin-top:10px' class="btn btn-danger" data-dismiss="modal" onclick="window.open('https://idfg.idaho.gov/hunt/rules/', '_blank')">Close</div>
+				</div>
+			<!-- </div> -->
+		</div>
+	</div>
+	<!-- Layout -->
+	<div id="map-layout" class="row">
+		<div class="row">
+			<!-- sidebar -->
+			<div id="sidebar" class="column col-md-3 sidebar-offcanvas">
+				<!-- tool nav -->
+				<ul class="nav">
+					<h4>Customize the Map</h4>
+					<li>
+						<a id="legendNav1">
+							<i class="glyphicon glyphicon-list"></i> Turn Layers On/Off</a>
+					</li>
+					<!-- Legend Collapse -->
+					<div id="legendCollapse" class="panel-collapse collapse">
+						<div class="esriLayerList" role="presentation">
+							<div id="queryLabelDiv" class="esriTitle" style="display: none;">
+								<div class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-bottom: 10px;">
+									<span data-dojo-attach-point="contentNode">
+										<span data-dojo-attach-point="checkContainerNode">
+											<input id="queryCheckbox" type="checkbox" class="esriCheckbox" />
+										</span>
+										<label class="esriLabel" for="queryCheckbox"> Highlighted Hunt Areas </label>
+										<label class='huntDisclaimer'>If hunt area has lines through it, further restrictions may apply.
+											<a href='https://idfg.idaho.gov/public/hunt/'
+											    target='_blank'>Consult Regulations</a>
+										</label>
+										<div id="queryLabel3Div" style="display: none;">
+											<img data-dojo-attach-point="iconNode" src="src/images/queryIMG3.png" />
+											<span id="queryLabel3" data-dojo-attach-point="labelNode"></span>
 										</div>
-									</div>
-									<div id="uploadLabelDiv" class="esriTitle" style="display: none;">
-										<div class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-bottom: 5px;">
-											<span data-dojo-attach-point="contentNode">
-												<span data-dojo-attach-point="checkContainerNode">
-													<input id="uploadCheckbox" type="checkbox" class="esriCheckbox"/>
-												</span>
-												<label class="esriLabel" for="uploadCheckbox"> Uploaded GPX Files </label>
-												<div id="uploadLabel1Div"  style="display: none;">
-													<img data-dojo-attach-point="iconNode" src="src/images/WaypointIMG.png"/>
-													<span id="uploadLabel1" data-dojo-attach-point="labelNode">Waypoints</span>
-												</div>
-												<div id="uploadLabel2Div"  style="display: none;">
-													<img data-dojo-attach-point="iconNode" src="src/images/TrackIMG.png"/>
-													<span id="uploadLabel2" data-dojo-attach-point="labelNode">Tracks</span>
-												</div>
-											</span>	
+										<div id="queryLabel1Div" style="display: none;">
+											<img data-dojo-attach-point="iconNode" src="src/images/queryIMG.png" />
+											<span id="queryLabel1" data-dojo-attach-point="labelNode"></span>
 										</div>
-									</div>
-								</div>
-								<div id="tocDiv"></div>
-								<div class="esriLayerList" role="presentation">
-									<div id="fireLayersDiv" class="esriTitle">
-										<div class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-bottom: 5px; border-top-width:0px !important">
-											<span data-dojo-attach-point="contentNode">
-											<span data-dojo-attach-point="checkContainerNode">
-												<input id="fireLayersCheckbox" type="checkbox" class="esriCheckbox"/>
-											</span>
-											<label class="esriLabel" for="fireLayersCheckbox">Wildfire & Closure Related Layers</label>
-												<div id="TOCNode_significantClosures_1" class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 10px; padding-bottom: 5px; border-top-width: 0px !important">
-													<span data-dojo-attach-point="contentNode">
-														<span data-dojo-attach-point="checkContainerNode">
-															<input id="significantClosure1Checkbox" type="checkbox" class="esriCheckbox"></input>
-														</span>
-														<img src="src/images/PioneerSalvageClosure.png"><label class="esriLabel fireLabel" for="significantClosure1Checkbox" style="display:inline-block; padding-left:5px !important; font-weight:normal;">Pioneer Fire Recovery Closure</label>
-												</div>
-												<!-- <div id="TOCNode_fireLayers_0" class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 10px; padding-bottom: 5px; border-top-width: 0px !important">
-													<span data-dojo-attach-point="contentNode">
-														<span data-dojo-attach-point="checkContainerNode">
-															<input id="fireLayer0Checkbox" type="checkbox" class="esriCheckbox"></input>
-														</span>
-														<img src="src/images/FireClosures.png"><label class="esriLabel fireLabel" for="fireLayer0Checkbox" style="display:inline-block; padding-left:5px !important; font-weight:normal;">Fire Emergency Area Closures</label>
-												</div>
-												<div id="TOCNode_fireLayers_X" class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 10px; padding-bottom: 5px; border-top-width: 0px !important">
-													<span data-dojo-attach-point="contentNode">
-														<span data-dojo-attach-point="checkContainerNode">
-															<input id="fireLayerXCheckbox" type="checkbox" class="esriCheckbox"></input>
-														</span>
-														<img src="src/images/ActiveFireReport.png"><label class="esriLabel fireLabel" for="fireLayerXCheckbox" style="display:inline-block; padding-left:5px !important; font-weight:normal;">Active Fire Report</label>
-												</div>
-												<div id="TOCNode_fireLayers_1" class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 10px; padding-bottom: 5px; border-top-width: 0px !important">
-													<span data-dojo-attach-point="contentNode">
-														<span data-dojo-attach-point="checkContainerNode">
-															<input id="fireLayer1Checkbox" type="checkbox" class="esriCheckbox"></input>
-														</span>
-														<img src="src/images/ActiveFirePerimeters.png"><label class="esriLabel fireLabel" for="fireLayer1Checkbox" style="display:inline-block; padding-left:5px !important; font-weight:normal;">2017 Active Fire Perimeters</label>
-												</div> -->
-<!-- 												<div id="TOCNode_fireLayers_2" class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 10px; padding-bottom: 5px; border-top-width: 0px !important">
-													<span data-dojo-attach-point="contentNode">
-														<span data-dojo-attach-point="checkContainerNode">
-															<input id="fireLayer2Checkbox" type="checkbox" class="esriCheckbox"></input>
-														</span>
-														<img src="src/images/InactiveFirePerimeters.png"><label class="esriLabel fireLabel" for="fireLayer2Checkbox" style="display:inline-block; padding-left:5px !important; font-weight:normal;">2017 All Fire Perimeters</label>
-												</div> -->
-												<div id="TOCNode_fireLayers_3" class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 10px; padding-bottom: 5px; border-top-width: 0px !important">
-													<span data-dojo-attach-point="contentNode">
-														<span data-dojo-attach-point="checkContainerNode">
-															<input id="fireLayer3Checkbox" type="checkbox" class="esriCheckbox"></input>
-														</span>
-														<label class="esriLabel fireLabel" for="fireLayer3Checkbox" style="padding-left:5px !important; padding-bottom:0px !important; font-weight:normal;">Past Year Fire Perimeters</label>
-														<img src="src/images/PastYearPerimeters.png">
-												</div>
- 												<div id="TOCNode_fireLayers_4" class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 10px; padding-bottom: 5px; border-top-width: 0px !important">
-													<span data-dojo-attach-point="contentNode">
-														<span data-dojo-attach-point="checkContainerNode">
-															<input id="fireLayer4Checkbox" type="checkbox" class="esriCheckbox"></input>
-														</span>
-														<label class="esriLabel fireLabel" for="fireLayer4Checkbox" style="padding-left:5px !important; padding-bottom:0px !important; font-weight:normal;">MODIS Fire Detections</label>
-														<img src="src/images/MODIS2017.png">
-												</div>
-												<div id="TOCNode_significantClosures_0" class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-left: 10px; padding-bottom: 5px; border-top-width: 0px !important">
-													<span data-dojo-attach-point="contentNode">
-														<span data-dojo-attach-point="checkContainerNode">
-															<input id="significantClosure0Checkbox" type="checkbox" class="esriCheckbox"></input>
-														</span>
-														<img src="src/images/WilksClosure.png"><label class="esriLabel fireLabel" for="significantClosure0Checkbox" style="display:inline-block; padding-left:5px !important; font-weight:normal;">Wilks Development - No Access</label>
-												</div></br>
-												<p class='disclaimer'>Active Fire Reports and perimeter layers are maintained by USGS GeoMAC. <a href='https://wildfire.usgs.gov/geomac/' target='_blank'>Learn More</a></p>
-												<p class='disclaimer'>MODIS layer is maintained by USFS RSAC. <a href='https://fsapps.nwcg.gov/afm/' target='_blank'>Learn More</a></p>
-												<p class='disclaimer'>Fire restrictions may be in place. <a href='http://www.idahofireinfo.com/p/fire-restrictions.html' target='_blank'>Learn More</a></p>							
-										</div>	
-									</div>
+										<div id="queryLabel2Div" style="display: none;">
+											<img data-dojo-attach-point="iconNode" src="src/images/queryIMG2.png" />
+											<span id="queryLabel2" data-dojo-attach-point="labelNode"></span>
+										</div>
+										<div id="queryLabel4Div" style="display: none;">
+											<img data-dojo-attach-point="iconNode" src="src/images/queryIMG4.png" />
+											<span id="queryLabel4" data-dojo-attach-point="labelNode"></span>
+										</div>
+										<div id="queryLabel5Div" style="display: none;">
+											<img data-dojo-attach-point="iconNode" src="src/images/queryIMG5.png" />
+											<span id="queryLabel5" data-dojo-attach-point="labelNode"></span>
+										</div>
+									</span>
 								</div>
 							</div>
-							<li><a id="basemapNav1"><i class="glyphicon glyphicon-globe"></i> Change the Basemap</a></li>
-							<!-- Basemap Collapse -->
-							<div id="basemapCollapse" class="panel-collapse collapse">
-								<div class="panel-body">
-									<div id="basemapDiv"></div>
+							<div id="uploadLabelDiv" class="esriTitle" style="display: none;">
+								<div class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-bottom: 5px;">
+									<span data-dojo-attach-point="contentNode">
+										<span data-dojo-attach-point="checkContainerNode">
+											<input id="uploadCheckbox" type="checkbox" class="esriCheckbox" />
+										</span>
+										<label class="esriLabel" for="uploadCheckbox"> Uploaded GPX Files </label>
+										<div id="uploadLabel1Div" style="display: none;">
+											<img data-dojo-attach-point="iconNode" src="src/images/WaypointIMG.png" />
+											<span id="uploadLabel1" data-dojo-attach-point="labelNode">Waypoints</span>
+										</div>
+										<div id="uploadLabel2Div" style="display: none;">
+											<img data-dojo-attach-point="iconNode" src="src/images/TrackIMG.png" />
+											<span id="uploadLabel2" data-dojo-attach-point="labelNode">Tracks</span>
+										</div>
+									</span>
 								</div>
 							</div>
-							<li><a id="huntNav1"><i class="glyphicon glyphicon-flash"></i> Highlight a Hunt Area</a></li>
-							<!-- Highlight a Hunt Collapse -->
-							<div id="huntCollapse" class="panel-collapse collapse">
-								<div class="panel-body">
-									<p style="font-weight:bold; font-size:16px"> Select a Single or Multiple Hunt Areas To Highlight</p>
-									<table>
-									<tr style="height:40px;">
-										<td>Controlled Hunts: </td>
-										<td><select class="selectpicker" multiple title='--none--' id="chunt">
+						</div>
+						<div id="accordion" role="tablist">
+							<div class="card">
+								<div class="card-header" role="tab" id="headingOne">
+									<h5 class="mb-0" style="font-weight: bold;">
+										<a class="labelStuff btn btnCollapse" data-toggle="collapse" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">Hunt Related Layers</a>
+									</h5>
+								</div>
+								<div id="collapseOne" class="collapse" role="tabpanel" aria-labelledby="headingOne" data-parent="#accordion">
+									<!-- <p style='padding-left: 6px;'>* Use the sliders to adjust layer opacity.</p> -->
+									<div id="tocDiv1"></div>
+								</div>
+							</div>
+							<div class="card">
+								<div class="card-header" role="tab" id="headingTwo">
+									<h5 class="mb-0" style="font-weight: bold;">
+										<a class="labelStuff btn btnCollapse" data-toggle="collapse" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">Administrative Boundary Layers</a>
+									</h5>
+								</div>
+								<div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo" data-parent="#accordion">
+									<!-- <p style='padding-left: 6px;'>* Use the sliders to adjust layer opacity.</p> -->
+									<div id="tocDiv2"></div>
+								</div>
+							</div>
+							<div class="card">
+								<div class="card-header" role="tab" id="headingThree">
+									<h5 class="mb-0" style="font-weight: bold;">
+										<a class="labelStuff btn btnCollapse" data-toggle="collapse" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">Reference Layers (Trails, Lands, etc.)</a>
+									</h5>
+								</div>
+								<div id="collapseThree" class="collapse" role="tabpanel" aria-labelledby="headingThree" data-parent="#accordion">
+									<!-- <p style='padding-left: 6px;'>* Use the sliders to adjust layer opacity.</p> -->
+									<div id="tocDiv3"></div>
+								</div>
+							</div>
+							<div class="card">
+								<div class="card-header" role="tab" id="headingFour">
+									<h5 class="mb-0" style="font-weight: bold;">
+										<a class="labelStuff btn btnCollapse" data-toggle="collapse" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">Wildfire & Closure Related Layers</a>
+									</h5>
+								</div>
+								<div id="collapseFour" class="collapse" role="tabpanel" aria-labelledby="headingFour" data-parent="#accordion">
+									<!-- <p style='padding-left: 6px;'>* Use the sliders to adjust layer opacity.</p> -->
+									<div id="tocDiv4"></div>
+								</div>
+							</div>
+							<!-- <div class="card">
+								<div class="card-header" role="tab" id="headingFive">
+									<h5 class="mb-0" style="font-weight: bold;">
+										<a class="labelStuff btn btnCollapse" data-toggle="collapse" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">Wildfire & Closure Related Layers</a>
+									</h5>
+								</div> -->
+								<!-- <div id="collapseFive" class="collapse" role="tabpanel" aria-labelledby="headingFive" data-parent="#accordion">
+									<div class="card-body">
+										<div class="esriLayerList" role="presentation">
+											<div id="fireLayersDiv" class="esriTitle">
+												<div class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode" style="padding-bottom: 5px; border-top-width:0px !important">
+													<span data-dojo-attach-point="contentNode">
+														<div id="TOCNode_fireLayers_0" class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode"
+														    style="padding-left: 10px; padding-bottom: 5px; border-top-width: 0px !important">
+															<span data-dojo-attach-point="contentNode">
+																<span data-dojo-attach-point="checkContainerNode">
+																	<input id="fireLayer0Checkbox" type="checkbox" class="esriCheckbox"></input>
+																</span>
+																<img src="src/images/FireClosures.png">
+																<label class="esriLabel fireLabel" for="fireLayer0Checkbox" style="display:inline-block; padding-left:5px !important; font-weight:normal;">Fire Emergency Area Closures</label>
+														</div>
+														<div id="TOCNode_fireLayers_X" class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode"
+														    style="padding-left: 10px; padding-bottom: 5px; border-top-width: 0px !important">
+															<span data-dojo-attach-point="contentNode">
+																<span data-dojo-attach-point="checkContainerNode">
+																	<input id="fireLayerXCheckbox" type="checkbox" class="esriCheckbox"></input>
+																</span>
+																<img src="src/images/marker_fire.png">
+																<label class="esriLabel fireLabel" for="fireLayerXCheckbox" style="display:inline-block; padding-left:5px !important; font-weight:normal;">Active Fire Report</label>
+														</div>
+														<div id="TOCNode_fireLayers_1" class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode"
+														    style="padding-left: 10px; padding-bottom: 5px; border-top-width: 0px !important">
+															<span data-dojo-attach-point="contentNode">
+																<span data-dojo-attach-point="checkContainerNode">
+																	<input id="fireLayer1Checkbox" type="checkbox" class="esriCheckbox"></input>
+																</span>
+																<label class="esriLabel fireLabel" for="fireLayer1Checkbox" style="padding-left:5px !important; padding-bottom:0px !important; font-weight:normal;">2018 Active Fire Perimeters</label>
+																<img src="src/images/ActiveFirePerimeters.png">
+														</div>
+														<div id="TOCNode_fireLayers_2" class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode"
+														    style="padding-left: 10px; padding-bottom: 5px; border-top-width: 0px !important">
+															<span data-dojo-attach-point="contentNode">
+																<span data-dojo-attach-point="checkContainerNode">
+																	<input id="fireLayer2Checkbox" type="checkbox" class="esriCheckbox"></input>
+																</span>
+																<img src="src/images/InactiveFirePerimeters.png">
+																<label class="esriLabel fireLabel" for="fireLayer2Checkbox" style="display:inline-block; padding-left:5px !important; font-weight:normal;">2018 All Fire Perimeters</label>
+														</div>
+														<div id="TOCNode_fireLayers_3" class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode"
+														    style="padding-left: 10px; padding-bottom: 5px; border-top-width: 0px !important">
+															<span data-dojo-attach-point="contentNode">
+																<span data-dojo-attach-point="checkContainerNode">
+																	<input id="fireLayer3Checkbox" type="checkbox" class="esriCheckbox"></input>
+																</span>
+																<label class="esriLabel fireLabel" for="fireLayer3Checkbox" style="padding-left:5px !important; padding-bottom:0px !important; font-weight:normal;">Past Year Fire Perimeters</label>
+																<img src="src/images/PastYearPerimeters.png">
+														</div>
+														<div id="TOCNode_fireLayers_4" class="esriTitleContainer" data-dojo-attach-event="onclick:_onClick" data-dojo-attach-point="rowNode"
+														    style="padding-left: 10px; padding-bottom: 5px; border-top-width: 0px !important">
+															<span data-dojo-attach-point="contentNode">
+																<span data-dojo-attach-point="checkContainerNode">
+																	<input id="fireLayer4Checkbox" type="checkbox" class="esriCheckbox"></input>
+																</span>
+																<label class="esriLabel fireLabel" for="fireLayer4Checkbox" style="padding-left:5px !important; padding-bottom:0px !important; font-weight:normal;">MODIS Fire Detections</label>
+																<img src="src/images/MODIS2018.png">
+														</div>
+														</br>
+														<p class='disclaimer'>Active Fire Reports and perimeter layers are maintained by USGS GeoMAC.
+															<a href='https://wildfire.usgs.gov/geomac/'
+															    target='_blank'>Learn More</a>
+														</p>
+														<p class='disclaimer'>MODIS layer is maintained by USFS RSAC.
+															<a href='https://fsapps.nwcg.gov/afm/' target='_blank'>Learn More</a>
+														</p>
+														<p class='disclaimer'>Fire restrictions may be in place.
+															<a href='http://www.idahofireinfo.com/p/fire-restrictions.html' target='_blank'>Learn More</a>
+														</p>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div> -->
+							<!-- </div> -->
+						</div>
+					</div>
+
+					<li>
+						<a id="basemapNav1">
+							<i class="glyphicon glyphicon-globe"></i> Change the Basemap</a>
+					</li>
+					<!-- Basemap Collapse -->
+					<div id="basemapCollapse" class="panel-collapse collapse">
+						<div class="panel-body">
+							<div id="basemapDiv"></div>
+						</div>
+					</div>
+					<li>
+						<a id="huntNav1">
+							<i class="glyphicon glyphicon-flash"></i> Highlight a Hunt Area</a>
+					</li>
+					<!-- Highlight a Hunt Collapse -->
+					<div id="huntCollapse" class="panel-collapse collapse">
+						<div class="panel-body">
+							<p style="font-weight:bold; font-size:16px"> Select a Single or Multiple Hunt Areas To Highlight</p>
+							<table>
+								<tr style="height:40px;">
+									<td>Controlled Hunts: </td>
+									<td>
+										<select class="selectpicker" multiple title='--none--' id="chunt">
 											<option value="271">Deer 1001 - Area 1-1</option>
 											<option value="185">Deer 1002 - Area 11</option>
 											<option value="185">Deer 1003 - Area 11</option>
@@ -387,7 +535,7 @@
 											<option value="48">Deer 1099 - Area 51-1</option>
 											<option value="236">Deer 1100 - Area 52</option>
 											<option value="237">Deer 1101 - Area 52A</option>
-											<option value="242">Deer 1102 - Area 57</option>											
+											<option value="242">Deer 1102 - Area 57</option>
 											<option value="248">Deer 1103 - Area 61</option>
 											<option value="787">Deer 1104 - Area 64-1</option>
 											<option value="265">Deer 1105 - Area 73A</option>
@@ -409,9 +557,9 @@
 											<option value="107">Deer 1121 - Area 39-1X</option>
 											<option value="1149">Deer 1122 - Area 40-1X</option>
 											<option value="1372">Deer 1123 - Area 1-1X</option>
-											<option value="1373">Deer 1124 - Area 2-1X</option>											
+											<option value="1373">Deer 1124 - Area 2-1X</option>
 											<option value="1374">Deer 1125 - Area 3-1X</option>
-											<option value="1375">Deer 1126 - Area 5-1X</option>											
+											<option value="1375">Deer 1126 - Area 5-1X</option>
 											<option value="180">Deer 1127 - Area 8X</option>
 											<option value="3">Deer 1128 - Area 8A-1X</option>
 											<option value="4">Deer 1129 - Area 10A-1X</option>
@@ -429,11 +577,11 @@
 											<option value="1148">Deer 1141 - Area 38-1X</option>
 											<option value="1377">Deer 1142 - Area 50-1X</option>
 											<option value="1368">Deer 1143 - Area 60-1X</option>
-											<option value="1378">Deer 1144 - Area 60A-1X</option>											
+											<option value="1378">Deer 1144 - Area 60A-1X</option>
 											<option value="252">Deer 1145 - Area 63AX</option>
 											<option value="259">Deer 1146 - Area 68AX</option>
 											<option value="1380">Deer 1147 - Area 73-1X</option>
-											<option value="1381">Deer 1148 - Area 78-1X</option>											
+											<option value="1381">Deer 1148 - Area 78-1X</option>
 											<option value="271">Deer 1149 - Area 1-1</option>
 											<option value="185">Deer 1150 - Area 11</option>
 											<option value="186">Deer 1151 - Area 11A</option>
@@ -1003,200 +1151,255 @@
 											<option value="1338">Turkey 9024: 36B-1</option>
 											<option value="445">Turkey 9025: 38-1</option>
 											<option value="262">Turkey 9026: 71</option>
-										</select></td>
+										</select>
+									</td>
 									<tr>
 										<td>Game Management Units: </td>
-											<td><select class="selectpicker" multiple title='--none--' id="gmu">
-											</select></td>
+										<td>
+											<select class="selectpicker" multiple title='--none--' id="gmu">
+											</select>
+										</td>
 									</tr>
 									<tr style="height:40px;">
 										<td>Elk Zones: </td>
-										<td><select class="selectpicker" multiple title='--none--' id="elkzone">
-										</select></td>
+										<td>
+											<select class="selectpicker" multiple title='--none--' id="elkzone">
+											</select>
+										</td>
 									</tr>
-									</tr style="height:40px;">
-									<tr>
-										<td>Waterfowl Hunt Areas: </td>
-										<td><select class="selectpicker" multiple title='--none--' id="waterfowl">
-										</select></td>
-									</tr>
-									<tr style="height:40px;">
-										<td>Game Animal Distributions: </td>
-										<td><select class="selectpicker" multiple title='--none--' id="gameDistribution">
-										</select></td>
-									</tr>	
-									</table>
-									<br/>
-									<input type="submit" id="btnQuery" value="Go">
-									<button type="button" id="btnClearHighlighted">Clear Highlighted Area</button>
+								</tr style="height:40px;">
+								<tr>
+									<td>Waterfowl Hunt Areas: </td>
+									<td>
+										<select class="selectpicker" multiple title='--none--' id="waterfowl">
+										</select>
+									</td>
+								</tr>
+								<tr style="height:40px;">
+									<td>Game Animal Distributions: </td>
+									<td>
+										<select class="selectpicker" multiple title='--none--' id="gameDistribution">
+										</select>
+									</td>
+								</tr>
+							</table>
+							<br/>
+							<input type="submit" id="btnQuery" value="Select">
+							<!-- <button id='kmlNav1' class='btn btn-info' style="display: none;"><a id='getKml'><i class="glyphicon glyphicon-floppy-save"></i>Download Area as KML</a></button> -->
+							<button type="button" id="btnClearHighlighted" class='btn btn-danger'>Clear</button>
+
+						</div>
+					</div>
+					<li>
+						<a id="kmlNav1" style="display: none;">
+							<i class="glyphicon glyphicon-floppy-save"></i> Download Highlighted Area as KML</a>
+					</li>
+					<!-- Download KML Collapse -->
+					<div id="kmlCollapse" class="panel-collapse collapse">
+						<div class="panel-body">
+							<p style="font-weight:bold; font-size:16px;">Click the link(s) below to download the highlighted hunt areas you selected as a Google Earth KML.</p>
+							<a id="gmuKML" class="Link" style="display: none;">
+								<i class="glyphicon glyphicon-download alt"></i> Selected GMU</a>
+							<br/>
+							<br/>
+							<a id="elkzoneKML" class="Link" style="display: none;">
+								<i class="glyphicon glyphicon-download alt"></i> Selected Elk Zone</a>
+							<br/>
+							<br/>
+							<a id="chuntKML" class="Link" style="display: none;">
+								<i class="glyphicon glyphicon-download alt"></i> Selected Controlled Hunt</a>
+							<br/>
+							<br/>
+							<a id="waterfowlKML" class="Link" style="display: none;">
+								<i class="glyphicon glyphicon-download alt"></i> Selected Waterfowl Hunt</a>
+							<br/>
+							<br/>
+							<a id="gameDistributionKML" class="Link" style="display: none;">
+								<i class="glyphicon glyphicon-download alt"></i> Selected Game Animal Distribution</a>
+						</div>
+					</div>
+					<li>
+						<a id="uploadNav1">
+							<i class="glyphicon glyphicon-floppy-open"></i> Upload Waypoints &amp; Tracks</a>
+					</li>
+					<!-- Upload GPX Collapse -->
+					<div id="uploadCollapse" class="panel-collapse collapse">
+						<div class="panel-body">
+							<p>Add your own location data, such as GPS waypoints and tracks. If you data is in another format such as kml, shp, txt,
+								csv, wpt, dat, or some other GPS specific file type you may find
+								<a class="Link" href="https://www.gpsvisualizer.com/"
+								    target="_blank">GPS Visualizer</a> or
+								<a class="Link" href="https://www.gpsbabel.org/" target="_blank">GPSBabel</a> helpful tools for converting them to GPX.</p>
+							<form enctype="multipart/form-data" method="post" id="uploadForm">
+								<div class="field">
+									<label class="file-upload">
+										<input type="file" name="file" id="inFile" />
+									</label>
 								</div>
-							</div>
-							<li><a id="kmlNav1" style="display: none;"><i class="glyphicon glyphicon-floppy-save"></i> Download Highlighted Area as KML</a></li>
-							<!-- Download KML Collapse -->
-							<div id="kmlCollapse" class="panel-collapse collapse">
-									<div class="panel-body">
-										<p style="font-weight:bold; font-size:16px; padding:">Click the link(s) below to download the highlighted hunt areas you selected as a Google Earth KML.</p>
-										<a id="gmuKML" class="Link" style="display: none;"><i class="glyphicon glyphicon-download alt"></i>   Selected GMU KML</a>
-										<br/><br/>
-										<a id="elkzoneKML" class="Link" style="display: none;"><i class="glyphicon glyphicon-download alt"></i>   Selected Elk Zone KML</a>
-										<br/><br/>
-										<a id="chuntKML" class="Link" style="display: none;"><i class="glyphicon glyphicon-download alt"></i>   Selected Controlled Hunt KML</a>
-										<br/><br/>
-										<a id="waterfowlKML" class="Link" style="display: none;"><i class="glyphicon glyphicon-download alt"></i>   Selected Waterfowl Hunt KML</a>
-										<br/><br/>
-										<a id="gameDistributionKML" class="Link" style="display: none;"><i class="glyphicon glyphicon-download alt"></i>   Selected Game Animal Distribution KML</a>
-									</div>
-							</div>
-							<li><a id="uploadNav1"><i class="glyphicon glyphicon-floppy-open"></i> Upload Waypoints & Tracks</a></li>
-							<!-- Upload GPX Collapse -->
-							<div id="uploadCollapse" class="panel-collapse collapse">
-								<div class="panel-body">
-									<p>Add your own location data, such as GPS waypoints and tracks.  If you data is in another format such as kml, shp, txt, csv, wpt, dat, or some other GPS specific file type you may find <a class="Link" href="https://www.gpsvisualizer.com/" target="_blank">GPS Visualizer</a> or <a class="Link" href="https://www.gpsbabel.org/" target="_blank">GPSBabel</a> helpful tools for converting them to GPX.</p>
-									<br/>
-									<form enctype="multipart/form-data" method="post" id="uploadForm">
-										<div class="field">
-												<label class="file-upload">
-														<input type="file" name="file" id="inFile"/>
-												</label>
-										</div>
-									</form>
-									<span class="file-upload-status" style="opacity:1;" id="upload-status"></span>		
-									<br/><br/>
-									<button id="btnClearUpload">Clear Uploaded GPX Files</button>
+							</form>
+							<span class="file-upload-status" style="opacity:1;" id="upload-status"></span>
+							<button id="btnClearUpload" class='btn btn-danger'>Clear Uploaded GPX Files</button>
+						</div>
+					</div>
+					<h4>Map Tools</h4>
+					<li>
+						<a id="geosearchNav1">
+							<i class="glyphicon glyphicon-search"></i> Search By Place or Coordinates</a>
+					</li>
+					<!-- Coordinate and Place Search Collapse -->
+					<div id="geosearchCollapse" class="panel-collapse collapse">
+						<div class="modal-body">
+							<form id="geosearch-form">
+								<div class="form-group">
+									<p style="font-weight:bold; font-size:16px">Enter Place or Coordinates: </p>
+									<div id="geosearch"></div>
 								</div>
-							</div>
-							<h4>Map Tools</h4>
-							<li><a id="geosearchNav1"><i class="glyphicon glyphicon-search"></i> Search By Place or Coordinates</a></li>
-							<!-- Coordinate and Place Search Collapse -->
-							<div id="geosearchCollapse" class="panel-collapse collapse">
-									<div class="modal-body">
-										<form id="geosearch-form">
-											<div class="form-group">
-												<p style="font-weight:bold; font-size:16px"> Place Search: </p>
-												<div id="geosearch"></div>
-											</div> 
-											<button type="button" id="btnGeosearch">Go to Place</button>
-											<button type="button" id="btnClearPlace">Clear Place Search</button>
-											<br/><br/>
+								<button type="button" id="btnGeosearch" disabled>Search</button>
+								<button type="button" id="btnClearPlace" class='btn btn-danger'>Clear Location</button>
+								<!-- <br/><br/>
 											<p style="font-weight:bold; font-size:16px"> Zoom to Coordinate: </p>
 											Longitude: <input id="longitudeInput" type="text" name="longitude" placeholder="ex. -116.18"><br/>
 											<br/>
 											Latitude: <input id="latitudeInput" type="text" name="latitude" placeholder="ex. 43.61"><br/>
 											<br/>
 											<button type="button" id="btnCoordZoom">Go To Coords</button>
-											<button type="button" id="btnClear">Clear Coords Search</button>
-										</form>
-									</div>
-							</div>
-							<li><a id="measurementNav1"><i class="glyphicon glyphicon-screenshot"></i> Measurements &amp; Coordinates</a></li>
-							<!-- Measurement Collapse -->
-							<div id="measureCollapse" class = "panel-collapse collapse">
-								<div class="panel-body">
-									<div id="measurementNote">
-										Measure area or distance or get the coordinates of a specific point. Toggle the dropdown menu on the right to change the units of measure.
-										</br></br>
-										When you are finished using the Measurement Tools, make sure all of the tool buttons are "off" (not highlighted by a grey box) and collapse the Measurement pane to enable popups. 
-									</div>
-									<div id="MeasureInstructions"></div>
-									<div id="measurementDiv"></div>
-									<button id="clearMeasureResults">Clear Measurement Results</button>
-								</div>
-							</div>
-							<li><a id="drawNav1"><i class="glyphicon glyphicon-pencil"></i> Draw On the Map</a></li>
-							<!-- Draw Collapse -->
-							<div id="drawCollapse" class="panel-collapse collapse">
-								<div class="modal-body">
-									<button data-dojo-type="dijit/form/Button" class="draw-button" name="Multi Point">Multi Point</button>
-									<button data-dojo-type="dijit/form/Button" class="draw-button" name="Polyline">Line</button>
-									<button data-dojo-type="dijit/form/Button" class="draw-button" name="Circle">Circle</button>
-									<button data-dojo-type="dijit/form/Button" class="draw-button" name="Polygon">Polygon</button>
-									<button data-dojo-type="dijit/form/Button" class="draw-button" name="Freehand Polyline">Freehand Line</button>
-									<button data-dojo-type="dijit/form/Button" class="draw-button" name="Freehand Polygon">Freehand Polygon</button>
-									<br/><br/>
-									Add text to your map: <input type="text" id="userTextBox" placeholder="ex. Camp Spot"><button data-dojo-type="dijit/form/Button" class="draw-button" name="Text">Add Text</button>
-									<br/>
-									<div id="DrawInstructions"></div>
-									<button id="btnClearGraphic">Clear Shapes</button>
-									<button id="btnClearText">Clear Text</button>
-								</div>
-							</div>
-							<li><a id="pdfNav1"><i class="glyphicon glyphicon-print"></i> Create Printable Map</a></li>
-							<!-- Print Collapse -->
-							<div id="pdfCollapse" class="panel-collapse collapse">
-								<div class="modal-body pdfBody">
-									<!--	<div id="pdfNote">
-											<h2>Due to high server load we have temporarily disabled printing to keep the Map Center available. We apologize for the inconvenience.</h2>
-										</div>-->
-									<div id="pdfNote">
-											Enter a map title:
-											<input id="txtTitle" type="text" class="textBox" placeholder="ex. GMU 54"/>
-											<br/>
-											<span>Layout: </span><select class="selectpicker" id="layout">
-												<option value="Custom_IDFG_PrintTemplate_Landscape_8x11">&#160;&#160;8x11 Landscape</option>
-												<option value="Custom_IDFG_PrintTemplate_Landscape_11x17">&#160;&#160;11x17 Landscape</option>
-												<option value="Custom_IDFG_PrintTemplate_Portrait_8x11">&#160;&#160;8x11 Portrait</option>
-												<option value="Custom_IDFG_PrintTemplate_Portrait_11x17">&#160;&#160;11x17 Portrait</option>
-												<!--<option value="MAP_ONLY">Map Only (no scale, legend, etc)</option>-->
-											</select>
-											<br/>
-											<span>Format: </span><select class="selectpicker" id="format">
-												<option value="PDF">&#160;&#160;PDF</option>
-												<option value="PNG32">&#160;&#160;PNG (image)</option>
-											</select>
-											<br/><br/>
-											The 'Creating Map...' message indicates the map is being generated.
-											When the map is ready, "CLICK HERE TO DOWNLOAD YOUR MAP" will appear in this window.  Click this hyperlink to open your map.
-											<br/><br/>
-											<input type="submit" id="btnPDF" value="Create Map!">
-											<span id="printStatus"></span><img id="loadingPrint" src="https://idfg.idaho.gov/ifwis/images/loading.gif" style="display:none;" />
-											<br/><br/>
-											<div id="div_for_pdf"></div>
-											<span id="note">NOTE: The PDF maps are georeference.  You can use the <a class="Link" href="https://www.avenza.com/pdf-maps" target="_blank">Avenza PDF Maps app</a> to interact with a map to view your location, record GPS tracks, add placemarks, and find places on your Apple or Android device. The maps use coordinate system WGS 84.</span>
-									</div>
-									<p id="wrongBasemap" class='printDisclaimer'>Please select one of the first four basemaps to enable the 'Create Printable Map' tool.</p>
-								</div>
-							</div>
-							<li><a id="helpNav1"><i class="glyphicon glyphicon-question-sign"></i> How To...</a></li>
-					</ul>	
-					<div class="controlBtns">
-							<button id="ReturnBtn" class="btn btn-default">Go to Map</button>
-					</div>					
-				</div>
-				<!-- /sidebar -->		
-				<!-- map -->
-			<!-- 	<div id="main" class="col-md-9"> -->
-				<div id="mapView" class="column col-sm-9 col-xs-10">
-					<div id="mapDiv">
-						<div id="LocateButton" class="masterTooltip"></div>
-						<span id="expandSidebar" class="glyphicon glyphicon-chevron-left"title="Open/Close Toolbar" class="masterTooltip" style="padding-left:7px;"></span>
-						<span id="info1"></span>
-						<span id="info2"></span>
-						<div id="measureResultsDiv">
-							Measurement Results:<br/><span id="Results"></span>
+											<button type="button" id="btnClear" class='btn btn-danger'>Clear Coords Search</button> -->
+							</form>
 						</div>
 					</div>
+					<li>
+						<a id="measurementNav1">
+							<i class="glyphicon glyphicon-screenshot"></i> Measurements &amp; Coordinates</a>
+					</li>
+					<!-- Measurement Collapse -->
+					<div id="measureCollapse" class="panel-collapse collapse">
+						<div class="panel-body">
+							<div id="measurementNote">
+								<p>Measure area or distance or get the coordinates of a specific point. Toggle the dropdown menu on the right to change
+									the units of measure.</p>
+								<p>When you are finished using the Measurement Tools, make sure all of the tool buttons are "off" (not highlighted by
+									a grey box) and collapse the Measurement pane to enable popups.</p>
+							</div>
+							<div id="MeasureInstructions"></div>
+							<div id="measurementDiv"></div>
+							<button id="clearMeasureResults" class='btn btn-danger'>Clear Measurement</button>
+						</div>
+					</div>
+					<li>
+						<a id="drawNav1">
+							<i class="glyphicon glyphicon-pencil"></i> Draw On the Map</a>
+					</li>
+					<!-- Draw Collapse -->
+					<div id="drawCollapse" class="panel-collapse collapse">
+						<div class="modal-body">
+							<button data-dojo-type="dijit/form/Button" class="draw-button" name="Multi Point">Multi Point</button>
+							<button data-dojo-type="dijit/form/Button" class="draw-button" name="Polyline">Line</button>
+							<button data-dojo-type="dijit/form/Button" class="draw-button" name="Circle">Circle</button>
+							<button data-dojo-type="dijit/form/Button" class="draw-button" name="Polygon">Polygon</button>
+							<button data-dojo-type="dijit/form/Button" class="draw-button" name="Freehand Polyline">Freehand Line</button>
+							<button data-dojo-type="dijit/form/Button" class="draw-button" name="Freehand Polygon">Freehand Polygon</button>
+							<br/>
+							<br/> Add text to your map:
+							<input type="text" id="userTextBox" placeholder="ex. Camp Spot">
+							<button data-dojo-type="dijit/form/Button" class="draw-button txt-btn" name="Text">Add Text</button>
+							<br/>
+							<div id="DrawInstructions"></div>
+							<button id="btnClearGraphic" class='btn btn-danger graphic-btn'>Clear Shapes</button>
+							<button id="btnClearText" class='btn btn-danger graphic-btn'>Clear Text</button>
+						</div>
+					</div>
+					<li>
+						<a id="pdfNav1">
+							<i class="glyphicon glyphicon-print"></i> Create Printable Map</a>
+					</li>
+					<!-- Print Collapse -->
+					<div id="pdfCollapse" class="panel-collapse collapse">
+						<div class="modal-body pdfBody">
+							<div id="pdfNote">
+								Map Title:
+								<input id="txtTitle" type="text" class="textBox" placeholder="ex. GMU 54" />
+								<br/>
+								<span>Layout: </span>
+								<select class="selectpicker" id="layout">
+									<option value="IDFG_PrintTemplate_Landscape_8.5x11" selected>8.5 x 11 Landscape</option>
+									<option value="IDFG_PrintTemplate_Landscape_11x17">11 x 17 Landscape</option>
+									<option value="IDFG_PrintTemplate_Portrait_8.5x11">8.5 x 11 Portrait</option>
+									<option value="IDFG_PrintTemplate_Portrait_11x17">11 x 17 Portrait</option>
+									<option value="MAP_ONLY">Map Only (no scale, legend, etc)</option>
+								</select>
+								<br/>
+								<span>Format: </span>
+								<select class="selectpicker" id="format">
+									<option value="PDF" selected>PDF</option>
+									<option value="PNG32">PNG (image)</option>
+								</select>
+								<div><div id="div_for_pdf" class='btn btn-primary' style='display: none'></div></div>
+								<div>
+									<input type="submit" id="btnPDF" value="Create Map">
+									<span id="printStatus"></span>
+									<img id="loadingPrint" src="https://idfg.idaho.gov/ifwis/images/loading.gif" style="display:none;" />
+								</div>
+								<div id="note"><em>NOTE: The PDF maps are georeferenced. You can use the
+									<a class="Link" href="https://www.avenza.com/pdf-maps" target="_blank">Avenza PDF Maps app</a> to interact with a map to view your location, record GPS tracks, add placemarks, and find
+									places on your Apple or Android device. The maps use coordinate system WGS 84.</em></div>
+							</div>
+							<!-- <p id="wrongBasemap" class='printDisclaimer'>Please select one of the first four basemaps to enable the 'Create Printable Map' tool.</p> -->
+						</div>
+					</div>
+					<li>
+						<a id="helpNav1">
+							<i class="glyphicon glyphicon-question-sign"></i> How To...</a>
+					</li>
+				</ul>
+				<div class="controlBtns">
+					<button id="ReturnBtn" class="btn btn-default">Go to Map</button>
 				</div>
-				<!-- /map -->
 			</div>
+			<!-- /sidebar -->
+			<!-- map -->
+			<!-- 	<div id="main" class="col-md-9"> -->
+			<div id="mapView" class="column col-sm-9 col-xs-10">
+				<div id="mapDiv">
+					<div id="LocateButton" class="masterTooltip"></div>
+					<span id="expandSidebar" class="glyphicon glyphicon-menu-left" title="Open/Close Toolbar" class="masterTooltip"></span>
+					<span id="info1" title='Click to display DD or DMS'></span>
+					<span id="info2"></span>
+					<div id="measureResultsDiv">
+						Measurement Results:
+						<br/>
+						<span id="Results"></span>
+					</div>
+				</div>
+			</div>
+			<!-- /map -->
 		</div>
-		
-		<!-- JS CDNs -->
-		<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
-		<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
-		<script src="https://js.arcgis.com/3.20"></script>
-		<!-- Custom JS -->
- 		<!-- <script src="src/js/map.js"></script> -->
-		<!-- Uglified/minified src/js code. -->
-   	<script src="src/dist/main.min.js"></script>
-		<script>
-			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-			})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-			ga('create', 'UA-427842-11', 'auto');
-			ga('send', 'pageview');
-		</script>
-  </body>
+	</div>
+
+	<!-- JS CDNs -->
+	<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+	<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
+	<script src="https://js.arcgis.com/3.25"></script>
+	<!-- Custom JS -->
+	<!-- <script src="src/js/map.js"></script> -->
+	<!-- Uglified/minified src/js code. -->
+	<script src="src/dist/main.min.js"></script>
+	<script>
+		(function (i, s, o, g, r, a, m) {
+			i['GoogleAnalyticsObject'] = r;
+			i[r] = i[r] || function () {
+				(i[r].q = i[r].q || []).push(arguments)
+			}, i[r].l = 1 * new Date();
+			a = s.createElement(o),
+				m = s.getElementsByTagName(o)[0];
+			a.async = 1;
+			a.src = g;
+			m.parentNode.insertBefore(a, m)
+		})(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+		ga('create', 'UA-427842-11', 'auto');
+		ga('send', 'pageview');
+	</script>
+</body>
+
 </html>
