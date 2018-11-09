@@ -530,7 +530,8 @@ body.modal-open, .modal-open .navbar-fixed-top, .modal-open .navbar-fixed-bottom
 }
 
 
-body, html {
+body,
+html {
 	padding: 0;
 	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
 	font-size: 14px;
@@ -544,41 +545,24 @@ body, html {
 }
 
 .row {
-  height: 100%;
-  margin-left:0;
-  margin-right:0;
-}
-
-.column:before, .column:after {
-  content: "";
-  display: table;
-}
-
-.column:after {
-  clear: both;
+	height: 100%;
+	margin-left: 0;
+	margin-right: 0;
 }
 
 .column {
 	height: 100%;
-	*zoom:1;
-}
-
-.column .padding {
-  padding: 20px;
+	*zoom: 1;
 }
 
 #map-layout {
 	padding-top: 50px;
-	transition: color 0.4s ease;
-	-webkit-transition: color 0.4s ease;
-	-moz-transition: color 0.4s ease;
-	transition: color 0.4s ease;
 }
 
 #mapView {
 	padding: 0px !important;
-	height:100%;
-  overflow-y:auto;
+	height: 100%;
+	overflow-y: auto;
 	overflow-x: hidden;
 	float: none !important;
 	width: auto !important;
@@ -593,13 +577,14 @@ body, html {
 
 #sidebar {
 	padding: 0px;
-	padding-top: 10px;
 	border-right: 1px solid #4c4c4c;
 }
 
-#sidebar, #sidebar a, #sidebar-footer {
-	color:#a2a379;
-	background-color:transparent;
+#sidebar,
+#sidebar a,
+#sidebar-footer {
+	color: #3f4533;
+	background-color: transparent;
 	font-family: 'Trebuchet MS', 'Helvetica Neue', Arial, Helvetica, sans-serif;
 }
 
@@ -608,29 +593,38 @@ body, html {
 }
 
 #sidebar .nav li>a:hover {
-	background-color:#677054 !important;
-	color: #ffffff !important;
+	background-color: #7b755ccc !important;
+	color: #fff;
+  }
+  
+  #sidebar .nav>li>a {
+	border-bottom: 1px solid #3f4533;
+  }
+
+#wrongBasemap{
+	display: none;
 }
 
-#sidebar .nav li>a {
-	padding-top: 5px !important;
+.glyphicon-link{
+	font-size: 20px;
+	color: #a2a379;
 }
 
 .red {
-  color: red !important;
+	color: red !important;
 	font-size: 14px !important;
 	font-weight: normal;
+	margin: 0;
 }
 
-.panel-collapse{
+.panel-collapse {
 	width: 100%;
-	max-height: 370px !important;
+	max-height: 380px !important;
 	overflow-y: auto;
 	overflow-x: hidden;
 	color: black !important;
 	background-color: #F8F8F8 !important;
-	border-top: 2px solid #ccc;
-	border-bottom: 2px solid #ccc;"
+	border-bottom: 2px solid #ccc;
 }
 
 .controlBtns {
@@ -660,16 +654,17 @@ body, html {
 	display: none;
 }
 
-#ReturnBtn.btn-default:focus, #ReturnBtn.btn-default:hover{
+#ReturnBtn.btn-default:focus,
+#ReturnBtn.btn-default:hover {
 	background-color: #ffae00;
 }
 
 .fullScreen {
-   width: 100% !important;
+	width: 100% !important;
 }
 
 .splitScreen {
-   width: 70%;
+	width: 70%;
 }
 
 @media (min-width: 500px) {
@@ -682,7 +677,7 @@ body, html {
 
 @media(max-width:500px) {
 	#sidebar {
-		overflow:auto;
+		overflow: auto;
 		height: 90%;
 	}
 	.controlBtns {
@@ -692,42 +687,25 @@ body, html {
 
 @media(max-height:750px) {
 	#sidebar {
-		overflow-y:auto;
-		overflow-x:hidden;
+		overflow-y: auto;
+		overflow-x: hidden;
 	}
 }
 
-
 #expandSidebar {
 	position: absolute;
-	top: 120px;
-	left: 0px;
-	padding: 10px 14px 11px 9px;
-	color: #4c4c4c;
-	border-top: 1px solid #4c4c4c;
-	border-right: 1px solid #4c4c4c;
-	border-bottom: 1px solid #4c4c4c;
-	background-color: #f7c85d;
-	border-top-left-radius: 1px;
-	border-bottom-left-radius: 1px;
-	border-top-right-radius: 7px;
-	border-bottom-right-radius: 7px;
-	z-index: 99;
-}
-
-/* #expandSidebar {
-  position: absolute;
-	left: 0px;
-	top: 120px;
+	text-align: center;
+	width: 36px;
+	top: 3px;
+	left: 0;
 	padding: 11px 4px 11px 3px;
 	z-index: 1;
-	color: #565d46;
-	background-color: white;
-	border-top-left-radius: 1px;
-	border-bottom-left-radius: 1px;
-	border-top-right-radius: 7px;
-	border-bottom-right-radius: 7px;
-} */
+	color: #e6e6d6;
+	background-color: #3f4533;
+	border: 1px solid #a2a379;
+	border-left: none;
+	cursor: pointer;
+}
 
 img.ri {
 	position: absolute;
@@ -748,11 +726,15 @@ img.ri:empty {
 }
 
 @media screen and (orientation: portrait) {
-  img.ri { max-width: 50%; }
+	img.ri {
+		max-width: 50%;
+	}
 }
 
 @media screen and (orientation: landscape) {
-  img.ri { max-height: 50%; }
+	img.ri {
+		max-height: 50%;
+	}
 }
 
 .simpleGeocoder {
@@ -763,46 +745,54 @@ img.ri:empty {
 	opacity: 1 !important;
 }
 
-.esriSimpleSlider{
-	top: 10px !important;
-	left: 5px !important;
+.esriSimpleSlider {
+	border-radius: 0;
+	top: 45px !important;
+	left: 3px !important;
+	outline: none;
 }
 
 #LocateButton {
 	position: absolute;
-	top: 75px;
-	left: 6px;
+	top: 112px;
+	left: 4px;
 	z-index: 50;
 }
 
-#info1, #info2 {
-	position:absolute;
-	right:5px;
-	top:5px;
-	color:#2b2b2b;
-	font-weight:bold;
-	font-size:12px;
-/* 	background-color:#ffffff; */
-	text-shadow:
-		-1px -1px 0 #fff,
-		1px -1px 0 #fff,
-		-1px 1px 0 #fff,
-		1px 1px 0 #fff;
-	z-index:52;
+#LocateButton .zoomLocateButton {
+	border-radius: 0;
+	background-color: rgba(63, 69, 51, .8);
+}
+
+#info1{
+	cursor:pointer;
+}
+#info1,
+#info2 {
+	position: absolute;
+	right: 5px;
+	top: 5px;
+	color: #2b2b2b;
+	font-weight: bold;
+	font-size: 12px;
+	text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+	z-index: 52;
 }
 
 #info2 {
-	top:22px;
+	top: 22px;
 }
 
-.arcgisSearch .searchGroup .searchInput, .arcgisSearch .searchBtn {
+.arcgisSearch .searchGroup .searchInput,
+.arcgisSearch .searchBtn {
 	border-color: #ccc;
 }
 
-#longitudeInput, #latitudeInput {
+#longitudeInput,
+#latitudeInput {
 	display: inline;
-	height: 20px;
-	width: 100px;
+	/* height: 20px;
+	width: 100px; */
 	padding: 6px 24px 6px 12px;
 	font-size: 14px;
 	line-height: 20px;
@@ -815,92 +805,91 @@ img.ri:empty {
 }
 
 #measureResultsDiv {
-	position:absolute;
-	right:5px;
-	bottom:42px;
-	color:#2b2b2b;
-	font-weight:bold;
-	text-align:right;
-	background-color:#ffffff;
-	z-index:51;
-	display:none;
+	position: absolute;
+	right: 5px;
+	bottom: 42px;
+	color: #2b2b2b;
+	font-weight: bold;
+	text-align: right;
+	background-color: #ffffff;
+	z-index: 51;
+	display: none;
 }
 
 #Results {
-	color:#7a7a7a;
+	color: #7a7a7a;
 }
 
-.esriLayerList {
-	border-top: none;
-	border-bottom: none;
+.esriTitleContainer {
+	padding-left: 7px;
 }
 
-.esriLayerList .esriContainer{
-	background-color: #F8F8F8!important;
+.esriLayerList .esriContainer {
+	border-top: none !important;
+	background-color: #F8F8F8 !important;
 	color: black !important;
+}
+
+.esriLayerList .esriToggleButton {
+	float: left;
+	width:0;
+	position:relative;
+	left:-42px;
+	top: 8px;
+	padding:0;
+	outline: none;
+  }
+
+  .esriList {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
 }
 
 .esriControlsBR {
 	position: fixed;
 }
 
-.dijitTreeExpando, .agsjsTOCContent {
-	cursor:pointer;
+.bootstrap-select.btn-group {
+	margin-top: 3px !important;
+	margin-left: 2px !important;
 }
 
-.dijitTreeExpando {
-	background-repeat: no-repeat !important;
-	width: 20px !important;
-	height: 20px !important;
+.bootstrap-select>.btn {
+	width: 80% !important;
 }
 
-.dijitPopup {
-	position:absolute !important;
-	z-index:10000 !important;
-}
-
-.dijitPopup.dijitMenuPopup {
-	color: #fff !important;
-	border: 1px solid transparent !important;
-	border-radius: 4px !important;
-	background-color:#677054 !important;
-	border-color:#3F4533 !important;
-	padding: 6px 12px !important;
-	font-size: 14px !important;
-}
-
- .bootstrap-select.btn-group{
-	margin-top:3px !important;
-	margin-left:2px !important;
-}
-
-.bootstrap-select > .btn {
-	width:80% !important;
-}
-
-#btnQuery, #btnPDF, #btnCoordZoom, #btnGeosearch {
+#btnQuery,
+#btnPDF,
+#btnCoordZoom,
+#btnGeosearch {
 	color: #fff;
 	border: 1px solid transparent;
-	border-radius: 4px;
-	background-color:#677054;
-	border-color:#3F4533;
+	background-color: #677054;
+	border-color: #3F4533;
 	padding: 6px 12px;
 	font-size: 14px;
-	margin-left: 5px;
+}
+
+#btnPDF {
+	margin-top: 5px;
 }
 
 .claro .dijitButton .dijitButtonNode {
 	color: #fff !important;
 	border: 1px solid transparent !important;
-	border-radius: 4px !important;
-	background-color:#677054 !important;
-	border-color:#3F4533 !important;
+	border-radius: 0px !important;
+	background-color: #677054;
+	border-color: #3F4533 !important;
 	padding: 2px 4px 4px !important;
 	box-shadow: none !important;
 	background-image: none !important;
 }
 
- .esriBasemapGalleryNode {
+.claro .dijitButton .dijitButtonNode:hover, #btnGeosearch:hover, #btnQuery:hover, #btnPDF:hover{
+	background-color:#3f4533;
+}
+
+.esriBasemapGalleryNode {
 	width: 90px;
 }
 
@@ -909,18 +898,17 @@ img.ri:empty {
 	display: inline !important;
 }
 
-/* .esriBasemapGallerySelectedNode .esriBasemapGalleryThumbnail {
-	border: 2px !important;
-	margin: 1px !important;
-} */
-
-/*  .esriBasemapGalleryThumbnail {
-	border: 0px !important;
-} */
-
-#gmu, #elkzone, #chunt, #waterfowl, #gameDistribution, #userTextBox, #longitudeInput, #latitudeInput, #txtTitle {
+#gmu,
+#elkzone,
+#chunt,
+#waterfowl,
+#gameDistribution,
+#userTextBox,
+#longitudeInput,
+#latitudeInput,
+#txtTitle {
 	margin-right: 5px;
-	border-radius: 4px;
+	border-radius: 0px;
 }
 
 .dropdown-menu.open {
@@ -944,35 +932,44 @@ ul.dropdown-menu.inner.selectpicker {
 #btnText {
 	color: #fff;
 	border: 1px solid transparent;
-	border-radius: 4px;
-	background-color:#677054;
-	border-color:#3F4533;
+	border-radius: 0px;
+	background-color: #677054;
+	border-color: #3F4533;
 	font-size: 14px;
 	padding: 2px 4px 4px;
 }
 
-#btnClearHighlighted, #btnClear, #btnClearUpload, #btnClearGraphic, #btnClearText, #btnClearPlace, #clearMeasureResults, #btnCloseLandDisclaimer {
+/* #btnClearHighlighted,
+#btnClear,
+#btnClearPlace,
+#clearMeasureResults,
+#btnCloseLandDisclaimer {
 	text-align: center !important;
-	/* vertical-align: middle !important; */
-	border: 1px solid #cccccc!important;
+	border: 1px solid #cccccc !important;
 	border-radius: 4px !important;
 	padding: 6.5px 12px !important;
 	font-size: 14px !important;
 	color: #333 !important;
 	background-color: #FFF !important;
-	margin-left:5px !important;
+	margin-left: 5px !important;
+} */
+
+#clearMeasureResults,
+#btnClearPlace, #btnClearGraphic,
+#btnClearText, .txt-btn, #btnClearUpload, #btnClearHighlighted {
+	display: none;
 }
 
-#btnClearText {
-	margin-left:5px !important;
-	margin-right:5px !important;
-}
+/* #btnClearText {
+	margin-left: 5px !important;
+	margin-right: 5px !important;
+} */
 
 #Close {
 	text-align: center;
 	color: #fff;
 	background-color: #677054;
-  border-color: ##454c38;
+	border-color: #454c38;
 	width: 25%;
 	font-size: 14px;
 	visibility: visible;
@@ -983,58 +980,97 @@ ul.dropdown-menu.inner.selectpicker {
 
 #printStatus {
 	font-weight: bold;
+	margin-top: 10px;
 	font-size: 16px;
+}
+
+#loadingPrint {
+	padding-top: 5px;
+}
+
+#div_for_pdf{
+	float: left;
+    border: 1px solid #3F4533;
+    margin-top: 5px;
+    margin-right: 5px;
+}
+
+#div_for_pdf a{
+	color: white !important;
+	text-decoration: none !important;
 }
 
 #note {
 	font-size: 12px;
+	padding-top: 5px;
 }
 
-.esriToggleButton{	
-	padding-right: 60px !important;
-}
-
-#queryLabel1Div, #queryLabel2Div, #queryLabel3Div, #queryLabel4Div, #queryLabel5Div, #uploadLabel1Div, #uploadLabel2Div {
+#queryLabel1Div,
+#queryLabel2Div,
+#queryLabel3Div,
+#queryLabel4Div,
+#queryLabel5Div,
+#uploadLabel1Div,
+#uploadLabel2Div {
 	margin-left: 27px;
 	margin-bottom: 5px;
 }
-	
-.huntDisclaimer{
+
+.huntDisclaimer {
 	font-size: 12px;
 	color: #999;
 	margin-left: 10px;
 }
 
-.disclaimer{
+#huntWarningModal .modal-header {
+	padding: 0;
+}
+
+.disclaimer {
 	font-size: 12px;
 	color: #999;
 	margin-left: 5px;
 }
 
-.sigClosureNote{
+.sigClosureNote {
 	font-size: 12px;
 	color: #999;
 	margin-left: 35px;
 }
 
-.printDisclaimer{
+.printDisclaimer {
 	font-size: 16px;
 	color: #999;
 	margin-left: 5px;
 }
 
-#legendNav1, #huntNav1, #kmlNav1, #basemapNav1, #uploadNav1, #geosearchNav1, #measurementNav1, #drawNav1, #pdfNav1, #helpNav1{
+#viewLegendNav1,
+#legendNav1,
+#huntNav1,
+#kmlNav1,
+#basemapNav1,
+#uploadNav1,
+#geosearchNav1,
+#measurementNav1,
+#drawNav1,
+#pdfNav1,
+#helpNav1 {
 	font-size: 16px;
 }
 
-#huntWarningModal .modal-title {
-  background: yellow;
+#getKml {
+	color: white !important;
+	text-decoration: none !important;
 }
 
-.starter-template {
+#helpModal .modal-dialog{
+	width: 80%;
+  }
+
+/* .starter-template {
   padding: 40px 15px;
   text-align: center;
-}
+} */
 
 .container {
 	width: 100% !important;
@@ -1045,126 +1081,179 @@ ul.dropdown-menu.inner.selectpicker {
 	cursor: default !important;
 }
 
-/* .navbar-brand {
-	float: none;
-	padding-left: 3px !important;
-	font-size: 24px;
-	color: #a2a379 !important;
-} */
-
 .navbar-brand {
-    /*padding-left: 3px !important;
-    padding-top: 10px !important;*/
-    color: #a2a379 !important;
-    padding: 0;
-    display: inline-flex;
-    vertical-align: middle;
+	color: #a2a379 !important;
+	padding: 0;
+	display: inline-flex;
+	vertical-align: middle;
 }
 
 #Title {
-	margin: 10px;
-	font-size: 24px;
-}
+	margin: auto;
+  }
 
 .navbar-brand-image {
-		padding: 5px 0 5px 0px;
-		width: 40px;
+	padding: 5px 0 5px 0px;
+	width: 40px;
 }
 
 @media(max-width: 295px) {
-	.navbar-brand{
+	.navbar-brand {
 		font-size: 18px;
 	}
 }
 
 @media(max-width: 250px) {
-	.navbar-brand{
+	.navbar-brand {
 		font-size: 12px;
 	}
 }
 
 #navbar-wrapper {
-	background-color: #3F4533;
-	background-image: linear-gradient(#677054, #3f4533);
-/* 	moz-box-shadow: 0 3px 20px #000;
-	webkit-box-shadow: 0 3px 20px #000;
-	box-shadow: 0 3px 20px #000; */
+	background-color: #3f4533;
+	/* background-image: linear-gradient(#677054, #3f4533); */
 	font-family: 'Trebuchet MS', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+}
+
+#navbar-wrapper strong {
+    font-size: 1.4em;
+    /* font-family: serif; */
+    font-weight: normal;
 }
 
 .nav a {
 	cursor: pointer;
 }
-.navbar-inverse .navbar-nav > li > a { 
-	color: #A2A379; padding-right: 10px; padding-left: 10px;
+
+.navbar-inverse .navbar-nav>li>a {
+	color: #a2a379;
+	padding-right: 10px;
+	padding-left: 10px;
 }
 
 .panel-title {
 	font-size: 14px;
 }
 
-/* #esri_dijit_Legend_2_Land_Management_Layer_0_group{
-	display: none !important;
+#sidebar h4 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 0;
+	margin-bottom: 0;
+	padding: 10px;
+    background-color: #e6e6d6;
+    color: #3f4533;
 }
 
-#esri_dijit_Legend_2_Land_Management_Layer_2_group{
-	display: none !important;
-} */
-
-.esriPopup.myTheme{
-	z-index: 55;
+#DrawInstructions, #MeasureInstructions{
+	margin: 0;
+	margin-top:6px;
+	margin-bottom:6px;
 }
 
-.esriPopupWrapper {
-	font-family: 'Trebuchet MS', 'Helvetica Neue', Arial, Helvetica, sans-serif !important;
-	font-size: 14px !important;
+.graphic-btn{
+	outline: none;
+	margin-top: 5px;
 }
 
-.esriPopup.myTheme .sizer {
-	width: 300px;
-}
-	
-.esriPopup.myTheme .titlePane {
-	font-weight: bold !important;
-	background-color: #000000;
-}
-
-.esriPopup.myTheme .title {
-	color: #ffffff !important;
+.btnCollapse {
+	border-radius: 0px;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	display: block;
 }
 
-.esriPopup.myTheme .titleButton {
-	position: absolute !important;
-	width: 16px !important;
-	height: 16px !important;
-	cursor: pointer !important;
-}
-
-.esriPopup.myTheme .titleButton.close {
-	background: url('../images/close.png') no-repeat scroll !important;
-	opacity: 0.9 !important;
-}
-
-.esriPopup.myTheme .titleButton.prev {
-	background: url('../images/prev.png') no-repeat scroll !important;
-}
-
-.esriPopup.myTheme .titleButton.next {
-	background: url('../images/next.png') no-repeat scroll !important;
-}
-
-.esriPopup.myTheme .titleButton.maximize {
-	background: url('../images/maximize.png') no-repeat scroll !important;
-}
-		
-.esriPopup.myTheme .contentPane, .esriPopup.myTheme .actionsPane {
-	border-color: 1px solid #3f4533;
-	background-color: #ffffff;
-	color:#3f4533;
-}
-
-#sidebar h4 { 
-  padding-left: 10px;
-  font-size: 20px;
+#sidebar a.labelStuff {
+	color: #3f4533;
+    text-align: left;
+    padding-left: 10px;
+    font-size: 15px;
+	/* font-size: 14px;
 	font-weight: bold;
+	color: black;
+	text-align: left;
+	padding: 4px 4px 4px 14px;
+	border-top: 2px solid #ccc; */
 }
+
+#sidebar a.labelStuff::before {
+	content: "\e080";
+	position: relative;
+	font-family: 'Glyphicons Halflings';
+	left: 4px;
+	top: 1px;
+  padding-right: 7px;
+  font-size: 12px;
+}
+
+#sidebar a.labelStuff[aria-expanded="true"]::before {
+	content: "\e114";
+}
+
+@media(max-width: 1050px){
+	#Links {
+	  padding-left: 0;
+	  text-align: center;
+	  position: relative;
+	  width: 100%;
+	  margin: 0 auto;
+	  /* background-color: #5c6153 */
+  }
+  .navbar-header {
+	  float: none;
+  }
+  
+  .container{
+	padding-right: 0;
+	padding-left: 0;
+  
+  }
+  
+  .navbar-brand-image {
+	margin-left: 15px;
+  }
+  .navbar-toggle {
+	padding: 12px 10px;
+	display: block;
+	border-radius: 0;
+	margin: 0;
+	border: 0;
+	height: 50px;
+	right: 0;
+	border-left: 1px solid transparent;
+	position: absolute;
+  }
+  .navbar-inverse .navbar-toggle:hover,
+  .navbar-inverse .navbar-toggle:focus {
+	  background-color: #3f4533;
+  }
+  .navbar-inverse .navbar-toggle {
+	  border-color: #57671c;
+  }
+  /* .navbar-inverse .navbar-toggle .glyphicon-link {
+	  background-color: #bddae8;
+  } */
+  .navbar-collapse {
+	  padding: 0;
+	  border-top: 1px solid transparent;
+	  background-color: #a2a379;
+  }
+  .navbar-collapse.collapse {
+	  display: none !important;
+  }
+  
+  .navbar-nav {
+	margin: 7.5px 30px;
+	text-align: center;
+  }
+  
+  .collapse.in {
+	  display: block !important;
+  }
+  
+  }
+
+  .btn{
+	  border-radius:0 !important;
+  }
