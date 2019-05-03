@@ -1402,54 +1402,62 @@ require(["esri/config", "esri/urlUtils", "esri/arcgis/utils", "esri/map", "esri/
 		id: "Elk_Management_Zones",
 		visible: false
 	});
-	var controlledHuntAntelope = new FeatureLayer("https://services.arcgis.com/FjJI5xHF2dUPVrgK/ArcGIS/rest/services/ControlledHunts_Antelope/FeatureServer/0", {
+	var controlledHuntAntelope = new FeatureLayer("https://services.arcgis.com/FjJI5xHF2dUPVrgK/ArcGIS/rest/services/ControlledHunts_All/FeatureServer/0", {
 		id: "Controlled_Hunt_Areas_-_Antelope",
 		outFields: ["BigGame", "HuntArea", "AreaNote"],
 		infoTemplate: controlledHuntPopupTemplate,
 		visible: false
 	});
-	var controlledHuntBear = new FeatureLayer("https://services.arcgis.com/FjJI5xHF2dUPVrgK/ArcGIS/rest/services/ControlledHunts_Bear/FeatureServer/0", {
+	controlledHuntAntelope.setDefinitionExpression("Year = 2019 AND BigGame = 'Pronghorn'");
+	var controlledHuntBear = new FeatureLayer("https://services.arcgis.com/FjJI5xHF2dUPVrgK/ArcGIS/rest/services/ControlledHunts_All/FeatureServer/0", {
 		id: "Controlled_Hunt_Areas_-_Bear",
 		outFields: ["BigGame", "HuntArea", "AreaNote"],
 		infoTemplate: controlledHuntPopupTemplate,
 		visible: false
 	});
-	var controlledHuntBighorn = new FeatureLayer("https://services.arcgis.com/FjJI5xHF2dUPVrgK/ArcGIS/rest/services/ControlledHunts_BighornSheep/FeatureServer/0", {
+	controlledHuntBear.setDefinitionExpression("Year = 2019 AND BigGame = 'Bear'");
+	var controlledHuntBighorn = new FeatureLayer("https://services.arcgis.com/FjJI5xHF2dUPVrgK/ArcGIS/rest/services/ControlledHunts_All/FeatureServer/0", {
 		id: "Controlled_Hunt_Areas_-_Bighorn Sheep",
 		outFields: ["BigGame", "HuntArea", "AreaNote"],
 		infoTemplate: controlledHuntPopupTemplate,
 		visible: false
 	});
-	var controlledHuntDeer = new FeatureLayer("https://services.arcgis.com/FjJI5xHF2dUPVrgK/ArcGIS/rest/services/ControlledHunts_Deer/FeatureServer/0", {
+	controlledHuntBighorn.setDefinitionExpression("Year = 2019 AND BigGame LIKE '%Sheep'");
+	var controlledHuntDeer = new FeatureLayer("https://services.arcgis.com/FjJI5xHF2dUPVrgK/ArcGIS/rest/services/ControlledHunts_All/FeatureServer/0", {
 		id: "Controlled_Hunt_Areas_-_Deer",
 		outFields: ["BigGame", "HuntArea", "AreaNote"],
 		infoTemplate: controlledHuntPopupTemplate,
 		visible: false
 	});
-	var controlledHuntElk = new FeatureLayer("https://services.arcgis.com/FjJI5xHF2dUPVrgK/ArcGIS/rest/services/ControlledHunts_Elk/FeatureServer/0", {
+	controlledHuntDeer.setDefinitionExpression("Year = 2019 AND BigGame = 'Deer'");
+	var controlledHuntElk = new FeatureLayer("https://services.arcgis.com/FjJI5xHF2dUPVrgK/ArcGIS/rest/services/ControlledHunts_All/FeatureServer/0", {
 		id: "Controlled_Hunt_Areas_-_Elk",
 		outFields: ["BigGame", "HuntArea", "AreaNote"],
 		infoTemplate: controlledHuntPopupTemplate,
 		visible: false
 	});
-	var controlledHuntMoose = new FeatureLayer("https://services.arcgis.com/FjJI5xHF2dUPVrgK/ArcGIS/rest/services/ControlledHunts_Moose/FeatureServer/0", {
+	controlledHuntElk.setDefinitionExpression("Year = 2019 AND BigGame = 'Elk'");
+	var controlledHuntMoose = new FeatureLayer("https://services.arcgis.com/FjJI5xHF2dUPVrgK/ArcGIS/rest/services/ControlledHunts_All/FeatureServer/0", {
 		id: "Controlled_Hunt_Areas_-_Moose",
 		outFields: ["BigGame", "HuntArea", "AreaNote"],
 		infoTemplate: controlledHuntPopupTemplate,
 		visible: false
 	});
-	var controlledHuntGoat = new FeatureLayer("https://services.arcgis.com/FjJI5xHF2dUPVrgK/ArcGIS/rest/services/ControlledHunts_MountainGoat/FeatureServer/0", {
+	controlledHuntMoose.setDefinitionExpression("Year = 2019 AND BigGame = 'Moose'");
+	var controlledHuntGoat = new FeatureLayer("https://services.arcgis.com/FjJI5xHF2dUPVrgK/ArcGIS/rest/services/ControlledHunts_All/FeatureServer/0", {
 		id: "Controlled_Hunt_Areas_-_Mountain_Goat",
 		outFields: ["BigGame", "HuntArea", "AreaNote"],
 		infoTemplate: controlledHuntPopupTemplate,
 		visible: false
 	});
+	controlledHuntGoat.setDefinitionExpression("Year = 2019 AND BigGame = 'Goat'");
 	var controlledHuntTurkey = new FeatureLayer("https://services.arcgis.com/FjJI5xHF2dUPVrgK/ArcGIS/rest/services/ControlledHunts_Turkey/FeatureServer/0", {
 		id: "Controlled_Hunt_Areas_-_Turkey",
 		outFields: ["BigGame", "HuntArea", "AreaNote"],
 		infoTemplate: controlledHuntPopupTemplate,
 		visible: false
 	});
+	//controlledHuntTurkey.setDefinitionExpression("Year = 2019 AND BigGame = 'Turkey'");
 	var huntingRestrictionsBigGame = new FeatureLayer("https://services.arcgis.com/FjJI5xHF2dUPVrgK/ArcGIS/rest/services/AreasWithHuntingRestrictions/FeatureServer/0", {
 		id: "Areas_with_Big_Game_Hunting_Restrictions",
 		outFields: ["*"],
@@ -1647,7 +1655,7 @@ require(["esri/config", "esri/urlUtils", "esri/arcgis/utils", "esri/map", "esri/
 
 	// REFERENCE LAYERS GROUP //
 
-	var surfaceMgmtLayer = new ArcGISTiledMapServiceLayer("https://gis.blm.gov/arcgis/rest/services/lands/BLM_Natl_SMA_Cached_without_PriUnk/MapServer", {
+	var surfaceMgmtLayer = new ArcGISTiledMapServiceLayer("https://tiles.arcgis.com/tiles/FjJI5xHF2dUPVrgK/arcgis/rest/services/BLM_Surface_Management/MapServer", {
 		id: "State_&_Federal_Land_Management",
 		opacity: 0.7,
 		visible: false
@@ -1719,12 +1727,12 @@ require(["esri/config", "esri/urlUtils", "esri/arcgis/utils", "esri/map", "esri/
 		visible: false,
 		infoTemplate: perimeterPopupTemplate
 	});
-	var HistoricFirePerimeterLyr = new FeatureLayer("https://rmgsc.cr.usgs.gov/ArcGIS/rest/services/geomac_dyn/MapServer/26", {
+	var HistoricFirePerimeterLyr = new FeatureLayer("https://rmgsc.cr.usgs.gov/ArcGIS/rest/services/geomac_dyn/MapServer/27", {
 		id: "Past_Fire_Perimeters",
 		opacity: "0.7",
 		visible: false
 	});
-	HistoricFirePerimeterLyr.setDefinitionExpression("year_ in ('2013','2014','2015','2016', '2017')");
+	HistoricFirePerimeterLyr.setDefinitionExpression("year_ in ('2013','2014','2015','2016', '2017', '2018')");
 
 	var ModisFireLyr = new FeatureLayer("https://wildfire.cr.usgs.gov/arcgis/rest/services/geomac_fires/MapServer/3", {
 		id: "MODIS_Fire_Detection",
@@ -2119,6 +2127,7 @@ require(["esri/config", "esri/urlUtils", "esri/arcgis/utils", "esri/map", "esri/
 	    newHighlight1 = void 0,
 	    newHighlight2 = void 0,
 	    newHighlight3 = void 0,
+	    newHighlight3Hatched = void 0,
 	    newHighlight4 = void 0,
 	    newHighlight5 = void 0;
 
@@ -2153,7 +2162,7 @@ require(["esri/config", "esri/urlUtils", "esri/arcgis/utils", "esri/map", "esri/
 			if (typeof label != 'undefined') {
 				label = label;
 			} else {
-				label = "";
+				label = "Selected GMU";
 			}
 			if (typeof gmuID != 'undefined') {
 				doQuery1(gmuID, label);
@@ -2162,8 +2171,7 @@ require(["esri/config", "esri/urlUtils", "esri/arcgis/utils", "esri/map", "esri/
 			$("#queryLabel1Div").show();
 
 			//Create a KML of the user-selected GMUs, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
-			var gmuKMLlink = "https://gis.idfg.idaho.gov/server/rest/services/Apps/MapCenterQueryLayers/MapServer/3/query?where=ID in (" + gmuID + ")&outfields=NAME&f=kmz";
-			// var gmuKMLlink = "https://ifwisarc-new.idfg.state.id.us/server/rest/services/MapCenterQueryLayers/MapServer/3/query?where=ID in (" + gmuID + ")&outfields=NAME&f=kmz"
+			var gmuKMLlink = "https://gis.idfg.idaho.gov/server/rest/services/Hunting/MapServer/3/query?where=ID in (" + gmuID + ")&outfields=NAME&f=kmz";
 			$("#gmuKML").attr("href", gmuKMLlink);
 			$("#gmuKML").show();
 		}
@@ -2184,7 +2192,7 @@ require(["esri/config", "esri/urlUtils", "esri/arcgis/utils", "esri/map", "esri/
 			if (typeof label != 'undefined') {
 				label = label;
 			} else {
-				label = "";
+				label = "Selected Elk Zone";
 			}
 			if (typeof elkID != 'undefined') {
 				doQuery2(elkID, label);
@@ -2193,10 +2201,8 @@ require(["esri/config", "esri/urlUtils", "esri/arcgis/utils", "esri/map", "esri/
 			$("#queryLabel2Div").show();
 
 			//Create a KML of the user-selected Elk Zones, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
-			var elkzoneKMLlink = "https://ifwisgis.idfg.state.id.us:6443/arcgis/rest/services/Apps/MapCenterQueryLayers/MapServer/4/query?where=ID in (" + elkID + ")&outfields=NAME&f=kmz";
+			var elkzoneKMLlink = "https://gis.idfg.idaho.gov/server/rest/services/Hunting/MapServer/1/query?where=ID in (" + elkID + ")&outfields=NAME&returnGeometry=true&outSR=4326&f=kmz";
 			$("#elkzoneKML").attr("href", elkzoneKMLlink);
-			// var elkzoneKMLlink = "https://ifwisarc-new.idfg.state.id.us/server/rest/services/MapCenterQueryLayers/MapServer/4/query?where=ID in (" + elkID + ")&outfields=NAME&f=kmz"
-			// $("#elkzoneKML").attr("href", elkzoneKMLlink);
 			$("#elkzoneKML").show();
 		}
 
@@ -2216,7 +2222,7 @@ require(["esri/config", "esri/urlUtils", "esri/arcgis/utils", "esri/map", "esri/
 			if (typeof label != 'undefined') {
 				label = label;
 			} else {
-				label = "";
+				label = "Selected Hunt Area";
 			}
 			if (typeof chuntID != 'undefined') {
 				doQuery3(chuntID, label);
@@ -2232,8 +2238,7 @@ require(["esri/config", "esri/urlUtils", "esri/arcgis/utils", "esri/map", "esri/
 			}, 3000);
 
 			//Create a KML of the user-selected controlled hunts, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
-			var chuntKMLlink = "https://gis.idfg.idaho.gov/server/rest/services/Apps/MapCenterQueryLayers/MapServer/5/query?where=AreaID in (" + chuntID + ")&outfields=BigGame,HuntArea&f=kmz";
-			// var chuntKMLlink = "https://ifwisarc-new.idfg.state.id.us/server/rest/services/MapCenterQueryLayers/MapServer/5/query?where=AreaID in (" + chuntID + ")&outfields=BigGame,HuntArea&f=kmz"
+			var chuntKMLlink = "https://gis.idfg.idaho.gov/server/rest/services/Hunting/MapServer/0/query?where=AreaID in (" + chuntID + ")&outfields=NAME&f=kmz";
 			$("#chuntKML").attr("href", chuntKMLlink);
 			$("#chuntKML").show();
 		}
@@ -2254,7 +2259,7 @@ require(["esri/config", "esri/urlUtils", "esri/arcgis/utils", "esri/map", "esri/
 			if (typeof label != 'undefined') {
 				label = label;
 			} else {
-				label = "";
+				label = "Selected Hunt Areas";
 			}
 			if (typeof waterfowlID != 'undefined') {
 				doQuery4(waterfowlID, label);
@@ -2263,8 +2268,7 @@ require(["esri/config", "esri/urlUtils", "esri/arcgis/utils", "esri/map", "esri/
 			$("#queryLabel4Div").show();
 
 			//Create a KML of the user-selected waterfowl hunt areas, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
-			var waterfowlKMLlink = "https://gis.idfg.idaho.gov/server/rest/services/Apps/MapCenterQueryLayers/MapServer/6/query?where=ID in (" + waterfowlID + ")&outfields=Area_Name&f=kmz";
-			// var waterfowlKMLlink = "https://ifwisarc-new.idfg.state.id.us/server/rest/services/MapCenterQueryLayers/MapServer/6/query?where=ID in (" + waterfowlID + ")&outfields=Area_Name&f=kmz"
+			var waterfowlKMLlink = "https://gis.idfg.idaho.gov/server/rest/services/Hunting/MapServer/0/query?where=ID in (" + waterfowlID + ")&outfields=NAME&f=kmz";
 			$("#waterfowlKML").attr("href", waterfowlKMLlink);
 			$("#waterfowlKML").show();
 		}
@@ -2294,8 +2298,7 @@ require(["esri/config", "esri/urlUtils", "esri/arcgis/utils", "esri/map", "esri/
 			$("#queryLabel5Div").show();
 
 			//Create a KML of the user-selected game animal distributions, show the 'Download Highlighted Areas as KML' tool, and highlight it for a short period to get the users attention.
-			var gameDistributionKMLlink = "https://gis.idfg.idaho.gov/server/rest/services/Apps/MapCenterQueryLayers/MapServer/7/query?where=ID in (" + gameDistributionID + ")&outfields=NAME&f=kmz";
-			// var gameDistributionKMLlink = "https://ifwisarc-new.idfg.state.id.us/se?rver/rest/services/MapCenterQueryLayers/MapServer/7/query?where=ID in (" + gameDistributionID + ")&outfields=NAME&f=kmz"
+			var gameDistributionKMLlink = "https://gis.idfg.idaho.gov/server/rest/services/Species/Distribution/MapServer/3/query?where=TaxonID in (" + gameDistributionID + ")&outfields=StateCommonName&returnGeometry=true&outSR=4326&f=kmz";
 			$("#gameDistributionKML").attr("href", gameDistributionKMLlink);
 			$("#gameDistributionKML").show();
 		}
@@ -2330,30 +2333,35 @@ require(["esri/config", "esri/urlUtils", "esri/arcgis/utils", "esri/map", "esri/
 
 	var newHighlightHatched = new SimpleFillSymbol(SimpleFillSymbol.STYLE_BACKWARD_DIAGONAL, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([154, 32, 219]), 3), new Color([154, 32, 219]));
 
+	var QueryLayers = ["https://gis.idfg.idaho.gov/server/rest/services/Hunting/MapServer/0", // Hunt Areas
+	"https://gis.idfg.idaho.gov/server/rest/services/Outfitters/MapServer/0", // OGLB Areas
+	"https://gis.idfg.idaho.gov/server/rest/services/Access/MapServer/1", // Access Yes
+	"https://gis.idfg.idaho.gov/server/rest/services/Hunting/MapServer/3", // GMUs
+	"https://gis.idfg.idaho.gov/server/rest/services/Hunting/MapServer/1", // Elk Zones
+	"https://gis.idfg.idaho.gov/server/rest/services/Hunting/MapServer/4", // Controlled Hunts
+	"https://services.arcgis.com/FjJI5xHF2dUPVrgK/ArcGIS/rest/services/WaterfowlHuntAreas/FeatureServer/0", // Waterfowl Hunt Areas:huntID
+	"https://gis.idfg.idaho.gov/server/rest/services/Species/Distribution/MapServer/3" // Distribution:TaxonID
+	];
+
 	function doQuery(areaID, layerID, label) {
+		// Update field to query by for some layers.
+		var dID = ["ID", "ID", "ID", "ID", "AreaID", "ID", "huntID", "TaxonID"];
+
 		//initialize query tasks
-		var newQueryTask = new QueryTask("https://gis.idfg.idaho.gov/server/rest/services/Apps/MapCenterQueryLayers/MapServer/" + layerID);
-		// let newQueryTask = new QueryTask("https://ifwisarc-new.idfg.state.id.us/server/rest/services/MapCenterQueryLayers/MapServer/" + layerID);
+		var newQueryTask = new QueryTask(QueryLayers[layerID]);
 
 		//initialize query
 		var newQuery = new Query();
 		newQuery.returnGeometry = true;
 		newQuery.outFields = ["*"];
 		newHighlight = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([154, 32, 219]), 3), new Color([154, 32, 219, 0.1]));
-		// let newHighlightHatched = new SimpleFillSymbol(SimpleFillSymbol.STYLE_BACKWARD_DIAGONAL,
-		// 	new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
-		// 		new Color([154, 32, 219]), 3),
-		// 	new Color([154, 32, 219])
-		// );
-
-		newQuery.where = "ID IN (" + areaID + ")";
+		newQuery.where = dID[layerID] + " IN (" + areaID + ")";
 		newQueryTask.execute(newQuery, showResults);
 	}
 
 	function doQuery1(gmuID, label) {
 		//initialize query tasks
-		var newQueryTask1 = new QueryTask("https://gis.idfg.idaho.gov/server/rest/services/Apps/MapCenterQueryLayers/MapServer/3");
-		// let newQueryTask1 = new QueryTask("https://ifwisarc-new.idfg.state.id.us/server/rest/services/MapCenterQueryLayers/MapServer/3");
+		var newQueryTask1 = new QueryTask(QueryLayers[3]);
 
 		//initialize query
 		var newQuery1 = new Query();
@@ -2367,8 +2375,7 @@ require(["esri/config", "esri/urlUtils", "esri/arcgis/utils", "esri/map", "esri/
 
 	function doQuery2(elkID, label) {
 		//initialize query tasks
-		var newQueryTask2 = new QueryTask("https://gis.idfg.idaho.gov/server/rest/services/Apps/MapCenterQueryLayers/MapServer/4");
-		// let newQueryTask2 = new QueryTask("https://ifwisarc-new.idfg.state.id.us/server/rest/services/MapCenterQueryLayers/MapServer/4");
+		var newQueryTask2 = new QueryTask(QueryLayers[4]);
 
 		//initialize query
 		var newQuery2 = new Query();
@@ -2382,47 +2389,43 @@ require(["esri/config", "esri/urlUtils", "esri/arcgis/utils", "esri/map", "esri/
 
 	function doQuery3(chuntID, label) {
 		//initialize query tasks
-		var newQueryTask3 = new QueryTask("https://gis.idfg.idaho.gov/server/rest/services/Apps/MapCenterQueryLayers/MapServer/5");
-		// let newQueryTask3 = new QueryTask("https://ifwisarc-new.idfg.state.id.us/server/rest/services/MapCenterQueryLayers/MapServer/5");
+		var newQueryTask3 = new QueryTask(QueryLayers[5]);
 
 		//initialize query
 		var newQuery3 = new Query();
 		newQuery3.returnGeometry = true;
 		newQuery3.outFields = ["FLAG", "AreaID", "BigGame", "HuntArea"];
 		newHighlight3 = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([18, 237, 18]), 3), new Color([18, 237, 18, 0.1]));
-		var newHighlight3Hatched = new SimpleFillSymbol(SimpleFillSymbol.STYLE_BACKWARD_DIAGONAL, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([18, 237, 18]), 3), new Color([18, 237, 18]));
-
+		newHighlight3Hatched = new SimpleFillSymbol(SimpleFillSymbol.STYLE_BACKWARD_DIAGONAL, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([18, 237, 18]), 3), new Color([18, 237, 18, 0.3]));
 		newQuery3.where = "AreaID IN (" + chuntID + ")";
 		newQueryTask3.execute(newQuery3, showResults3);
 	}
 
 	function doQuery4(waterfowlID, label) {
 		//initialize query tasks
-		var newQueryTask4 = new QueryTask("https://gis.idfg.idaho.gov/server/rest/services/Apps/MapCenterQueryLayers/MapServer/6");
-		// let newQueryTask4 = new QueryTask("https://ifwisarc-new.idfg.state.id.us/server/rest/services/MapCenterQueryLayers/MapServer/6");
+		var newQueryTask4 = new QueryTask(QueryLayers[6]);
 
 		//initialize query
 		var newQuery4 = new Query();
 		newQuery4.returnGeometry = true;
-		newQuery4.outFields = ["ID", "Area_Name"];
+		newQuery4.outFields = ["huntID", "Area_Name"];
 		newHighlight4 = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255, 157, 0]), 3), new Color([255, 157, 0, 0.1]));
 
-		newQuery4.where = "ID IN (" + waterfowlID + ")";
+		newQuery4.where = "huntID IN (" + waterfowlID + ")";
 		newQueryTask4.execute(newQuery4, showResults4);
 	}
 
 	function doQuery5(gameDistributionID, label) {
 		//initialize query tasks
-		var newQueryTask5 = new QueryTask("https://gis.idfg.idaho.gov/server/rest/services/Apps/MapCenterQueryLayers/MapServer/7");
-		// let newQueryTask5 = new QueryTask("https://ifwisarc-new.idfg.state.id.us/server/rest/services/MapCenterQueryLayers/MapServer/7");
+		var newQueryTask5 = new QueryTask(QueryLayers[7]);
 
 		//initialize query
 		var newQuery5 = new Query();
 		newQuery5.returnGeometry = true;
-		newQuery5.outFields = ["ID", "SCINAME", "NAME"];
+		newQuery5.outFields = ["TaxonID", "StateSciName", "StateCommonName"];
 		newHighlight5 = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255, 0, 225]), 3), new Color([255, 0, 225, 0.1]));
 
-		newQuery5.where = "ID IN (" + gameDistributionID + ")";
+		newQuery5.where = "TaxonID IN (" + gameDistributionID + ")";
 		newQueryTask5.execute(newQuery5, showResults5);
 	}
 
@@ -3213,653 +3216,6 @@ require(["esri/config", "esri/urlUtils", "esri/arcgis/utils", "esri/map", "esri/
 
 	// Show modal dialog, hide nav
 	$(document).ready(function () {
-		//populate the GMU dropdown with JSON vars.
-		var gmuList = [{
-			"ID": "1",
-			"NAME": "UNIT 1"
-		}, {
-			"ID": "2",
-			"NAME": "UNIT 2"
-		}, {
-			"ID": "3",
-			"NAME": "UNIT 3"
-		}, {
-			"ID": "4",
-			"NAME": "UNIT 4"
-		}, {
-			"ID": "5",
-			"NAME": "UNIT 4A"
-		}, {
-			"ID": "6",
-			"NAME": "UNIT 5"
-		}, {
-			"ID": "7",
-			"NAME": "UNIT 6"
-		}, {
-			"ID": "8",
-			"NAME": "UNIT 7"
-		}, {
-			"ID": "9",
-			"NAME": "UNIT 8"
-		}, {
-			"ID": "10",
-			"NAME": "UNIT 8A"
-		}, {
-			"ID": "11",
-			"NAME": "UNIT 9"
-		}, {
-			"ID": "13",
-			"NAME": "UNIT 10"
-		}, {
-			"ID": "14",
-			"NAME": "UNIT 10A"
-		}, {
-			"ID": "15",
-			"NAME": "UNIT 11"
-		}, {
-			"ID": "16",
-			"NAME": "UNIT 11A"
-		}, {
-			"ID": "17",
-			"NAME": "UNIT 12"
-		}, {
-			"ID": "18",
-			"NAME": "UNIT 13"
-		}, {
-			"ID": "19",
-			"NAME": "UNIT 14"
-		}, {
-			"ID": "20",
-			"NAME": "UNIT 15"
-		}, {
-			"ID": "21",
-			"NAME": "UNIT 16"
-		}, {
-			"ID": "22",
-			"NAME": "UNIT 16A"
-		}, {
-			"ID": "23",
-			"NAME": "UNIT 17"
-		}, {
-			"ID": "24",
-			"NAME": "UNIT 18"
-		}, {
-			"ID": "25",
-			"NAME": "UNIT 19"
-		}, {
-			"ID": "26",
-			"NAME": "UNIT 19A"
-		}, {
-			"ID": "27",
-			"NAME": "UNIT 20"
-		}, {
-			"ID": "28",
-			"NAME": "UNIT 20A"
-		}, {
-			"ID": "29",
-			"NAME": "UNIT 21"
-		}, {
-			"ID": "30",
-			"NAME": "UNIT 21A"
-		}, {
-			"ID": "31",
-			"NAME": "UNIT 22"
-		}, {
-			"ID": "32",
-			"NAME": "UNIT 23"
-		}, {
-			"ID": "33",
-			"NAME": "UNIT 24"
-		}, {
-			"ID": "34",
-			"NAME": "UNIT 25"
-		}, {
-			"ID": "35",
-			"NAME": "UNIT 26"
-		}, {
-			"ID": "36",
-			"NAME": "UNIT 27"
-		}, {
-			"ID": "37",
-			"NAME": "UNIT 28"
-		}, {
-			"ID": "38",
-			"NAME": "UNIT 29"
-		}, {
-			"ID": "39",
-			"NAME": "UNIT 30"
-		}, {
-			"ID": "40",
-			"NAME": "UNIT 30A"
-		}, {
-			"ID": "41",
-			"NAME": "UNIT 31"
-		}, {
-			"ID": "42",
-			"NAME": "UNIT 32"
-		}, {
-			"ID": "43",
-			"NAME": "UNIT 32A"
-		}, {
-			"ID": "44",
-			"NAME": "UNIT 33"
-		}, {
-			"ID": "45",
-			"NAME": "UNIT 34"
-		}, {
-			"ID": "46",
-			"NAME": "UNIT 35"
-		}, {
-			"ID": "47",
-			"NAME": "UNIT 36"
-		}, {
-			"ID": "48",
-			"NAME": "UNIT 36A"
-		}, {
-			"ID": "49",
-			"NAME": "UNIT 36B"
-		}, {
-			"ID": "50",
-			"NAME": "UNIT 37"
-		}, {
-			"ID": "51",
-			"NAME": "UNIT 37A"
-		}, {
-			"ID": "52",
-			"NAME": "UNIT 38"
-		}, {
-			"ID": "53",
-			"NAME": "UNIT 39"
-		}, {
-			"ID": "54",
-			"NAME": "UNIT 40"
-		}, {
-			"ID": "55",
-			"NAME": "UNIT 41"
-		}, {
-			"ID": "56",
-			"NAME": "UNIT 42"
-		}, {
-			"ID": "57",
-			"NAME": "UNIT 43"
-		}, {
-			"ID": "58",
-			"NAME": "UNIT 44"
-		}, {
-			"ID": "59",
-			"NAME": "UNIT 45"
-		}, {
-			"ID": "60",
-			"NAME": "UNIT 46"
-		}, {
-			"ID": "61",
-			"NAME": "UNIT 47"
-		}, {
-			"ID": "62",
-			"NAME": "UNIT 48"
-		}, {
-			"ID": "63",
-			"NAME": "UNIT 49"
-		}, {
-			"ID": "64",
-			"NAME": "UNIT 50"
-		}, {
-			"ID": "65",
-			"NAME": "UNIT 51"
-		}, {
-			"ID": "66",
-			"NAME": "UNIT 52"
-		}, {
-			"ID": "67",
-			"NAME": "UNIT 52A"
-		}, {
-			"ID": "68",
-			"NAME": "UNIT 53"
-		}, {
-			"ID": "69",
-			"NAME": "UNIT 54"
-		}, {
-			"ID": "70",
-			"NAME": "UNIT 55"
-		}, {
-			"ID": "71",
-			"NAME": "UNIT 56"
-		}, {
-			"ID": "72",
-			"NAME": "UNIT 57"
-		}, {
-			"ID": "73",
-			"NAME": "UNIT 58"
-		}, {
-			"ID": "74",
-			"NAME": "UNIT 59"
-		}, {
-			"ID": "75",
-			"NAME": "UNIT 59A"
-		}, {
-			"ID": "76",
-			"NAME": "UNIT 60"
-		}, {
-			"ID": "77",
-			"NAME": "UNIT 60A"
-		}, {
-			"ID": "78",
-			"NAME": "UNIT 61"
-		}, {
-			"ID": "79",
-			"NAME": "UNIT 62"
-		}, {
-			"ID": "80",
-			"NAME": "UNIT 62A"
-		}, {
-			"ID": "81",
-			"NAME": "UNIT 63"
-		}, {
-			"ID": "82",
-			"NAME": "UNIT 63A"
-		}, {
-			"ID": "83",
-			"NAME": "UNIT 64"
-		}, {
-			"ID": "84",
-			"NAME": "UNIT 65"
-		}, {
-			"ID": "85",
-			"NAME": "UNIT 66"
-		}, {
-			"ID": "86",
-			"NAME": "UNIT 66A"
-		}, {
-			"ID": "87",
-			"NAME": "UNIT 67"
-		}, {
-			"ID": "88",
-			"NAME": "UNIT 68"
-		}, {
-			"ID": "89",
-			"NAME": "UNIT 68A"
-		}, {
-			"ID": "90",
-			"NAME": "UNIT 69"
-		}, {
-			"ID": "91",
-			"NAME": "UNIT 70"
-		}, {
-			"ID": "92",
-			"NAME": "UNIT 71"
-		}, {
-			"ID": "93",
-			"NAME": "UNIT 72"
-		}, {
-			"ID": "94",
-			"NAME": "UNIT 73"
-		}, {
-			"ID": "95",
-			"NAME": "UNIT 73A"
-		}, {
-			"ID": "96",
-			"NAME": "UNIT 74"
-		}, {
-			"ID": "97",
-			"NAME": "UNIT 75"
-		}, {
-			"ID": "98",
-			"NAME": "UNIT 76"
-		}, {
-			"ID": "99",
-			"NAME": "UNIT 77"
-		}, {
-			"ID": "100",
-			"NAME": "UNIT 78"
-		}];
-		$.each(gmuList, function () {
-			$('#gmu').append('<option value="' + this.ID + '">' + this.NAME + '</option>');
-		});
-		//populate the Elk Zone dropdown with JSON vars.
-		var ElkZoneList = [{
-			"ID": "93",
-			"NAME": "Bannock"
-		}, {
-			"ID": "2",
-			"NAME": "Bear River"
-		}, {
-			"ID": "3",
-			"NAME": "Beaverhead"
-		}, {
-			"ID": "5",
-			"NAME": "Big Desert"
-		}, {
-			"ID": "6",
-			"NAME": "Boise River"
-		}, {
-			"ID": "7",
-			"NAME": "Brownlee"
-		}, {
-			"ID": "8",
-			"NAME": "Diamond Creek"
-		}, {
-			"ID": "9",
-			"NAME": "Dworshak"
-		}, {
-			"ID": "10",
-			"NAME": "Elk City"
-		}, {
-			"ID": "11",
-			"NAME": "Hells Canyon"
-		}, {
-			"ID": "12",
-			"NAME": "Island Park"
-		}, {
-			"ID": "13",
-			"NAME": "Lemhi"
-		}, {
-			"ID": "14",
-			"NAME": "Lolo"
-		}, {
-			"ID": "15",
-			"NAME": "McCall"
-		}, {
-			"ID": "16",
-			"NAME": "Middle Fork"
-		}, {
-			"ID": "52",
-			"NAME": "Owyhee"
-		}, {
-			"ID": "18",
-			"NAME": "Palisades"
-		}, {
-			"ID": "19",
-			"NAME": "Palouse"
-		}, {
-			"ID": "20",
-			"NAME": "Panhandle"
-		}, {
-			"ID": "21",
-			"NAME": "Pioneer"
-		}, {
-			"ID": "22",
-			"NAME": "Salmon"
-		}, {
-			"ID": "23",
-			"NAME": "Sawtooth"
-		}, {
-			"ID": "24",
-			"NAME": "Selway"
-		}, {
-			"ID": "4",
-			"NAME": "Smoky - Bennett"
-		}, {
-			"ID": "26",
-			"NAME": "Snake River"
-		}, {
-			"ID": "60",
-			"NAME": "South Hills"
-		}, {
-			"ID": "28",
-			"NAME": "Tex Creek"
-		}, {
-			"ID": "29",
-			"NAME": "Weiser River"
-		}];
-		$.each(ElkZoneList, function () {
-			$('#elkzone').append('<option value="' + this.ID + '">' + this.NAME + '</option>');
-		});
-		//populate the Waterfowl Hunt Areas dropdown with JSON vars.
-		var waterfowlList = [{
-			"ID": "1",
-			"NAME": "Canada Goose Area 1"
-		}, {
-			"ID": "2",
-			"NAME": "Canada Goose Area 2"
-		}, {
-			"ID": "3",
-			"NAME": "Canada Goose Area 3"
-		}, {
-			"ID": "4",
-			"NAME": "Duck Area 1"
-		}, {
-			"ID": "5",
-			"NAME": "Duck Area 2"
-		}, {
-			"ID": "6",
-			"NAME": "Light Goose Area 1"
-		}, {
-			"ID": "7",
-			"NAME": "Light Goose Area 2"
-		}, {
-			"ID": "8",
-			"NAME": "Light Goose Area 3"
-		}, {
-			"ID": "9",
-			"NAME": "Light Goose Area 4"
-		}, {
-			"ID": "10",
-			"NAME": "White-fronted Goose Area 1"
-		}, {
-			"ID": "11",
-			"NAME": "White-fronted Goose Area 2"
-		}, {
-			"ID": "12",
-			"NAME": "White-fronted Goose Area 3"
-		}, {
-			"ID": "13",
-			"NAME": "Sandhill Crane Area 1"
-		}, {
-			"ID": "14",
-			"NAME": "Sandhill Crane Area 2"
-		}, {
-			"ID": "15",
-			"NAME": "Sandhill Crane Area 3"
-		}, {
-			"ID": "16",
-			"NAME": "Sandhill Crane Area 4"
-		}, {
-			"ID": "17",
-			"NAME": "Sandhill Crane Area 5"
-		}];
-		$.each(waterfowlList, function () {
-			$('#waterfowl').append('<option value="' + this.ID + '">' + this.NAME + '</option>');
-		});
-		//populate the Game Distribution dropdown with JSON vars.
-		var gameAnimalList = [{
-			"ID": "730",
-			"NAME": "American Badger"
-		}, {
-			"ID": "693",
-			"NAME": "American Beaver"
-		}, {
-			"ID": "362",
-			"NAME": "American Coot"
-		}, {
-			"ID": "500",
-			"NAME": "American Crow"
-		}, {
-			"ID": "723",
-			"NAME": "American Marten"
-		}, {
-			"ID": "306",
-			"NAME": "American Wigeon"
-		}, {
-			"ID": "318",
-			"NAME": "Barrow's Goldeneye"
-		}, {
-			"ID": "719",
-			"NAME": "Black Bear"
-		}, {
-			"ID": "301",
-			"NAME": "Blue-Winged Teal"
-		}, {
-			"ID": "736",
-			"NAME": "Bobcat"
-		}, {
-			"ID": "319",
-			"NAME": "Bufflehead"
-		}, {
-			"ID": "747",
-			"NAME": "California Bighorn Sheep"
-		}, {
-			"ID": "356",
-			"NAME": "California Quail"
-		}, {
-			"ID": "295",
-			"NAME": "Canada Goose"
-		}, {
-			"ID": "307",
-			"NAME": "Canvasback"
-		}, {
-			"ID": "345",
-			"NAME": "Chukar"
-		}, {
-			"ID": "302",
-			"NAME": "Cinnamon Teal"
-		}, {
-			"ID": "352",
-			"NAME": "Columbian Sharp-Tailed Grouse"
-		}, {
-			"ID": "317",
-			"NAME": "Common Goldeneye"
-		}, {
-			"ID": "321",
-			"NAME": "Common Merganser"
-		}, {
-			"ID": "722",
-			"NAME": "Common Raccoon"
-		}, {
-			"ID": "397",
-			"NAME": "Common Snipe"
-		}, {
-			"ID": "-700",
-			"NAME": "Deer"
-		}, {
-			"ID": "348",
-			"NAME": "Dusky Grouse"
-		}, {
-			"ID": "305",
-			"NAME": "Eurasian Wigeon"
-		}, {
-			"ID": "304",
-			"NAME": "Gadwall"
-		}, {
-			"ID": "344",
-			"NAME": "Gray Partridge"
-		}, {
-			"ID": "310",
-			"NAME": "Greater Scaup"
-		}, {
-			"ID": "297",
-			"NAME": "Green-Winged Teal"
-		}, {
-			"ID": "313",
-			"NAME": "Harlequin Duck"
-		}, {
-			"ID": "320",
-			"NAME": "Hooded Merganser"
-		}, {
-			"ID": "311",
-			"NAME": "Lesser Scaup"
-		}, {
-			"ID": "299",
-			"NAME": "Mallard"
-		}, {
-			"ID": "727",
-			"NAME": "Mink"
-		}, {
-			"ID": "740",
-			"NAME": "Moose"
-		}, {
-			"ID": "656",
-			"NAME": "Mountain Cottontail"
-		}, {
-			"ID": "745",
-			"NAME": "Mountain Goat"
-		}, {
-			"ID": "734",
-			"NAME": "Mountain Lion"
-		}, {
-			"ID": "746",
-			"NAME": "Mountain Sheep"
-		}, {
-			"ID": "428",
-			"NAME": "Mourning Dove"
-		}, {
-			"ID": "738",
-			"NAME": "Mule Deer"
-		}, {
-			"ID": "708",
-			"NAME": "Muskrat"
-		}, {
-			"ID": "354",
-			"NAME": "Northern Bobwhite"
-		}, {
-			"ID": "300",
-			"NAME": "Northern Pintail"
-		}, {
-			"ID": "733",
-			"NAME": "Northern River Otter"
-		}, {
-			"ID": "303",
-			"NAME": "Northern Shoveler"
-		}, {
-			"ID": "743",
-			"NAME": "Pronghorn"
-		}, {
-			"ID": "660",
-			"NAME": "Pygmy Rabbit"
-		}, {
-			"ID": "717",
-			"NAME": "Red Fox"
-		}, {
-			"ID": "322",
-			"NAME": "Red-Breasted Merganser"
-		}, {
-			"ID": "308",
-			"NAME": "Redhead"
-		}, {
-			"ID": "309",
-			"NAME": "Ring-Necked Duck"
-		}, {
-			"ID": "346",
-			"NAME": "Ring-Necked Pheasant"
-		}, {
-			"ID": "293",
-			"NAME": "Ross's Goose"
-		}, {
-			"ID": "323",
-			"NAME": "Ruddy Duck"
-		}, {
-			"ID": "349",
-			"NAME": "Ruffed Grouse"
-		}, {
-			"ID": "350",
-			"NAME": "Sage Grouse"
-		}, {
-			"ID": "363",
-			"NAME": "Sandhill Crane"
-		}, {
-			"ID": "292",
-			"NAME": "Snow Goose"
-		}, {
-			"ID": "657",
-			"NAME": "Snowshoe Hare"
-		}, {
-			"ID": "347",
-			"NAME": "Spruce Grouse"
-		}, {
-			"ID": "737",
-			"NAME": "Wapiti Or Elk"
-		}, {
-			"ID": "739",
-			"NAME": "White-Tailed Deer"
-		}, {
-			"ID": "353",
-			"NAME": "Wild Turkey"
-		}, {
-			"ID": "296",
-			"NAME": "Wood Duck"
-		}];
-		$.each(gameAnimalList, function () {
-			$('#gameDistribution').append('<option value="' + this.ID + '">' + this.NAME + '</option>');
-		});
 		// legend nav1 menu is selected
 		$("#legendNav1").click(function (e) {
 			$("#legendCollapse").collapse('toggle');
