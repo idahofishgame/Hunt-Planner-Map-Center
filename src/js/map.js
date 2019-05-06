@@ -423,10 +423,11 @@ require([
 			id: "GMUs_with_Motorized_Hunting_Rules",
 			visible: false
 		});
-		let accessYes = new FeatureLayer("https://services.arcgis.com/FjJI5xHF2dUPVrgK/ArcGIS/rest/services/AccessYesProperties/FeatureServer/0", {
+		let accessYes = new FeatureLayer("https://gis.idfg.idaho.gov/server/rest/services/Access/MapServer/1", {
 			id: "Access_Yes!_ Properties",
 			visible: false
 		});
+    accessYes.setDefinitionExpression("IFWIS_Wildlife.dbo.VU_YES_Active.BidID IS NOT NULL");
 		let elkMgmtZones = new FeatureLayer("https://services.arcgis.com/FjJI5xHF2dUPVrgK/ArcGIS/rest/services/ElkManagementZones/FeatureServer/0", {
 			id: "Elk_Management_Zones",
 			visible: false
