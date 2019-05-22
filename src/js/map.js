@@ -722,7 +722,7 @@ require([
 
 
 
-		let roadClosureLayer = new FeatureLayer("https://gis2.idaho.gov/arcgis/rest/services/DPR/Idaho_Trails_Map/MapServer/0", {
+		let roadClosureLayer = new FeatureLayer("https://gis2.idaho.gov/arcgis/rest/services/DPR/Idaho_Trails_Map/MapServer/1", {
 			id: "Road_and_Trail_Closures_(zoom_in_to_activate)",
 			outFields: ["*"],
 			visible: false,

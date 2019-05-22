@@ -1684,7 +1684,7 @@ require(["esri/config", "esri/urlUtils", "esri/arcgis/utils", "esri/map", "esri/
 	});
 	trailLayers.setVisibleLayers([4, 5, 6, 7, 8, 9, 10, 11, 12, 13]);
 
-	var roadClosureLayer = new FeatureLayer("https://gis2.idaho.gov/arcgis/rest/services/DPR/Idaho_Trails_Map/MapServer/0", {
+	var roadClosureLayer = new FeatureLayer("https://gis2.idaho.gov/arcgis/rest/services/DPR/Idaho_Trails_Map/MapServer/1", {
 		id: "Road_and_Trail_Closures_(zoom_in_to_activate)",
 		outFields: ["*"],
 		visible: false,
