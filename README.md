@@ -26,3 +26,4 @@ Install Node and Gulp
 2. Move to huntplanner_mapcenter directory
 3. Type `gulp`
 
+Now any edit made to the source files will auto-magically be minified and compressed into the dist and the browser will refresh.
