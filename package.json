@@ -18,6 +18,7 @@
   "homepage": "https://github.com/idahofishgame/huntplanner_mapcenter#readme",
   "dependencies": {
     "babel-core": "^6.26.3",
+    "bitwise64": "^1.0.0",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.0",
     "gulp-gzip": "^1.4.0",

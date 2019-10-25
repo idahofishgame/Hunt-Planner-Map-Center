@@ -53,7 +53,7 @@ html {
 #sidebar-footer {
 	color: #4d1e00;
 	background-color: transparent;
-	font-family: 'Trebuchet MS', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+	/*font-family: 'Trebuchet MS', 'Helvetica Neue', Arial, Helvetica, sans-serif;*/
 }
 
 .Link {
@@ -544,7 +544,7 @@ ul.dropdown-menu.inner.selectpicker {
 #navbar-wrapper {
 	background-color: #ec7a2d;
 	/* background-image: linear-gradient(#677054, #3f4533); */
-	font-family: 'Trebuchet MS', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+	/*font-family: 'Trebuchet MS', 'Helvetica Neue', Arial, Helvetica, sans-serif;*/
 }
 
 #navbar-wrapper strong {

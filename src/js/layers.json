@@ -1,0 +1,47 @@
+{
+  "hunt": {
+    "1": "Game Management Units",
+    "2": "GMUs with Motorized Hunting Rules",
+    "4": "Elk Management Zones",
+    "8": "Controlled Hunt Areas - Antelope",
+    "16": "Controlled Hunt Areas - Black Bear",
+    "32": "Controlled Hunt Areas - Bighorn Sheep",
+    "64": "Controlled Hunt Areas - Deer",
+    "128": "Controlled Hunt Areas - Elk",
+    "256": "Controlled Hunt Areas - Mountain Goat",
+    "512": "Controlled Hunt Areas - Moose",
+    "1024": "Controlled Hunt Areas - Turkey",
+    "2048": "Areas with Hunting Restrictions - Big Game",
+    "4096": "Areas with Hunting Restrictions - Upland Game Bird & Turkey",
+    "8192": "Areas with Hunting Restrictions - Upland Game",
+    "16384": "Areas with Hunting Restrictions - Waterfowl",
+    "32768": "Areas with Hunting Restrictions - Furbearer"
+  },
+  "admin": {
+    "1": "Fish and Game Regions",
+    "2": "Counties",
+    "4": "USGS Quad Map Boundaries",
+    "8": "BLM Field Office Boundaries",
+    "16": "USFS Administrative Boundaries",
+    "32": "Wilderness Areas"
+  },
+  "reference": {
+    "1": "FAA Airports/Airstrips",
+    "2": "Campgrounds",
+    "4": "Emergency Road & Trail Closures",
+    "8": "Roads & Trails",
+    "16": "USFS Motor Vehicle Use",
+    "32": "Wildlife Management Areas",
+    "64": "Large Tracts Access",
+    "128": "Endowment Lands Access",
+    "256": "Access Yes! Properties",
+    "512": "State & Federal Land Management"
+  },
+  "wildlife": {
+    "1": "Fire Emergency Closure Areas",
+    "2": "Current Year Fire Perimeters",
+    "4": "MODIS Fire Detections",
+    "8": "Inactive Fire Perimeters",
+    "16": "Historic Fire Perimeters"
+  }
+}

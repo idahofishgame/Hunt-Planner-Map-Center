@@ -99,6 +99,10 @@ gulp.task('lib-optimize', function(){
 });
 //////////////////////////////////////////////////////////////////////////////
 
+gulp.task('copy', function () {
+    gulp.src('./src/js/bs64.min.js')
+        .pipe(gulp.dest('./src/dist'));
+});
 
 //create javascript optimization task
 ////////////////////////////////////////////////////////////////////////////////
@@ -112,8 +116,6 @@ gulp.task('js', function(){
 	 
 			'./src/js/bootstrap-select.js',
 			 './src/js/map.js',
-
-
    ])
    //define concatenation order of js files
   .pipe(order([
