@@ -769,6 +769,7 @@ require([
             id: "Large_Tracts_Access",
             outFields: ["AgreementWith", "Partnership", "Accesss", "last_edited_date", "IDFGMoreInfo"],
             visible: (64 & params.reference) !== 0,
+            opacity: 0.4,
             infoTemplate: largeTractsPopupTemplate
         });
 
@@ -779,7 +780,7 @@ require([
 
         let landCoverLayer = new ArcGISImageServiceLayer("https://utility.arcgis.com/usrsvcs/servers/9a9d92e2b6b749e0be6e47461a50c822/rest/services/USA_NLCD_2011/ImageServer", {
             id: "Land_Cover",
-            opacity: 0.4,
+            opacity: 0.7,
             visible: false
         });
 
