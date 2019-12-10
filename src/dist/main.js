@@ -1710,7 +1710,7 @@ require(["esri/config", "esri/urlUtils", "esri/arcgis/utils", "esri/map", "esri/
 
     // REFERENCE LAYERS GROUP //
 
-    var surfaceMgmtLayer = new ArcGISTiledMapServiceLayer("https://tiles.arcgis.com/tiles/FjJI5xHF2dUPVrgK/arcgis/rest/services/BLM_Surface_Management/MapServer", {
+    var surfaceMgmtLayer = new ArcGISTiledMapServiceLayer("https://tiles.arcgis.com/tiles/FjJI5xHF2dUPVrgK/arcgis/rest/services/BLM_Surface_Management_Tile/MapServer?cacheKey=aa0b86810d2d71f9", {
         id: "State_&_Federal_Land_Management",
         opacity: 0.7,
         visible: (512 & params.reference) !== 0
@@ -1971,7 +1971,7 @@ require(["esri/config", "esri/urlUtils", "esri/arcgis/utils", "esri/map", "esri/
 
     trailLandLayerList.on("load", function () {
         //Add disclaimer and layer source information.
-        $("label[for=tocDiv3_checkbox_0]").after("<div class='disclaimer'>IMPORTANT: Please be sure to obtain landowner permission before entering or crossing private lands. State & federal land management data maintained by BLM (2013). <a href='//cloud.insideidaho.org/webApps/metadataViewer/default.aspx?path=%5c%5cintranet.rocket.net%5cinsideprod%5cdata%5canonymous%5cblm%5cRLTY_SMA_PUB_24K_POLY.shp.xml' target='_blank'>Learn More</a></div>");
+        $("label[for=tocDiv3_checkbox_0]").after("<div class='disclaimer'>IMPORTANT: Please be sure to obtain landowner permission before entering or crossing private lands. State & federal land management data maintained by BLM (2013). <a href='https://catalog.data.gov/dataset/blm-national-surface-management-agency-area-polygons-national-geospatial-data-asset-ngda' target='_blank'>Learn More</a></div>");
         $("label[for=tocDiv3_checkbox_2]").after("<div class='disclaimer'>IMPORTANT: Know before you go! Please respect access rules. Access agreements are generally for wildlife recreation activities: hunting, fishing, trapping, and wildlife watching. Other uses may be restricted. <b>Access can change quickly. Observe posted signs</b>. <a href=' https://idfg.idaho.gov/access/endowment' target='_blank'>Learn More</a></div>");
         $("label[for=tocDiv3_checkbox_3]").after("<div class='disclaimer'>IMPORTANT: Know before you go! Please respect access rules. Selecting an area on the map gives more information. Access agreements are generally for wildlife recreation activities: hunting, fishing, trapping, and wildlife watching. Other uses may be restricted. <b>Access can change quickly. Observe posted signs</b>. <a href=' https://idfg.idaho.gov/access/large-tracts' target='_blank'>Learn More</a></div>");
         // $("label[for=tocDiv3_checkbox_1]").after("<div class='disclaimer'>Endowment lands data maintained by Idaho Dept. of Lands (2017). This layer shows which endowment lands designated as Yes or No Known Public Access. <a href='//www.arcgis.com/home/item.html?id=eabf22046eb64525b0ccfd64a099e6eb#overview' target='_blank'>Learn More</a></div>");

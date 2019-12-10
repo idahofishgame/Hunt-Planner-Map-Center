@@ -24,7 +24,6 @@
     "gulp-gzip": "^1.4.0",
     "gulp-rename": "^1.2.2",
     "gulp-util": "^3.0.7",
-    "js-yaml": "^3.13.1",
     "pageguide": "^2.0.3"
   },
   "devDependencies": {
